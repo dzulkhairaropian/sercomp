@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Resmi - SerComp Service Computer</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Font Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- SerComp Theme -->
+  <style>
+/* ========================================================
+   SerComp Unified Brand Design System (SI 2 / Bisnis Digital)
+   WCAG 2.2 Accessible & UI/UX Pro Max Aligned
+   ======================================================== */
+:root {
+  /* Brand Palette */
+  --sc-navy: #0d233a;
+  --sc-navy-dark: #071524;
+  --sc-navy-light: #16385d;
+  --sc-primary: #0284c7;       /* Tech Sapphire Blue */
+  --sc-primary-hover: #0369a1;
+  --sc-primary-subtle: #e0f2fe;
+  --sc-accent: #0ea5e9;        /* Electric Sky */
+  --sc-cyan: #06b6d4;
+  
+  /* Neutral Slate Scale */
+  --sc-slate-50: #f8fafc;
+  --sc-slate-100: #f1f5f9;
+  --sc-slate-200: #e2e8f0;
+  --sc-slate-300: #cbd5e1;
+  --sc-slate-400: #94a3b8;
+  --sc-slate-500: #64748b;
+  --sc-slate-600: #475569;
+  --sc-slate-700: #334155;
+  --sc-slate-800: #1e293b;
+  --sc-slate-900: #0f172a;
+
+  /* WCAG AA (4.5:1) Accessible Functional Accents */
+  --sc-emerald: #059669;
+  --sc-emerald-subtle: #d1fae5;
+  --sc-emerald-text: #065f46;   /* Contrast > 4.5:1 on light green */
+  
+  --sc-amber: #d97706;
+  --sc-amber-subtle: #fef3c7;
+  --sc-amber-text: #78350f;     /* Contrast > 5.5:1 on light amber */
+  
+  --sc-rose: #dc2626;
+  --sc-rose-subtle: #fee2e2;
+  --sc-rose-text: #991b1b;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: #0284c7;
+  --bs-primary-rgb: 2, 132, 199;
+  --bs-primary-border-subtle: #bae6fd;
+  --bs-primary-bg-subtle: #f0f9ff;
+  
+  --bs-body-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #f8fafc;
+  --bs-body-color: #0f172a;
+  --bs-border-color: #e2e8f0;
+  --bs-border-radius: 0.625rem;
+  --bs-border-radius-lg: 0.875rem;
+  --bs-border-radius-xl: 1.25rem;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--sc-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Brand Logo Box */
+.brand-box {
+  width: 40px;
+  height: 40px;
+  background: var(--sc-navy);
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 35, 58, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Gradient Hero */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #071524 0%, #0d233a 55%, #16385d 100%) !important;
+}
+
+/* Academic Demo Bar (Sufficient touch targets >= 24px) */
+.sc-demo-bar {
+  background: #09121d;
+  border-bottom: 1px solid #1e293b;
+  font-size: 12px;
+  padding: 6px 16px;
+  color: #cbd5e1;
+}
+
+.sc-demo-bar .btn-demo {
+  font-size: 11px;
+  padding: 4px 12px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.sc-demo-bar .btn-demo:hover {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.sc-demo-bar .btn-demo.active {
+  background: var(--sc-primary);
+  color: #ffffff;
+  border-color: var(--sc-primary);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+}
+
+/* Accessible Status Badges */
+.badge-warning-accessible {
+  background-color: var(--sc-amber-subtle) !important;
+  color: var(--sc-amber-text) !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700;
+}
+
+.badge-success-accessible {
+  background-color: var(--sc-emerald-subtle) !important;
+  color: var(--sc-emerald-text) !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 700;
+}
+
+.badge-info-accessible {
+  background-color: var(--sc-primary-subtle) !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+  font-weight: 700;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+  background-color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--sc-primary-hover) !important;
+  border-color: var(--sc-primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.text-primary {
+  color: var(--sc-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--sc-primary) !important;
+}
+
+.bg-primary-subtle {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+}
+
+.border-primary-subtle {
+  border-color: #bae6fd !important;
+}
+
+/* Quick Track Banner */
+.bg-quick-track {
+  background: linear-gradient(90deg, #071524 0%, #0d233a 100%) !important;
+  border-bottom: 2px solid #0284c7;
+}
+
+/* Device Card Selection in Booking Form */
+.device-card-input:checked + .device-card-label {
+  border-color: var(--sc-primary) !important;
+  background-color: #f0f9ff !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* Card Enhancements */
+.card {
+  border-color: var(--sc-slate-200);
+}
+
+.card.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05) !important;
+}
+
+.card.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
+
+</style>
+  <style>
+    body {
+      background-color: var(--sc-slate-50);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #212529;
+    }
+    .invoice-card {
+      max-width: 850px;
+      margin: 30px auto;
+      background: #ffffff;
+      border: 1px solid var(--sc-slate-200);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      padding: 40px;
+      position: relative;
+    }
+    .stamp-paid {
+      position: absolute;
+      top: 130px;
+      right: 50px;
+      border: 3px dashed var(--sc-emerald);
+      color: var(--sc-emerald);
+      padding: 8px 24px;
+      font-weight: 900;
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transform: rotate(-10deg);
+      border-radius: 8px;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .brand-logo-box {
+      width: 44px;
+      height: 44px;
+      background-color: var(--sc-navy);
+      color: #38bdf8;
+      font-weight: 900;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+    @media print {
+      body {
+        background-color: #ffffff;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .invoice-card {
+        margin: 0;
+        padding: 20px;
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP PROTOTYPE DEMO BAR (Screen Only) -->
+  <div class="no-print sc-demo-bar">
+    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
+        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <span class="text-white-50 me-1 small d-none d-lg-inline">Pintas Halaman:</span>
+        <a href="http://localhost:8000" class="btn-demo">1. Landing</a>
+        <a href="http://localhost:8000/booking" class="btn-demo">2. Form Reservasi</a>
+        <a href="http://localhost:8000/user-panel" class="btn-demo">3. Portal Pelanggan</a>
+        <a href="http://localhost:8000/teknisi" class="btn-demo">4. Panel Teknisi</a>
+        <a href="http://localhost:8000/invoice" class="btn-demo active">5. Faktur Invoice</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Action Bar (Screen Only) -->
+  <div class="container no-print mt-3 mb-2" style="max-width: 850px;">
+    <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 border shadow-sm">
+      <div class="d-flex align-items-center gap-2">
+        <a href="/user-panel" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Kembali ke Portal User
+        </a>
+        <span class="badge text-bg-success px-2.5 py-1.5 fs-7">
+          <i class="bi bi-check-circle-fill me-1"></i> Transaksi Selesai & Lunas
+        </span>
+      </div>
+      <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-sm btn-primary">
+          <i class="bi bi-printer me-1"></i> Cetak / Unduh PDF (A4)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVOICE SHEET -->
+  <div class="invoice-card">
+    <!-- Watermark Stempel Lunas -->
+    <div class="stamp-paid">
+      LUNAS (PAID)
+    </div>
+
+    <!-- Header Perusahaan & No Invoice -->
+    <div class="row align-items-start border-bottom pb-4 mb-4">
+      <div class="col-sm-7">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="brand-logo-box">SC</div>
+          <div>
+            <h4 class="fw-bold mb-0 text-dark tracking-tight">Ser<span class="text-primary">Comp</span></h4>
+            <span class="text-muted small fw-semibold">PT SerComp Digital Solusindo</span>
+          </div>
+        </div>
+        <p class="text-muted small mb-0">
+          Workshop Hub Jakarta Barat • Sentra Bisnis Teknologi UNM<br>
+          WhatsApp Hotline: 0812-9876-5432 • Surel: finance@sercomp.id
+        </p>
+      </div>
+      <div class="col-sm-5 text-sm-end mt-3 mt-sm-0">
+        <span class="badge text-bg-dark text-uppercase px-2.5 py-1 mb-1">Faktur Resmi Penjualan & Jasa</span>
+        <h5 class="fw-bold text-primary font-monospace mb-0" id="invNo">INV-SC-2026-8812</h5>
+        <div class="text-muted small mt-1">Tanggal: <span id="invDate" class="fw-semibold">27 Oktober 2026</span></div>
+        <div class="text-muted small">No. Tiket: <span id="invTicket" class="fw-bold text-dark">#SC-2026-9042</span></div>
+      </div>
+    </div>
+
+    <!-- Informasi Pelanggan & Perangkat -->
+    <div class="bg-light p-3 rounded-3 border mb-4">
+      <div class="row g-3 small">
+        <div class="col-6 col-md-3">
+          <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Pelanggan:</span>
+          <span class="fw-bold text-dark" id="invCustomer">Dzul Khair Aropian</span>
+        </div>
+        <div class="col-6 col-md-3">
+          <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Kontak WhatsApp:</span>
+          <span class="fw-bold text-dark" id="invPhone">0812-9876-5432</span>
+        </div>
+        <div class="col-6 col-md-3">
+          <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Perangkat Servis:</span>
+          <span class="fw-bold text-dark" id="invDevice">Laptop Asus ROG Strix G15</span>
+        </div>
+        <div class="col-6 col-md-3">
+          <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Metode Serah Terima:</span>
+          <span class="fw-bold text-primary" id="invDelivery">Diantar Sendiri ke Workshop</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Rincian Biaya -->
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered align-middle small mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 5%;">No</th>
+            <th scope="col" style="width: 55%;">Deskripsi Layanan & Suku Cadang</th>
+            <th scope="col" class="text-center" style="width: 10%;">Qty</th>
+            <th scope="col" class="text-end" style="width: 15%;">Harga Satuan</th>
+            <th scope="col" class="text-end" style="width: 15%;">Subtotal (Rp)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center fw-bold">1</td>
+            <td>
+              <div class="fw-bold text-dark">Jasa Servis & Bongkar Pasang Heatsink Modul</div>
+              <div class="text-muted" style="font-size: 11px;">Penanganan teknisi bersertifikat, diagnosa hardware & thermal stress test</div>
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-end font-monospace" id="invLaborCost">Rp 150.000</td>
+            <td class="text-end font-monospace fw-semibold" id="invLaborSubtotal">Rp 150.000</td>
+          </tr>
+          <tr>
+            <td class="text-center fw-bold">2</td>
+            <td>
+              <div class="fw-bold text-dark">Modul Fan Cooler Original DC 5V Brushless</div>
+              <div class="text-muted" style="font-size: 11px;">Penggantian part baru original (Garansi Resmi 90 Hari)</div>
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-end font-monospace" id="invPartsCost">Rp 220.000</td>
+            <td class="text-end font-monospace fw-semibold" id="invPartsSubtotal">Rp 220.000</td>
+          </tr>
+          <tr id="invCleaningRow">
+            <td class="text-center fw-bold">3</td>
+            <td>
+              <div class="fw-bold text-dark">Additional: Deep Cleaning & Dust Heatsink Removal</div>
+              <div class="text-muted" style="font-size: 11px;">Pembersihan total debu kipas, kisi-kisi pembuangan, dan motherboard</div>
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-end font-monospace" id="invCleaningCost">Rp 50.000</td>
+            <td class="text-end font-monospace fw-semibold" id="invCleaningSubtotal">Rp 50.000</td>
+          </tr>
+          <tr id="invRepastaRow">
+            <td class="text-center fw-bold">4</td>
+            <td>
+              <div class="fw-bold text-dark">Additional: Repasta Thermal Arctic MX-4 Premium</div>
+              <div class="text-muted" style="font-size: 11px;">Penggantian pasta konduktor panas CPU & GPU grade tinggi</div>
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-end font-monospace" id="invRepastaCost">Rp 75.000</td>
+            <td class="text-end font-monospace fw-semibold" id="invRepastaSubtotal">Rp 75.000</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="table-light">
+            <td colspan="4" class="text-end fw-bold text-uppercase fs-6">Total Tagihan Bersih (Net Total):</td>
+            <td class="text-end fw-bold text-primary fs-6 font-monospace" id="invGrandTotal">Rp 495.000</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Informasi Pembayaran & E-Warranty -->
+    <div class="row g-3 small mb-4">
+      <div class="col-md-6">
+        <div class="border rounded-3 p-3 bg-light h-100">
+          <span class="fw-bold text-dark d-block mb-1"><i class="bi bi-shield-check text-success me-1"></i> Data Verifikasi Pembayaran</span>
+          <table class="table table-borderless table-sm mb-0 text-muted" style="font-size: 12px;">
+            <tr>
+              <td style="width: 45%;">Metode Pembayaran</td>
+              <td>: <span class="fw-bold text-dark">QRIS Dinamis</span></td>
+            </tr>
+            <tr>
+              <td>Waktu Pembayaran</td>
+              <td>: <span class="fw-bold text-dark" id="invPaidAt">27 Okt 2026, 14:22 WIB</span></td>
+            </tr>
+            <tr>
+              <td>Status Transaksi</td>
+              <td>: <span class="badge text-bg-success">PAID & SETTLED</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="border rounded-3 p-3 bg-light h-100">
+          <span class="fw-bold text-dark d-block mb-1"><i class="bi bi-patch-check text-primary me-1"></i> Sertifikat Garansi Elektronik (E-Warranty)</span>
+          <table class="table table-borderless table-sm mb-0 text-muted" style="font-size: 12px;">
+            <tr>
+              <td style="width: 45%;">Kode Garansi</td>
+              <td>: <span class="fw-bold font-monospace text-primary" id="invWarrantyCode">#WAR-2026-9904</span></td>
+            </tr>
+            <tr>
+              <td>Masa Berlaku</td>
+              <td>: <span class="fw-bold text-dark">90 Hari Kalender (s.d. 25 Jan 2027)</span></td>
+            </tr>
+            <tr>
+              <td>Ketentuan Klaim</td>
+              <td>: <span class="text-dark">Klaim tanpa nota kertas via portal SerComp</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bukti Pengerjaan Dokumentasi Part -->
+    <div class="border-top pt-3 small text-muted">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="fw-bold text-dark d-block">Catatan Pengembalian Unit:</span>
+          <span>1. Suku cadang lama yang rusak disertakan dalam dus pengembalian kepada pelanggan.</span><br>
+          <span>2. Tiket otomatis diselesaikan (Closed) melalui SLA 1x24 jam setelah unit diserah-terimakan.</span>
+        </div>
+        <div class="text-end" style="width: 200px;">
+          <p class="mb-4">Disahkan secara sistem oleh,<br><strong>Finance SerComp</strong></p>
+          <div class="text-muted small">[ Digital Verified ]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadInvoiceData() {
+      const serverTicket = {"ticket_no":"#SC-2026-9042","created_at":"2026-10-28T04:13:44.245564Z","customer_name":"Dzul Khair Aropian","customer_phone":"081298765432","device_type":"Laptop","device_brand":"Asus","device_model":"ROG Strix G15 (Core i7 \/ RTX 3060)","issue_chronology":"Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas.","delivery_method":"Diantar Sendiri","step":3,"status":"Menunggu Persetujuan Biaya","technician":{"name":"Budi Santoso (Hardware Specialist)"},"diagnosis":"Kipas pendingin (fan cooler) aus \u0026 bearing macet, menyebabkan CPU thermal throttling (suhu mencapai 95\u00b0C).","action_plan":"1) Penggantian modul fan cooler original baru; 2) Deep cleaning debu heatsink; 3) Repasta thermal Arctic MX-4; 4) Running test suhu 60 menit.","technician_notes":"Motherboard normal bebas korsleting. Seluruh data SSD terlindungi 100%.","cost_labor":150000,"cost_parts":220000,"cost_cleaning":50000,"cost_repasta":75000,"total_cost":495000,"payment_status":"Unpaid","is_approved":false,"is_completed":false,"unit_handed_over":false,"unit_handed_over_at":null,"is_closed":false,"invoice_no":"INV-SC-2026-9042"};
+      let order = null;
+
+      if (serverTicket) {
+        order = {
+          invoiceNo: serverTicket.invoice_no,
+          ticketNo: serverTicket.ticket_no,
+          customerName: serverTicket.customer_name,
+          customerPhone: serverTicket.customer_phone,
+          deviceType: serverTicket.device_type,
+          deviceBrand: serverTicket.device_brand,
+          deviceModel: serverTicket.device_model || '',
+          deliveryMethod: serverTicket.delivery_method,
+          costLabor: serverTicket.cost_labor || 150000,
+          costParts: serverTicket.cost_parts || 220000,
+          addonCleaning: serverTicket.cost_cleaning > 0,
+          costCleaning: serverTicket.cost_cleaning || 0,
+          addonRepasta: serverTicket.cost_repasta > 0,
+          costRepasta: serverTicket.cost_repasta || 0
+        };
+      } else {
+        const stored = localStorage.getItem('sercomp_active_order');
+        if (stored) {
+          order = JSON.parse(stored);
+        }
+      }
+
+      if (order) {
+        if (order.invoiceNo) document.getElementById('invNo').innerText = order.invoiceNo;
+        if (order.ticketNo) document.getElementById('invTicket').innerText = order.ticketNo;
+        if (order.customerName) document.getElementById('invCustomer').innerText = order.customerName;
+        if (order.customerPhone) document.getElementById('invPhone').innerText = order.customerPhone;
+        if (order.deviceType && order.deviceBrand) {
+          document.getElementById('invDevice').innerText = `${order.deviceType} ${order.deviceBrand} ${order.deviceModel}`;
+        }
+        if (order.deliveryMethod) document.getElementById('invDelivery').innerText = order.deliveryMethod;
+
+        const labor = order.costLabor || 150000;
+        const parts = order.costParts || 220000;
+        const clean = order.addonCleaning ? (order.costCleaning || 50000) : 0;
+        const repasta = order.addonRepasta ? (order.costRepasta || 75000) : 0;
+
+        document.getElementById('invLaborCost').innerText = "Rp " + labor.toLocaleString('id-ID');
+        document.getElementById('invLaborSubtotal').innerText = "Rp " + labor.toLocaleString('id-ID');
+        document.getElementById('invPartsCost').innerText = "Rp " + parts.toLocaleString('id-ID');
+        document.getElementById('invPartsSubtotal').innerText = "Rp " + parts.toLocaleString('id-ID');
+
+        if (!order.addonCleaning) {
+          document.getElementById('invCleaningRow').style.display = 'none';
+        } else {
+          document.getElementById('invCleaningCost').innerText = "Rp " + clean.toLocaleString('id-ID');
+          document.getElementById('invCleaningSubtotal').innerText = "Rp " + clean.toLocaleString('id-ID');
+        }
+
+        if (!order.addonRepasta) {
+          document.getElementById('invRepastaRow').style.display = 'none';
+        } else {
+          document.getElementById('invRepastaCost').innerText = "Rp " + repasta.toLocaleString('id-ID');
+          document.getElementById('invRepastaSubtotal').innerText = "Rp " + repasta.toLocaleString('id-ID');
+        }
+
+        const grand = labor + parts + clean + repasta;
+        document.getElementById('invGrandTotal').innerText = "Rp " + grand.toLocaleString('id-ID');
+      }
+    }
+    window.onload = loadInvoiceData;
+  </script>
+</body>
+</html>

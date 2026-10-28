@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stok Suku Cadang - SerComp</title>
+  
+  <!-- Bootstrap 5.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <!-- Font Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- SerComp Theme -->
+  <style>
+/* ========================================================
+   SerComp Unified Brand Design System (SI 2 / Bisnis Digital)
+   WCAG 2.2 Accessible & UI/UX Pro Max Aligned
+   ======================================================== */
+:root {
+  /* Brand Palette */
+  --sc-navy: #0d233a;
+  --sc-navy-dark: #071524;
+  --sc-navy-light: #16385d;
+  --sc-primary: #0284c7;       /* Tech Sapphire Blue */
+  --sc-primary-hover: #0369a1;
+  --sc-primary-subtle: #e0f2fe;
+  --sc-accent: #0ea5e9;        /* Electric Sky */
+  --sc-cyan: #06b6d4;
+  
+  /* Neutral Slate Scale */
+  --sc-slate-50: #f8fafc;
+  --sc-slate-100: #f1f5f9;
+  --sc-slate-200: #e2e8f0;
+  --sc-slate-300: #cbd5e1;
+  --sc-slate-400: #94a3b8;
+  --sc-slate-500: #64748b;
+  --sc-slate-600: #475569;
+  --sc-slate-700: #334155;
+  --sc-slate-800: #1e293b;
+  --sc-slate-900: #0f172a;
+
+  /* WCAG AA (4.5:1) Accessible Functional Accents */
+  --sc-emerald: #059669;
+  --sc-emerald-subtle: #d1fae5;
+  --sc-emerald-text: #065f46;   /* Contrast > 4.5:1 on light green */
+  
+  --sc-amber: #d97706;
+  --sc-amber-subtle: #fef3c7;
+  --sc-amber-text: #78350f;     /* Contrast > 5.5:1 on light amber */
+  
+  --sc-rose: #dc2626;
+  --sc-rose-subtle: #fee2e2;
+  --sc-rose-text: #991b1b;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: #0284c7;
+  --bs-primary-rgb: 2, 132, 199;
+  --bs-primary-border-subtle: #bae6fd;
+  --bs-primary-bg-subtle: #f0f9ff;
+  
+  --bs-body-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #f8fafc;
+  --bs-body-color: #0f172a;
+  --bs-border-color: #e2e8f0;
+  --bs-border-radius: 0.625rem;
+  --bs-border-radius-lg: 0.875rem;
+  --bs-border-radius-xl: 1.25rem;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--sc-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Brand Logo Box */
+.brand-box {
+  width: 40px;
+  height: 40px;
+  background: var(--sc-navy);
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 35, 58, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Gradient Hero */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #071524 0%, #0d233a 55%, #16385d 100%) !important;
+}
+
+/* Academic Demo Bar (Sufficient touch targets >= 24px) */
+.sc-demo-bar {
+  background: #09121d;
+  border-bottom: 1px solid #1e293b;
+  font-size: 12px;
+  padding: 6px 16px;
+  color: #cbd5e1;
+}
+
+.sc-demo-bar .btn-demo {
+  font-size: 11px;
+  padding: 4px 12px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.sc-demo-bar .btn-demo:hover {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.sc-demo-bar .btn-demo.active {
+  background: var(--sc-primary);
+  color: #ffffff;
+  border-color: var(--sc-primary);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+}
+
+/* Accessible Status Badges */
+.badge-warning-accessible {
+  background-color: var(--sc-amber-subtle) !important;
+  color: var(--sc-amber-text) !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700;
+}
+
+.badge-success-accessible {
+  background-color: var(--sc-emerald-subtle) !important;
+  color: var(--sc-emerald-text) !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 700;
+}
+
+.badge-info-accessible {
+  background-color: var(--sc-primary-subtle) !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+  font-weight: 700;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+  background-color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--sc-primary-hover) !important;
+  border-color: var(--sc-primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.text-primary {
+  color: var(--sc-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--sc-primary) !important;
+}
+
+.bg-primary-subtle {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+}
+
+.border-primary-subtle {
+  border-color: #bae6fd !important;
+}
+
+/* Quick Track Banner */
+.bg-quick-track {
+  background: linear-gradient(90deg, #071524 0%, #0d233a 100%) !important;
+  border-bottom: 2px solid #0284c7;
+}
+
+/* Device Card Selection in Booking Form */
+.device-card-input:checked + .device-card-label {
+  border-color: var(--sc-primary) !important;
+  background-color: #f0f9ff !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* Card Enhancements */
+.card {
+  border-color: var(--sc-slate-200);
+}
+
+.card.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05) !important;
+}
+
+.card.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
+
+</style>
+
+  <style>
+    body {
+      background-color: var(--sc-slate-50);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--sc-slate-900);
+      min-height: 100vh;
+    }
+    .admin-wrapper {
+      display: flex;
+      min-height: calc(100vh - 35px);
+    }
+    .admin-sidebar {
+      width: 260px;
+      background: #ffffff;
+      border-right: 1px solid var(--sc-slate-200);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 1020;
+    }
+    .admin-content {
+      flex-grow: 1;
+      padding: 1.5rem 2rem;
+      background-color: var(--sc-slate-50);
+      overflow-x: hidden;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.625rem;
+      color: var(--sc-slate-600);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: all 0.15s ease-in-out;
+      margin-bottom: 0.25rem;
+    }
+    .sidebar-link:hover {
+      background-color: var(--sc-slate-100);
+      color: var(--sc-slate-900);
+    }
+    .sidebar-link.active {
+      background-color: var(--sc-primary-subtle);
+      color: var(--sc-primary);
+      font-weight: 700;
+    }
+    .sidebar-link i {
+      font-size: 1.15rem;
+    }
+    .card-kpi {
+      background: #ffffff;
+      border: 1px solid var(--sc-slate-200);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+      transition: transform 0.15s ease;
+    }
+    .card-kpi:hover {
+      transform: translateY(-2px);
+    }
+    @media (max-width: 991.98px) {
+      .admin-wrapper {
+        flex-direction: column;
+      }
+      .admin-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--sc-slate-200);
+      }
+      .admin-content {
+        padding: 1rem;
+      }
+    }
+  </style>
+  </head>
+<body>
+
+  <!-- TOP PROTOTYPE DEMO BAR -->
+  <div class="sc-demo-bar">
+    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
+        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <a href="http://localhost:8000" class="btn-demo">1. Landing</a>
+        <a href="http://localhost:8000/booking" class="btn-demo">2. Form Reservasi</a>
+        <a href="http://localhost:8000/user-panel" class="btn-demo">3. Portal Pelanggan</a>
+        <a href="http://localhost:8000/teknisi" class="btn-demo active">4. Panel Teknisi</a>
+        <a href="http://localhost:8000/invoice" class="btn-demo">5. Faktur Invoice</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-wrapper">
+    
+    <!-- SIDEBAR TEKNISI / ADMIN -->
+    <aside class="admin-sidebar p-3">
+      
+      <!-- Brand Logo -->
+      <div class="d-flex align-items-center gap-2 pb-3 mb-3 border-bottom">
+        <div class="brand-box">SC</div>
+        <div>
+          <span class="fw-bold fs-5 text-dark">Ser<span class="text-primary">Comp</span></span>
+          <span class="d-block text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">Panel Teknisi & Admin</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menus -->
+      <nav class="flex-grow-1">
+        <div class="small text-muted text-uppercase fw-bold px-2 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
+          Menu Utama
+        </div>
+
+        <a href="http://localhost:8000/teknisi" class="sidebar-link ">
+          <i class="bi bi-speedometer2"></i>
+          <span>Dashboard KPI</span>
+        </a>
+
+        <a href="http://localhost:8000/teknisi/servis" class="sidebar-link ">
+          <i class="bi bi-laptop"></i>
+          <span>Daftar Servis Unit</span>
+          <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">14</span>
+        </a>
+
+        <a href="http://localhost:8000/teknisi/meja-kerja" class="sidebar-link ">
+          <i class="bi bi-tools"></i>
+          <span>Meja Kerja Diagnosa</span>
+        </a>
+
+        <div class="small text-muted text-uppercase fw-bold px-2 mt-3 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
+          Operasional & Inventori
+        </div>
+
+        <a href="http://localhost:8000/teknisi/sparepart" class="sidebar-link ">
+          <i class="bi bi-box-seam"></i>
+          <span>Stok Suku Cadang</span>
+        </a>
+
+        <a href="http://localhost:8000/invoice" target="_blank" class="sidebar-link">
+          <i class="bi bi-receipt"></i>
+          <span>Faktur Invoice A4</span>
+          <i class="bi bi-box-arrow-up-right ms-auto text-muted" style="font-size: 11px;"></i>
+        </a>
+
+        <a href="http://localhost:8000" target="_blank" class="sidebar-link">
+          <i class="bi bi-globe"></i>
+          <span>Lihat Website Utama</span>
+          <i class="bi bi-box-arrow-up-right ms-auto text-muted" style="font-size: 11px;"></i>
+        </a>
+      </nav>
+
+      <!-- Bottom Profile & Logout -->
+      <div class="pt-3 border-top mt-auto">
+        <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border mb-2">
+          <div class="badge bg-primary text-white p-2 rounded-circle">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="lh-1 overflow-hidden">
+            <strong class="d-block text-dark text-truncate small">Budi Santoso</strong>
+            <span class="text-muted" style="font-size: 11px;">Hardware Specialist</span>
+          </div>
+        </div>
+
+        <div class="d-grid gap-1">
+          <a href="http://localhost:8000/user-panel" class="btn btn-sm btn-outline-primary py-1.5 fw-semibold" style="font-size: 12px;">
+            <i class="bi bi-person-circle me-1"></i> Mode Pelanggan
+          </a>
+          <a href="http://localhost:8000/teknisi/login" class="btn btn-sm btn-outline-danger py-1.5 fw-semibold" style="font-size: 12px;">
+            <i class="bi bi-box-arrow-right me-1"></i> Keluar Sistem
+          </a>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT VIEW -->
+    <main class="admin-content">
+      
+      <!-- Top Title Bar -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+          <h3 class="fw-bold text-dark mb-1">Katalog &amp; Inventori Suku Cadang</h3>
+          <p class="text-muted small mb-0">Monitoring stok suku cadang original, pasta pendingin, dan add-ons perbaikan workshop.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-white text-secondary border px-3 py-2 rounded-3 shadow-sm small">
+            <i class="bi bi-calendar3 me-1 text-primary"></i> 28 October 2026
+          </span>
+          <button onclick="alert('Modal Tambah Suku Cadang Baru siap diintegrasikan!')" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1">
+  <i class="bi bi-plus-circle"></i> Tambah Item Part
+</button>
+        </div>
+      </div>
+
+      <!-- Page Content -->
+      
+<!-- STATS INVENTORI -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-md-3">
+    <div class="card-kpi">
+      <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total SKU Item</span>
+      <div class="fs-3 fw-bold text-dark mt-1">16 Jenis</div>
+      <span class="text-primary small">Suku Cadang & Add-on</span>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card-kpi">
+      <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Unit Fisik</span>
+      <div class="fs-3 fw-bold text-success mt-1">121 Pcs</div>
+      <span class="text-muted small">Tersedia di Rak Workshop</span>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card-kpi">
+      <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Stok Menipis</span>
+      <div class="fs-3 fw-bold text-warning mt-1">2 Item</div>
+      <span class="text-warning small fw-semibold">Perlu Restock</span>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <div class="card-kpi bg-primary-subtle border-primary-subtle">
+      <span class="text-primary text-uppercase fw-bold" style="font-size: 11px;">Estimasi Valuasi Stok</span>
+      <div class="fs-3 fw-bold text-primary mt-1">Rp 12.800.000</div>
+      <span class="text-muted small">Nilai Aset Komponen</span>
+    </div>
+  </div>
+</div>
+
+<!-- TABEL DAFTAR SUKU CADANG -->
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 pb-3 border-bottom">
+    <div>
+      <h5 class="fw-bold text-dark mb-0">Daftar Komponen & Add-on Workshop</h5>
+      <span class="text-muted small">Suku cadang bergaransi distributor resmi Indonesia.</span>
+    </div>
+
+    <input type="text" id="sparepartSearch" class="form-control form-control-sm" placeholder="Cari nama part / kode..." style="max-width: 250px;" oninput="filterParts()">
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 small" id="sparepartTable">
+      <thead class="table-light text-uppercase text-secondary">
+        <tr>
+          <th>Kode Part</th>
+          <th>Nama Komponen</th>
+          <th>Kategori</th>
+          <th>Stok Tersedia</th>
+          <th>Harga Beli (Modal)</th>
+          <th>Harga Jual Konsumen</th>
+          <th>Margin / Unit</th>
+          <th>Status</th>
+          <th class="text-end">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="sparepartBody">
+                              <tr>
+              <td><code class="text-primary fw-bold">FAN-ASUS-G15</code></td>
+              <td><strong>Modul Fan Cooler Original Asus ROG Strix G15</strong></td>
+              <td><span class="badge bg-light text-dark border">Cooling</span></td>
+              <td><strong class="fs-6 text-dark">6</strong> Pcs</td>
+              <td>Rp 160.000</td>
+              <td class="text-primary fw-bold">Rp 220.000</td>
+              <td><span class="text-success fw-semibold">+Rp 60.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok FAN-ASUS-G15')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Modul Fan Cooler Original Asus ROG Strix G15">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">FAN-LENOVO-LEGION</code></td>
+              <td><strong>Modul Dual Fan Cooler Lenovo Legion 5 Series</strong></td>
+              <td><span class="badge bg-light text-dark border">Cooling</span></td>
+              <td><strong class="fs-6 text-dark">5</strong> Pcs</td>
+              <td>Rp 175.000</td>
+              <td class="text-primary fw-bold">Rp 240.000</td>
+              <td><span class="text-success fw-semibold">+Rp 65.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok FAN-LENOVO-LEGION')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Modul Dual Fan Cooler Lenovo Legion 5 Series">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">FAN-ACER-NITRO</code></td>
+              <td><strong>Modul Fan Cooler Acer Nitro 5 (AN515)</strong></td>
+              <td><span class="badge bg-light text-dark border">Cooling</span></td>
+              <td><strong class="fs-6 text-dark">4</strong> Pcs</td>
+              <td>Rp 140.000</td>
+              <td class="text-primary fw-bold">Rp 195.000</td>
+              <td><span class="text-success fw-semibold">+Rp 55.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok FAN-ACER-NITRO')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Modul Fan Cooler Acer Nitro 5 (AN515)">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">TH-ARCTIC-MX4</code></td>
+              <td><strong>Thermal Paste Arctic MX-4 High-Performance (4g)</strong></td>
+              <td><span class="badge bg-light text-dark border">Chemical</span></td>
+              <td><strong class="fs-6 text-dark">20</strong> Pcs</td>
+              <td>Rp 45.000</td>
+              <td class="text-primary fw-bold">Rp 75.000</td>
+              <td><span class="text-success fw-semibold">+Rp 30.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok TH-ARCTIC-MX4')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Thermal Paste Arctic MX-4 High-Performance (4g)">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">TH-GRIZZLY-KRYO</code></td>
+              <td><strong>Thermal Grizzly Kryonaut Ultra High-End (1g)</strong></td>
+              <td><span class="badge bg-light text-dark border">Chemical</span></td>
+              <td><strong class="fs-6 text-dark">8</strong> Pcs</td>
+              <td>Rp 75.000</td>
+              <td class="text-primary fw-bold">Rp 120.000</td>
+              <td><span class="text-success fw-semibold">+Rp 45.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok TH-GRIZZLY-KRYO')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Thermal Grizzly Kryonaut Ultra High-End (1g)">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">SSD-NVME-256</code></td>
+              <td><strong>SSD M.2 NVMe PCIe Gen 3 Kingston NV1 256GB</strong></td>
+              <td><span class="badge bg-light text-dark border">Storage</span></td>
+              <td><strong class="fs-6 text-dark">10</strong> Pcs</td>
+              <td>Rp 260.000</td>
+              <td class="text-primary fw-bold">Rp 340.000</td>
+              <td><span class="text-success fw-semibold">+Rp 80.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok SSD-NVME-256')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok SSD M.2 NVMe PCIe Gen 3 Kingston NV1 256GB">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">SSD-NVME-512</code></td>
+              <td><strong>SSD M.2 NVMe PCIe Gen 4 Kingston NV2 512GB</strong></td>
+              <td><span class="badge bg-light text-dark border">Storage</span></td>
+              <td><strong class="fs-6 text-dark">12</strong> Pcs</td>
+              <td>Rp 450.000</td>
+              <td class="text-primary fw-bold">Rp 580.000</td>
+              <td><span class="text-success fw-semibold">+Rp 130.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok SSD-NVME-512')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok SSD M.2 NVMe PCIe Gen 4 Kingston NV2 512GB">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">SSD-NVME-1TB</code></td>
+              <td><strong>SSD M.2 NVMe PCIe Gen 4 Kingston NV2 1TB</strong></td>
+              <td><span class="badge bg-light text-dark border">Storage</span></td>
+              <td><strong class="fs-6 text-dark">7</strong> Pcs</td>
+              <td>Rp 820.000</td>
+              <td class="text-primary fw-bold">Rp 990.000</td>
+              <td><span class="text-success fw-semibold">+Rp 170.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok SSD-NVME-1TB')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok SSD M.2 NVMe PCIe Gen 4 Kingston NV2 1TB">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">RAM-DDR4-8GB</code></td>
+              <td><strong>RAM SODIMM DDR4 8GB 3200MHz Kingston Value</strong></td>
+              <td><span class="badge bg-light text-dark border">Memory</span></td>
+              <td><strong class="fs-6 text-dark">15</strong> Pcs</td>
+              <td>Rp 220.000</td>
+              <td class="text-primary fw-bold">Rp 310.000</td>
+              <td><span class="text-success fw-semibold">+Rp 90.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok RAM-DDR4-8GB')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok RAM SODIMM DDR4 8GB 3200MHz Kingston Value">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">RAM-DDR4-16GB</code></td>
+              <td><strong>RAM SODIMM DDR4 16GB 3200MHz Kingston Value</strong></td>
+              <td><span class="badge bg-light text-dark border">Memory</span></td>
+              <td><strong class="fs-6 text-dark">8</strong> Pcs</td>
+              <td>Rp 390.000</td>
+              <td class="text-primary fw-bold">Rp 490.000</td>
+              <td><span class="text-success fw-semibold">+Rp 100.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok RAM-DDR4-16GB')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok RAM SODIMM DDR4 16GB 3200MHz Kingston Value">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">RAM-DDR5-16GB</code></td>
+              <td><strong>RAM SODIMM DDR5 16GB 4800MHz Crucial Micron</strong></td>
+              <td><span class="badge bg-light text-dark border">Memory</span></td>
+              <td><strong class="fs-6 text-dark">6</strong> Pcs</td>
+              <td>Rp 580.000</td>
+              <td class="text-primary fw-bold">Rp 720.000</td>
+              <td><span class="text-success fw-semibold">+Rp 140.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok RAM-DDR5-16GB')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok RAM SODIMM DDR5 16GB 4800MHz Crucial Micron">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">KB-ASUS-VIVO</code></td>
+              <td><strong>Keyboard Laptop Asus Vivobook A412 Series (Black)</strong></td>
+              <td><span class="badge bg-light text-dark border">Input_device</span></td>
+              <td><strong class="fs-6 text-dark">4</strong> Pcs</td>
+              <td>Rp 120.000</td>
+              <td class="text-primary fw-bold">Rp 190.000</td>
+              <td><span class="text-success fw-semibold">+Rp 70.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok KB-ASUS-VIVO')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Keyboard Laptop Asus Vivobook A412 Series (Black)">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">KB-LENOVO-IDEAPAD</code></td>
+              <td><strong>Keyboard Laptop Lenovo Ideapad Slim 3 Series</strong></td>
+              <td><span class="badge bg-light text-dark border">Input_device</span></td>
+              <td><strong class="fs-6 text-dark">3</strong> Pcs</td>
+              <td>Rp 135.000</td>
+              <td class="text-primary fw-bold">Rp 200.000</td>
+              <td><span class="text-success fw-semibold">+Rp 65.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok KB-LENOVO-IDEAPAD')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Keyboard Laptop Lenovo Ideapad Slim 3 Series">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">LCD-14-IPS-30P</code></td>
+              <td><strong>Layar Panel LCD 14.0 Slim FHD IPS 30 Pin Non-Touch</strong></td>
+              <td><span class="badge bg-light text-dark border">Display</span></td>
+              <td><strong class="fs-6 text-dark">3</strong> Pcs</td>
+              <td>Rp 580.000</td>
+              <td class="text-primary fw-bold">Rp 750.000</td>
+              <td><span class="text-success fw-semibold">+Rp 170.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok LCD-14-IPS-30P')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Layar Panel LCD 14.0 Slim FHD IPS 30 Pin Non-Touch">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">LCD-156-144HZ</code></td>
+              <td><strong>Layar Panel LCD 15.6 FHD IPS 144Hz 40 Pin Gaming</strong></td>
+              <td><span class="badge bg-light text-dark border">Display</span></td>
+              <td><strong class="fs-6 text-warning">2</strong> Pcs</td>
+              <td>Rp 780.000</td>
+              <td class="text-primary fw-bold">Rp 980.000</td>
+              <td><span class="text-success fw-semibold">+Rp 200.000</span></td>
+              <td>
+                                  <span class="badge badge-warning-accessible">Menipis</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok LCD-156-144HZ')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Layar Panel LCD 15.6 FHD IPS 144Hz 40 Pin Gaming">Edit</button>
+              </td>
+            </tr>
+                      <tr>
+              <td><code class="text-primary fw-bold">ADAP-TYPE-C-65W</code></td>
+              <td><strong>Adaptor Charger Universal 65W USB Type-C Original</strong></td>
+              <td><span class="badge bg-light text-dark border">Power</span></td>
+              <td><strong class="fs-6 text-dark">8</strong> Pcs</td>
+              <td>Rp 190.000</td>
+              <td class="text-primary fw-bold">Rp 270.000</td>
+              <td><span class="text-success fw-semibold">+Rp 80.000</span></td>
+              <td>
+                                  <span class="badge badge-success-accessible">Tersedia</span>
+                              </td>
+              <td class="text-end">
+                <button onclick="alert('Kelola stok ADAP-TYPE-C-65W')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok Adaptor Charger Universal 65W USB Type-C Original">Edit</button>
+              </td>
+            </tr>
+                        </tbody>
+    </table>
+  </div>
+</div>
+    </table>
+  </div>
+</div>
+
+
+    </main>
+
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+  function filterParts() {
+    const q = document.getElementById('sparepartSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#sparepartBody tr');
+    rows.forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+</script>
+  </body>
+</html>

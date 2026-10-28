@@ -236,40 +236,23 @@
       } else {
         const stored = localStorage.getItem('sercomp_active_order');
         if (stored) {
-          order = JSON.parse(stored);
+          try {
+            order = JSON.parse(stored);
+          } catch(e) {
+            order = null;
+          }
         } else {
-          order = {
-            ticketNo: "#SC-2026-9042",
-            customerName: "Dzul Khair Aropian",
-            customerPhone: "081298765432",
-            deviceType: "Laptop",
-            deviceBrand: "Asus",
-            deviceModel: "ROG Strix G15 (Core i7 / RTX 3060)",
-            issueChronology: "Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas.",
-            addonCleaning: true,
-            addonRepasta: true,
-            deliveryMethod: "Diantar Sendiri",
-            step: 3,
-            status: "Menunggu Persetujuan Biaya",
-            diagnosis: "Kipas pendingin (fan cooler) aus & bearing macet, menyebabkan CPU thermal throttling (suhu mencapai 95°C).",
-            actionPlan: "1) Penggantian unit modul fan cooler original baru; 2) Deep cleaning debu heatsink; 3) Repasta thermal Arctic MX-4; 4) Running test suhu 60 menit.",
-            technicianNote: "Motherboard normal bebas korsleting. Seluruh data SSD terlindungi 100%.",
-            costLabor: 150000,
-            costParts: 220000,
-            costCleaning: 50000,
-            costRepasta: 75000,
-            paymentStatus: "Unpaid",
-            isApproved: false,
-            isCompleted: false,
-            unitHandedOver: false,
-            unitHandedOverTime: null,
-            isClosed: false,
-            evidenceLaptopFixed: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
-            evidenceReplacedPart: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80",
-            invoiceNo: "INV-SC-2026-8812"
-          };
-          localStorage.setItem('sercomp_active_order', JSON.stringify(order));
+          order = null;
         }
+      }
+
+      if (!order) {
+        document.getElementById('tekTicketNo').innerText = "-";
+        document.getElementById('tekBadgeStatus').innerText = "Belum Ada Unit Dipilih";
+        document.getElementById('tekDevice').innerText = "-";
+        document.getElementById('tekCustomer').innerText = "-";
+        document.getElementById('tekChronology').innerText = "Silakan buka menu Daftar Servis Unit dan pilih unit yang ingin dikerjakan di Meja Kerja.";
+        return;
       }
 
       renderTeknisi();

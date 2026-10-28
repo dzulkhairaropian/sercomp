@@ -3,26 +3,25 @@
 namespace Database\Seeders;
 
 use App\Models\Service;
-use App\Models\ServiceTicket;
-use App\Models\ServiceTicketItem;
-use App\Models\SlaLog;
 use App\Models\Sparepart;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class SercompDatabaseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed master data: Akun Teknisi, Stok Suku Cadang, dan Katalog Layanan.
+     * Tidak menyertakan data tiket dummy agar sistem murni menggunakan input pengguna.
      */
     public function run(): void
     {
-        // 1. TEKNISI & STAF WORKSHOP
-        $techBudi = User::updateOrCreate(
-            ['email' => 'budi@sercomp.id'],
+        // =========================================================================
+        // 1. MASTER AKUN TEKNISI & STAF WORKSHOP
+        // =========================================================================
+        $technicians = [
             [
+                'email' => 'budi@sercomp.id',
                 'name' => 'Budi Santoso',
                 'password' => Hash::make('teknisi123'),
                 'role' => 'technician',
@@ -30,12 +29,9 @@ class SercompDatabaseSeeder extends Seeder
                 'phone' => '081298765432',
                 'specialization' => 'Hardware Specialist Level 3',
                 'is_active' => true,
-            ]
-        );
-
-        $techAgus = User::updateOrCreate(
-            ['email' => 'agus@sercomp.id'],
+            ],
             [
+                'email' => 'agus@sercomp.id',
                 'name' => 'Agus Prasetyo',
                 'password' => Hash::make('teknisi123'),
                 'role' => 'technician',
@@ -43,12 +39,19 @@ class SercompDatabaseSeeder extends Seeder
                 'phone' => '081377889900',
                 'specialization' => 'Micro-Soldering & Power IC',
                 'is_active' => true,
-            ]
-        );
-
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@sercomp.id'],
+            ],
             [
+                'email' => 'dodi@sercomp.id',
+                'name' => 'Dodi Firmansyah',
+                'password' => Hash::make('teknisi123'),
+                'role' => 'technician',
+                'tech_code' => 'TEK-2026-03',
+                'phone' => '085711223344',
+                'specialization' => 'Desktop PC & Custom Build',
+                'is_active' => true,
+            ],
+            [
+                'email' => 'admin@sercomp.id',
                 'name' => 'Admin SerComp',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
@@ -56,213 +59,278 @@ class SercompDatabaseSeeder extends Seeder
                 'phone' => '081122334455',
                 'specialization' => 'Workshop Manager',
                 'is_active' => true,
-            ]
-        );
+            ],
+        ];
 
-        // 2. KATALOG LAYANAN & ADD-ON
+        foreach ($technicians as $tech) {
+            User::updateOrCreate(['email' => $tech['email']], $tech);
+        }
+
+        // =========================================================================
+        // 2. MASTER KATALOG LAYANAN & ADD-ON
+        // =========================================================================
         $services = [
-            ['name' => 'Deep Cleaning & Dust Removal', 'category' => 'maintenance', 'price' => 50000, 'is_addon' => true],
-            ['name' => 'Repasta Thermal Arctic MX-4', 'category' => 'maintenance', 'price' => 75000, 'is_addon' => true],
-            ['name' => 'Troubleshoot Motherboard & Power IC', 'category' => 'hardware', 'price' => 250000, 'is_addon' => false],
-            ['name' => 'Jasa Penggantian Modul Fan Cooler', 'category' => 'hardware', 'price' => 150000, 'is_addon' => false],
-            ['name' => 'Jasa Ganti Keyboard Laptop', 'category' => 'hardware', 'price' => 100000, 'is_addon' => false],
-            ['name' => 'Jasa Upgrade SSD & RAM', 'category' => 'hardware', 'price' => 75000, 'is_addon' => false],
-            ['name' => 'Instalasi Bersih OS Windows 11 / Linux', 'category' => 'software', 'price' => 80000, 'is_addon' => false],
-            ['name' => 'Rakit PC Desktop Custom & Cable Mgmt', 'category' => 'custom_pc', 'price' => 150000, 'is_addon' => false],
+            // Add-ons Perawatan Cepat
+            [
+                'name' => 'Deep Cleaning & Dust Removal',
+                'category' => 'maintenance',
+                'price' => 50000,
+                'description' => 'Pembersihan debu kerak pada sirip heatsink pendingin, exhaust, dan motherboard.',
+                'is_addon' => true,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Repasta Thermal Arctic MX-4',
+                'category' => 'maintenance',
+                'price' => 75000,
+                'description' => 'Pelumasan ulang pasta pendingin CPU & GPU dengan Arctic MX-4 berkualitas tinggi.',
+                'is_addon' => true,
+                'is_active' => true,
+            ],
+            // Jasa Utama
+            [
+                'name' => 'Jasa Perbaikan Motherboard & Power IC',
+                'category' => 'hardware',
+                'price' => 250000,
+                'description' => 'Penanganan korsleting jalur VCore 19V, solder ulang IC regulator, dan reballing chip.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Jasa Penggantian Modul Fan Cooler',
+                'category' => 'hardware',
+                'price' => 150000,
+                'description' => 'Bongkar pasang modul pendingin heatsink dan uji running test suhu 60 menit.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Jasa Penggantian Layar Panel LCD',
+                'category' => 'hardware',
+                'price' => 125000,
+                'description' => 'Penggantian panel layar LCD slim/IPS bebas dead pixel dan uji refresh rate.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Jasa Ganti Keyboard Laptop',
+                'category' => 'hardware',
+                'price' => 100000,
+                'description' => 'Penggantian keyboard tanam/backlight dan uji respons seluruh tuts keyboard.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Jasa Upgrade SSD / RAM + Kloning OS',
+                'category' => 'hardware',
+                'price' => 75000,
+                'description' => 'Pemasangan SSD NVMe/RAM baru dan kloning sistem operasi tanpa menghilangkan data.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Rakit PC Desktop Custom & Cable Management',
+                'category' => 'custom_pc',
+                'price' => 150000,
+                'description' => 'Perakitan unit PC kantor/gaming, cable management rapi, setting BIOS, dan stress test.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Instalasi Bersih OS Windows 11 / Linux',
+                'category' => 'software',
+                'price' => 80000,
+                'description' => 'Instalasi bersih sistem operasi resmi, driver official vendor, dan aplikasi standar.',
+                'is_addon' => false,
+                'is_active' => true,
+            ],
         ];
 
         foreach ($services as $srv) {
             Service::updateOrCreate(['name' => $srv['name']], $srv);
         }
 
-        // 3. STOK SUKU CADANG (SPAREPARTS)
-        $partFan = Sparepart::updateOrCreate(
-            ['part_code' => 'FAN-ASUS-G15'],
+        // =========================================================================
+        // 3. MASTER STOK SUKU CADANG (SPAREPARTS WORKSHOP)
+        // =========================================================================
+        $spareparts = [
+            // Cooling
             [
+                'part_code' => 'FAN-ASUS-G15',
                 'name' => 'Modul Fan Cooler Original Asus ROG Strix G15',
                 'category' => 'cooling',
-                'stock' => 5,
+                'stock' => 6,
                 'cost_price' => 160000,
                 'selling_price' => 220000,
                 'min_stock_alert' => 3,
                 'is_active' => true,
-            ]
-        );
-
-        $partPaste = Sparepart::updateOrCreate(
-            ['part_code' => 'TH-ARCTIC-MX4'],
+            ],
             [
-                'name' => 'Thermal Paste Arctic MX-4 (4 Gram)',
+                'part_code' => 'FAN-LENOVO-LEGION',
+                'name' => 'Modul Dual Fan Cooler Lenovo Legion 5 Series',
+                'category' => 'cooling',
+                'stock' => 5,
+                'cost_price' => 175000,
+                'selling_price' => 240000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
+            [
+                'part_code' => 'FAN-ACER-NITRO',
+                'name' => 'Modul Fan Cooler Acer Nitro 5 (AN515)',
+                'category' => 'cooling',
+                'stock' => 4,
+                'cost_price' => 140000,
+                'selling_price' => 195000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
+
+            // Thermal Compound
+            [
+                'part_code' => 'TH-ARCTIC-MX4',
+                'name' => 'Thermal Paste Arctic MX-4 High-Performance (4g)',
                 'category' => 'chemical',
-                'stock' => 18,
+                'stock' => 20,
                 'cost_price' => 45000,
                 'selling_price' => 75000,
                 'min_stock_alert' => 5,
                 'is_active' => true,
-            ]
-        );
-
-        $partSsd = Sparepart::updateOrCreate(
-            ['part_code' => 'SSD-NVME-512'],
+            ],
             [
-                'name' => 'SSD M.2 NVMe PCIe Gen 4 Kingston NV2 512GB',
-                'category' => 'storage',
+                'part_code' => 'TH-GRIZZLY-KRYO',
+                'name' => 'Thermal Grizzly Kryonaut Ultra High-End (1g)',
+                'category' => 'chemical',
                 'stock' => 8,
-                'cost_price' => 450000,
-                'selling_price' => 580000,
+                'cost_price' => 75000,
+                'selling_price' => 120000,
                 'min_stock_alert' => 3,
                 'is_active' => true,
-            ]
-        );
+            ],
 
-        $partRam = Sparepart::updateOrCreate(
-            ['part_code' => 'RAM-DDR4-8GB'],
+            // Storage SSD
             [
-                'name' => 'RAM SODIMM DDR4 8GB 3200MHz Kingston Value',
-                'category' => 'memory',
+                'part_code' => 'SSD-NVME-256',
+                'name' => 'SSD M.2 NVMe PCIe Gen 3 Kingston NV1 256GB',
+                'category' => 'storage',
+                'stock' => 10,
+                'cost_price' => 260000,
+                'selling_price' => 340000,
+                'min_stock_alert' => 3,
+                'is_active' => true,
+            ],
+            [
+                'part_code' => 'SSD-NVME-512',
+                'name' => 'SSD M.2 NVMe PCIe Gen 4 Kingston NV2 512GB',
+                'category' => 'storage',
                 'stock' => 12,
-                'cost_price' => 220000,
-                'selling_price' => 310000,
+                'cost_price' => 450000,
+                'selling_price' => 580000,
                 'min_stock_alert' => 4,
                 'is_active' => true,
-            ]
-        );
-
-        $partKb = Sparepart::updateOrCreate(
-            ['part_code' => 'KB-ASUS-VIVO'],
+            ],
             [
-                'name' => 'Keyboard Laptop Asus Vivobook A412 Series',
+                'part_code' => 'SSD-NVME-1TB',
+                'name' => 'SSD M.2 NVMe PCIe Gen 4 Kingston NV2 1TB',
+                'category' => 'storage',
+                'stock' => 7,
+                'cost_price' => 820000,
+                'selling_price' => 990000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
+
+            // Memory RAM
+            [
+                'part_code' => 'RAM-DDR4-8GB',
+                'name' => 'RAM SODIMM DDR4 8GB 3200MHz Kingston Value',
+                'category' => 'memory',
+                'stock' => 15,
+                'cost_price' => 220000,
+                'selling_price' => 310000,
+                'min_stock_alert' => 5,
+                'is_active' => true,
+            ],
+            [
+                'part_code' => 'RAM-DDR4-16GB',
+                'name' => 'RAM SODIMM DDR4 16GB 3200MHz Kingston Value',
+                'category' => 'memory',
+                'stock' => 8,
+                'cost_price' => 390000,
+                'selling_price' => 490000,
+                'min_stock_alert' => 3,
+                'is_active' => true,
+            ],
+            [
+                'part_code' => 'RAM-DDR5-16GB',
+                'name' => 'RAM SODIMM DDR5 16GB 4800MHz Crucial Micron',
+                'category' => 'memory',
+                'stock' => 6,
+                'cost_price' => 580000,
+                'selling_price' => 720000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
+
+            // Input Device Keyboard
+            [
+                'part_code' => 'KB-ASUS-VIVO',
+                'name' => 'Keyboard Laptop Asus Vivobook A412 Series (Black)',
                 'category' => 'input_device',
-                'stock' => 2,
+                'stock' => 4,
                 'cost_price' => 120000,
                 'selling_price' => 190000,
                 'min_stock_alert' => 2,
                 'is_active' => true,
-            ]
-        );
-
-        // 4. DATA DEMO TIKET SERVIS (JOB ORDERS)
-        // Tiket 1: Active Interactive Demo Order
-        $ticket1 = ServiceTicket::updateOrCreate(
-            ['ticket_no' => '#SC-2026-9042'],
+            ],
             [
-                'customer_name' => 'Dzul Khair Aropian',
-                'customer_phone' => '081298765432',
-                'customer_email' => 'dzul@student.unm.ac.id',
-                'device_type' => 'Laptop',
-                'device_brand' => 'Asus',
-                'device_model' => 'ROG Strix G15 (Core i7 / RTX 3060)',
-                'device_specs' => 'Intel Core i7 11800H, RTX 3060 6GB, 16GB DDR4',
-                'issue_chronology' => 'Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas.',
-                'delivery_method' => 'Diantar Sendiri',
-                'technician_id' => $techBudi->id,
-                'diagnosis' => 'Kipas pendingin (fan cooler) aus & bearing macet, menyebabkan CPU thermal throttling darurat.',
-                'action_plan' => '1) Penggantian unit modul fan cooler original baru; 2) Deep cleaning debu heatsink; 3) Repasta thermal Arctic MX-4; 4) Running test suhu 60 menit.',
-                'technician_notes' => 'Motherboard normal bebas korsleting. Seluruh data SSD terlindungi 100%.',
-                'step' => 3,
-                'status' => 'Menunggu Persetujuan Biaya',
-                'cost_labor' => 150000,
-                'cost_parts' => 220000,
-                'cost_cleaning' => 50000,
-                'cost_repasta' => 75000,
-                'total_cost' => 495000,
-                'payment_status' => 'Unpaid',
-                'payment_method' => 'QRIS',
-                'is_approved' => false,
-                'is_completed' => false,
-                'unit_handed_over' => false,
-                'is_closed' => false,
-                'evidence_running_test_path' => 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80',
-                'evidence_replaced_part_path' => 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80',
-                'invoice_no' => 'INV-SC-2026-9042',
-            ]
-        );
+                'part_code' => 'KB-LENOVO-IDEAPAD',
+                'name' => 'Keyboard Laptop Lenovo Ideapad Slim 3 Series',
+                'category' => 'input_device',
+                'stock' => 3,
+                'cost_price' => 135000,
+                'selling_price' => 200000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
 
-        ServiceTicketItem::updateOrCreate(
-            ['service_ticket_id' => $ticket1->id, 'item_name' => 'Jasa Penggantian Modul Fan Cooler & Running Test'],
-            ['item_type' => 'service', 'quantity' => 1, 'unit_price' => 150000, 'subtotal' => 150000]
-        );
-        ServiceTicketItem::updateOrCreate(
-            ['service_ticket_id' => $ticket1->id, 'item_name' => 'Modul Fan Cooler Original Asus ROG G15'],
-            ['item_type' => 'sparepart', 'sparepart_id' => $partFan->id, 'quantity' => 1, 'unit_price' => 220000, 'subtotal' => 220000]
-        );
-        ServiceTicketItem::updateOrCreate(
-            ['service_ticket_id' => $ticket1->id, 'item_name' => 'Add-on: Deep Cleaning & Dust Removal'],
-            ['item_type' => 'addon', 'quantity' => 1, 'unit_price' => 50000, 'subtotal' => 50000]
-        );
-        ServiceTicketItem::updateOrCreate(
-            ['service_ticket_id' => $ticket1->id, 'item_name' => 'Add-on: Repasta Thermal Arctic MX-4 High-Performance'],
-            ['item_type' => 'addon', 'quantity' => 1, 'unit_price' => 75000, 'subtotal' => 75000]
-        );
-
-        // Tiket 2: Sedang Dikerjakan
-        ServiceTicket::updateOrCreate(
-            ['ticket_no' => '#SC-2026-0982'],
+            // Display LCD
             [
-                'customer_name' => 'Siti Rahmawati',
-                'customer_phone' => '081388992211',
-                'device_type' => 'Laptop',
-                'device_brand' => 'Asus',
-                'device_model' => 'Vivobook 14 (A412DA)',
-                'issue_chronology' => 'Mati total kena tetesan air hujan di ransel.',
-                'delivery_method' => 'Ambil oleh Teknisi',
-                'pickup_address' => 'Jl. Salemba Tengah No. 12, Jakarta Pusat',
-                'technician_id' => $techAgus->id,
-                'diagnosis' => 'Korosi pada pin IC Regulator VCore akibat lembap air hujan.',
-                'action_plan' => 'Solder ulang micro-soldering IC regulator dan pembersihan ultrasonic board.',
-                'step' => 5,
-                'status' => 'Sedang Dikerjakan',
-                'cost_labor' => 150000,
-                'cost_parts' => 120000,
-                'total_cost' => 270000,
-                'payment_status' => 'Paid',
-                'paid_at' => Carbon::now()->subHours(2),
-                'is_approved' => true,
-                'approved_at' => Carbon::now()->subHours(3),
-                'invoice_no' => 'INV-SC-2026-0982',
-            ]
-        );
-
-        // Tiket 3: Selesai & Ditutup dengan Garansi 90 Hari
-        $ticket3 = ServiceTicket::updateOrCreate(
-            ['ticket_no' => '#SC-2026-6640'],
+                'part_code' => 'LCD-14-IPS-30P',
+                'name' => 'Layar Panel LCD 14.0 Slim FHD IPS 30 Pin Non-Touch',
+                'category' => 'display',
+                'stock' => 3,
+                'cost_price' => 580000,
+                'selling_price' => 750000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
             [
-                'customer_name' => 'Rizky Hidayat',
-                'customer_phone' => '081399887766',
-                'device_type' => 'Laptop',
-                'device_brand' => 'Acer',
-                'device_model' => 'Nitro 5 (AN515-57)',
-                'issue_chronology' => 'Tuts keyboard huruf W, S, dan spasi mati.',
-                'delivery_method' => 'Diantar Sendiri',
-                'technician_id' => $techBudi->id,
-                'diagnosis' => 'Jalur membran switch keyboard putus permanen.',
-                'action_plan' => 'Penggantian modul keyboard backlight baru.',
-                'step' => 7,
-                'status' => 'Closed / Completed',
-                'cost_labor' => 100000,
-                'cost_parts' => 190000,
-                'total_cost' => 290000,
-                'payment_status' => 'Paid',
-                'paid_at' => Carbon::now()->subDays(3),
-                'is_approved' => true,
-                'is_completed' => true,
-                'completed_at' => Carbon::now()->subDays(2),
-                'unit_handed_over' => true,
-                'unit_handed_over_at' => Carbon::now()->subDays(2),
-                'sla_auto_close_deadline' => Carbon::now()->subDays(1),
-                'is_closed' => true,
-                'closed_at' => Carbon::now()->subDays(1),
-                'closed_by' => 'system_sla',
-                'warranty_code' => 'WRN-2026-6640',
-                'warranty_valid_until' => Carbon::now()->addDays(88),
-                'invoice_no' => 'INV-SC-2026-6640',
-            ]
-        );
+                'part_code' => 'LCD-156-144HZ',
+                'name' => 'Layar Panel LCD 15.6 FHD IPS 144Hz 40 Pin Gaming',
+                'category' => 'display',
+                'stock' => 2,
+                'cost_price' => 780000,
+                'selling_price' => 980000,
+                'min_stock_alert' => 2,
+                'is_active' => true,
+            ],
 
-        SlaLog::create([
-            'service_ticket_id' => $ticket3->id,
-            'event_type' => 'auto_closed',
-            'description' => 'SLA 1x24 Jam leluasa tanpa komplain. Sistem menutup tiket dan mengaktifkan e-Warranty 90 hari.',
-        ]);
+            // Power Adaptor
+            [
+                'part_code' => 'ADAP-TYPE-C-65W',
+                'name' => 'Adaptor Charger Universal 65W USB Type-C Original',
+                'category' => 'power',
+                'stock' => 8,
+                'cost_price' => 190000,
+                'selling_price' => 270000,
+                'min_stock_alert' => 3,
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($spareparts as $part) {
+            Sparepart::updateOrCreate(['part_code' => $part['part_code']], $part);
+        }
     }
 }

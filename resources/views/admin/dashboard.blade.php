@@ -93,7 +93,7 @@
           <span class="text-muted small">Tiket terkini yang siap ditindaklanjuti teknisi.</span>
         </div>
         <span class="badge bg-primary px-3 py-1.5 fw-bold font-monospace" id="kpiActiveTicket">
-          {{ $activeTicket ? $activeTicket->ticket_no : '#SC-2026-9042' }}
+          {{ $activeTicket ? $activeTicket->ticket_no : 'Belum Ada Unit' }}
         </span>
       </div>
 
@@ -102,17 +102,17 @@
           <div class="col-sm-6">
             <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10px;">Perangkat Konsumen:</span>
             <strong class="text-dark fs-6" id="kpiActiveDevice">
-              {{ $activeTicket ? ($activeTicket->device_brand . ' ' . $activeTicket->device_model) : 'Laptop Asus ROG Strix G15' }}
+              {{ $activeTicket ? ($activeTicket->device_brand . ' ' . $activeTicket->device_model) : 'Belum Ada Unit di Meja Kerja' }}
             </strong>
             <span class="d-block text-muted small" id="kpiActiveCustomer">
-              {{ $activeTicket ? $activeTicket->customer_name : 'Dzul Khair Aropian' }} ({{ $activeTicket ? $activeTicket->customer_phone : '081298765432' }})
+              {{ $activeTicket ? ($activeTicket->customer_name . ' (' . $activeTicket->customer_phone . ')') : 'Menunggu reservasi dari pelanggan.' }}
             </span>
           </div>
           <div class="col-sm-6 text-sm-end">
             <span class="badge badge-warning-accessible px-3 py-1.5 fw-bold" id="kpiActiveStatus">
-              {{ $activeTicket ? $activeTicket->status : 'Menunggu Pemeriksaan' }}
+              {{ $activeTicket ? $activeTicket->status : 'Siap Menerima Unit' }}
             </span>
-            <span class="d-block text-muted mt-1 small">Metode: {{ $activeTicket ? $activeTicket->delivery_method : 'Diantar Sendiri' }}</span>
+            <span class="d-block text-muted mt-1 small">Metode: {{ $activeTicket ? $activeTicket->delivery_method : '-' }}</span>
           </div>
         </div>
       </div>
@@ -120,17 +120,23 @@
       <div class="small mb-3">
         <span class="text-muted fw-bold d-block mb-1">Keluhan Konsumen / Diagnosa Fisik:</span>
         <p class="text-secondary bg-white p-2.5 rounded-3 border mb-0" id="kpiActiveDiagnosis">
-          {{ $activeTicket && $activeTicket->diagnosis ? $activeTicket->diagnosis : ($activeTicket ? $activeTicket->issue_chronology : 'Menunggu teknisi membongkar unit dan mengecek tegangan fisik di workshop.') }}
+          {{ $activeTicket && $activeTicket->diagnosis ? $activeTicket->diagnosis : ($activeTicket ? $activeTicket->issue_chronology : 'Belum ada unit yang diproses. Silakan input reservasi baru atau tunggu pelanggan submit form.') }}
         </p>
       </div>
 
       <div class="d-flex flex-wrap gap-2 mt-auto pt-2 border-top">
-        <a href="{{ url('/teknisi/meja-kerja/' . urlencode($activeTicket ? $activeTicket->ticket_no : '#SC-2026-9042')) }}" class="btn btn-primary btn-sm fw-bold px-3 py-2">
-          <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Buka Lembar Diagnosa di Meja Kerja
-        </a>
-        <a href="{{ url('/invoice?ticket=' . urlencode($activeTicket ? $activeTicket->ticket_no : '#SC-2026-9042')) }}" target="_blank" class="btn btn-outline-secondary btn-sm fw-semibold px-3 py-2">
-          <i class="bi bi-receipt me-1" aria-hidden="true"></i> Pratinjau Invoice
-        </a>
+        @if($activeTicket)
+          <a href="{{ url('/teknisi/meja-kerja/' . urlencode($activeTicket->ticket_no)) }}" class="btn btn-primary btn-sm fw-bold px-3 py-2">
+            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Buka Lembar Diagnosa di Meja Kerja
+          </a>
+          <a href="{{ url('/invoice?ticket=' . urlencode($activeTicket->ticket_no)) }}" target="_blank" class="btn btn-outline-secondary btn-sm fw-semibold px-3 py-2">
+            <i class="bi bi-receipt me-1" aria-hidden="true"></i> Pratinjau Invoice
+          </a>
+        @else
+          <a href="{{ url('/booking') }}" target="_blank" class="btn btn-primary btn-sm fw-bold px-3 py-2">
+            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Input Tiket Reservasi Pertama
+          </a>
+        @endif
       </div>
     </div>
   </div>

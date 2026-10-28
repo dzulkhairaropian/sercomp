@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SerComp - Servis Laptop &amp; PC Desktop Bergaransi 90 Hari</title>
+  
+  <!-- Bootstrap 5.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <!-- Font Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- SerComp Unified Design System -->
+  <style>
+/* ========================================================
+   SerComp Unified Brand Design System (SI 2 / Bisnis Digital)
+   WCAG 2.2 Accessible & UI/UX Pro Max Aligned
+   ======================================================== */
+:root {
+  /* Brand Palette */
+  --sc-navy: #0d233a;
+  --sc-navy-dark: #071524;
+  --sc-navy-light: #16385d;
+  --sc-primary: #0284c7;       /* Tech Sapphire Blue */
+  --sc-primary-hover: #0369a1;
+  --sc-primary-subtle: #e0f2fe;
+  --sc-accent: #0ea5e9;        /* Electric Sky */
+  --sc-cyan: #06b6d4;
+  
+  /* Neutral Slate Scale */
+  --sc-slate-50: #f8fafc;
+  --sc-slate-100: #f1f5f9;
+  --sc-slate-200: #e2e8f0;
+  --sc-slate-300: #cbd5e1;
+  --sc-slate-400: #94a3b8;
+  --sc-slate-500: #64748b;
+  --sc-slate-600: #475569;
+  --sc-slate-700: #334155;
+  --sc-slate-800: #1e293b;
+  --sc-slate-900: #0f172a;
+
+  /* WCAG AA (4.5:1) Accessible Functional Accents */
+  --sc-emerald: #059669;
+  --sc-emerald-subtle: #d1fae5;
+  --sc-emerald-text: #065f46;   /* Contrast > 4.5:1 on light green */
+  
+  --sc-amber: #d97706;
+  --sc-amber-subtle: #fef3c7;
+  --sc-amber-text: #78350f;     /* Contrast > 5.5:1 on light amber */
+  
+  --sc-rose: #dc2626;
+  --sc-rose-subtle: #fee2e2;
+  --sc-rose-text: #991b1b;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: #0284c7;
+  --bs-primary-rgb: 2, 132, 199;
+  --bs-primary-border-subtle: #bae6fd;
+  --bs-primary-bg-subtle: #f0f9ff;
+  
+  --bs-body-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #f8fafc;
+  --bs-body-color: #0f172a;
+  --bs-border-color: #e2e8f0;
+  --bs-border-radius: 0.625rem;
+  --bs-border-radius-lg: 0.875rem;
+  --bs-border-radius-xl: 1.25rem;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--sc-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Brand Logo Box */
+.brand-box {
+  width: 40px;
+  height: 40px;
+  background: var(--sc-navy);
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 35, 58, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Gradient Hero */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #071524 0%, #0d233a 55%, #16385d 100%) !important;
+}
+
+/* Academic Demo Bar (Sufficient touch targets >= 24px) */
+.sc-demo-bar {
+  background: #09121d;
+  border-bottom: 1px solid #1e293b;
+  font-size: 12px;
+  padding: 6px 16px;
+  color: #cbd5e1;
+}
+
+.sc-demo-bar .btn-demo {
+  font-size: 11px;
+  padding: 4px 12px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.sc-demo-bar .btn-demo:hover {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.sc-demo-bar .btn-demo.active {
+  background: var(--sc-primary);
+  color: #ffffff;
+  border-color: var(--sc-primary);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+}
+
+/* Accessible Status Badges */
+.badge-warning-accessible {
+  background-color: var(--sc-amber-subtle) !important;
+  color: var(--sc-amber-text) !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700;
+}
+
+.badge-success-accessible {
+  background-color: var(--sc-emerald-subtle) !important;
+  color: var(--sc-emerald-text) !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 700;
+}
+
+.badge-info-accessible {
+  background-color: var(--sc-primary-subtle) !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+  font-weight: 700;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+  background-color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--sc-primary-hover) !important;
+  border-color: var(--sc-primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.text-primary {
+  color: var(--sc-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--sc-primary) !important;
+}
+
+.bg-primary-subtle {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+}
+
+.border-primary-subtle {
+  border-color: #bae6fd !important;
+}
+
+/* Quick Track Banner */
+.bg-quick-track {
+  background: linear-gradient(90deg, #071524 0%, #0d233a 100%) !important;
+  border-bottom: 2px solid #0284c7;
+}
+
+/* Device Card Selection in Booking Form */
+.device-card-input:checked + .device-card-label {
+  border-color: var(--sc-primary) !important;
+  background-color: #f0f9ff !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* Card Enhancements */
+.card {
+  border-color: var(--sc-slate-200);
+}
+
+.card.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05) !important;
+}
+
+.card.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
+
+</style>
+
+  </head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- TOP PROTOTYPE DEMO BAR (Untuk Sidang / Pengujian Dosen) -->
+  <div class="sc-demo-bar">
+    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
+        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <span class="text-white-50 me-1 small d-none d-lg-inline">Pintas Halaman:</span>
+        <a href="http://localhost:8000" class="btn-demo active">
+          1. Landing Page
+        </a>
+        <a href="http://localhost:8000/booking" class="btn-demo ">
+          2. Form Reservasi
+        </a>
+        <a href="http://localhost:8000/user-panel" class="btn-demo ">
+          3. Portal Pelanggan
+        </a>
+        <a href="http://localhost:8000/teknisi" class="btn-demo ">
+          4. Panel Teknisi
+        </a>
+        <a href="http://localhost:8000/invoice" class="btn-demo ">
+          5. Faktur Invoice
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR UTAMA (NON-REDUNDANT & CLEAN) -->
+  <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm py-2">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="http://localhost:8000">
+        <div class="brand-box">SC</div>
+        <div>
+          <span class="fw-bold fs-5 text-dark">Ser<span class="text-primary">Comp</span></span>
+          <span class="d-block text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">Service Laptop & PC</span>
+        </div>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+        <ul class="navbar-nav align-items-lg-center gap-1 gap-lg-3 mt-2 mt-lg-0 small">
+          <li class="nav-item">
+            <a class="nav-link fw-semibold active text-primary" href="http://localhost:8000">Beranda</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="http://localhost:8000/#layanan">Layanan & Biaya</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="http://localhost:8000/#alur-kerja">Alur Transparan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="http://localhost:8000/#garansi">Garansi 90 Hari</a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-outline-primary btn-sm fw-semibold px-3 py-2 d-flex align-items-center gap-1" href="http://localhost:8000/user-panel">
+              <i class="bi bi-search"></i> Lacak Tiket
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm fw-bold px-3 py-2 d-flex align-items-center gap-1 shadow-sm" href="http://localhost:8000/booking">
+              <i class="bi bi-calendar-plus"></i> Reservasi Servis
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="flex-grow-1">
+    
+<!-- HERO SECTION -->
+<section class="py-5 bg-white border-bottom position-relative overflow-hidden">
+  <div class="container py-lg-4">
+    <div class="row align-items-center g-5">
+      
+      <!-- Headline & Value Proposition -->
+      <div class="col-lg-7 text-center text-lg-start">
+        <div class="d-inline-flex align-items-center gap-2 badge badge-info-accessible px-3 py-2 rounded-pill mb-3">
+          <span class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
+          <span>Layanan Servis Laptop & PC Desktop Berbasis Approval Biaya</span>
+        </div>
+
+        <h1 class="display-5 fw-bold text-dark mb-3 lh-sm">
+          Servis Laptop & PC Desktop<br>
+          <span class="text-primary">Estimasi Biaya di Muka, Bergaransi 90 Hari.</span>
+        </h1>
+
+        <p class="lead text-muted mb-4" style="font-size: 1.05rem;">
+          Biaya perbaikan disetujui di muka sebelum unit dibongkar. Lacak progres pengerjaan, verifikasi bukti foto suku cadang, dan dapatkan faktur invoice resmi secara digital.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-4">
+          <a href="http://localhost:8000/booking" class="btn btn-primary btn-lg fw-bold px-4 py-3 shadow d-flex align-items-center gap-2">
+            <i class="bi bi-calendar2-plus fs-5" aria-hidden="true"></i>
+            <span>Reservasi Servis Sekarang</span>
+          </a>
+          <a href="#lacak" class="btn btn-outline-secondary btn-lg fw-semibold px-4 py-3 d-flex align-items-center gap-2">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <span>Cek Status Tiket</span>
+          </a>
+        </div>
+
+        <!-- 4 Key Badges -->
+        <div class="row g-2 text-start pt-3 border-top">
+          <div class="col-6 col-sm-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-shield-check text-primary fs-4" aria-hidden="true"></i>
+              <div class="small lh-1">
+                <strong class="d-block text-dark">Biaya Terkunci</strong>
+                <span class="text-muted" style="font-size: 11px;">Wajib disetujui di muka</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-patch-check-fill text-success fs-4" aria-hidden="true"></i>
+              <div class="small lh-1">
+                <strong class="d-block text-dark">Garansi 90 Hari</strong>
+                <span class="text-muted" style="font-size: 11px;">Jasa & sparepart baru</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-lock-fill text-info fs-4" aria-hidden="true"></i>
+              <div class="small lh-1">
+                <strong class="d-block text-dark">Privasi Data</strong>
+                <span class="text-muted" style="font-size: 11px;">Storage tidak dibuka</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-qr-code-scan text-dark fs-4" aria-hidden="true"></i>
+              <div class="small lh-1">
+                <strong class="d-block text-dark">Bayar QRIS</strong>
+                <span class="text-muted" style="font-size: 11px;">Verifikasi otomatis</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual / Live Card Illustration -->
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+          <div class="bg-gradient-hero p-4 text-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge badge-success-accessible px-2.5 py-1">Contoh Rincian Transparan</span>
+              <span class="font-monospace small text-white-50">#SC-2026-SAMPLE</span>
+            </div>
+            <h5 class="fw-bold mb-0">Asus ROG Strix G15</h5>
+            <span class="text-white-50 small">Keluhan: Suhu panas tinggi & kipas berisik</span>
+          </div>
+          <div class="card-body p-4">
+            <div class="mb-3">
+              <label class="text-muted small fw-bold text-uppercase">Hasil Diagnosa Fisik:</label>
+              <p class="small text-dark mb-0 bg-light p-2.5 rounded-3 border">
+                Bearing fan cooler aus dan pasta pendingin mengering. Dibutuhkan penggantian modul fan ori baru dan repasta thermal Arctic MX-4.
+              </p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+              <span class="text-muted">Jasa Pasang & Uji Suhu 60 Menit</span>
+              <strong class="text-dark">Rp 150.000</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+              <span class="text-muted">Modul Fan Cooler Original Asus</span>
+              <strong class="text-dark">Rp 220.000</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
+              <span class="text-muted">Deep Cleaning & Thermal Arctic MX-4</span>
+              <strong class="text-dark">Rp 125.000</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 mb-3">
+              <strong class="text-dark">Total Biaya Disetujui:</strong>
+              <span class="fs-5 fw-bold text-primary">Rp 495.000</span>
+            </div>
+            <a href="http://localhost:8000/booking" class="btn btn-outline-primary w-100 fw-bold">
+              Buat Tiket Servis Sekarang &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- QUICK WIDGET: LACAK TIKET -->
+<section id="lacak" class="py-4 bg-quick-track text-white">
+  <div class="container">
+    <div class="row align-items-center justify-content-between g-3">
+      <div class="col-lg-5">
+        <h5 class="fw-bold mb-1"><i class="bi bi-search me-2 text-info" aria-hidden="true"></i>Lacak Status Tiket Servis</h5>
+        <p class="small mb-0 text-white-50">
+          Masukkan nomor resi tiket servis untuk melihat lembar diagnosa teknisi dan progres unit.
+        </p>
+      </div>
+      <div class="col-lg-6">
+        <form onsubmit="handleQuickTrack(event)" class="d-flex gap-2">
+          <label for="quickTicketInput" class="visually-hidden">Nomor Tiket Servis</label>
+          <input type="text" id="quickTicketInput" class="form-control form-control-lg fs-6 bg-white" placeholder="Contoh: #SC-2026-9042" required>
+          <button type="submit" class="btn btn-primary btn-lg fw-bold px-4 text-nowrap shadow-sm">
+            Lacak Tiket
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 LANGKAH ALUR SERVIS -->
+<section id="alur-kerja" class="py-5 bg-white border-bottom">
+  <div class="container py-lg-3">
+    <div class="text-center mx-auto mb-5" style="max-width: 680px;">
+      <span class="badge badge-info-accessible px-3 py-1 rounded-pill fw-bold text-uppercase small mb-2">
+        Alur Transparan
+      </span>
+      <h2 class="fw-bold text-dark mb-2">4 Tahapan Servis Unit</h2>
+      <p class="text-muted small">
+        Setiap langkah tercatat di portal digital untuk menjamin kepastian pengerjaan dan keamanan data.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border rounded-4 p-4 shadow-sm text-center">
+          <div class="badge bg-primary text-white fs-5 p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px;">
+            1
+          </div>
+          <h6 class="fw-bold text-dark mb-2">Formulir Reservasi</h6>
+          <p class="text-muted small mb-0">
+            Pelanggan mencatat tipe perangkat, uraian gejala kendala, foto fisik, dan memilih metode serah-terima.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border rounded-4 p-4 shadow-sm text-center">
+          <div class="badge badge-info-accessible fs-5 p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px;">
+            2
+          </div>
+          <h6 class="fw-bold text-dark mb-2">Lembar Persetujuan Biaya</h6>
+          <p class="text-muted small mb-0">
+            Teknisi memeriksa unit di workshop dan menerbitkan rincian biaya. Pengerjaan baru dimulai setelah konsumen menyetujui.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border rounded-4 p-4 shadow-sm text-center">
+          <div class="badge badge-warning-accessible fs-5 p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px;">
+            3
+          </div>
+          <h6 class="fw-bold text-dark mb-2">Pembayaran QRIS</h6>
+          <p class="text-muted small mb-0">
+            Pembayaran dilakukan via scan QRIS resmi. Status lunas terverifikasi secara instan di sistem teknisi.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border rounded-4 p-4 shadow-sm text-center">
+          <div class="badge badge-success-accessible fs-5 p-3 rounded-circle mx-auto mb-3" style="width: 54px; height: 54px;">
+            4
+          </div>
+          <h6 class="fw-bold text-dark mb-2">Faktur Invoice & SLA 24 Jam</h6>
+          <p class="text-muted small mb-0">
+            Unit diserahkan dengan bukti foto running test dan suku cadang lama. Disediakan masa uji 24 jam sebelum tiket resmi ditutup.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION KATALOG LAYANAN -->
+<section id="layanan" class="py-5 bg-light border-bottom">
+  <div class="container py-lg-3">
+    <div class="text-center mx-auto mb-5" style="max-width: 680px;">
+      <span class="badge badge-info-accessible px-3 py-1 rounded-pill fw-bold text-uppercase small mb-2">
+        Katalog Layanan
+      </span>
+      <h2 class="fw-bold text-dark mb-2">Standar Tarif Servis Laptop & PC</h2>
+      <p class="text-muted small">
+        Rincian biaya jasa dan perawatan perangkat berbasis Windows dan Linux.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      
+      <!-- Layanan 1 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge bg-primary-subtle text-primary p-3 rounded-3 fs-4">
+              <i class="bi bi-fan" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Deep Cleaning & Repasta</h6>
+              <span class="badge bg-light text-secondary border">Perawatan Suhu</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Pembersihan debu pada heatsink pendingin dan penggantian pasta termal CPU/GPU menggunakan Arctic MX-4.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Tarif Layanan:</span>
+            <strong class="text-primary fs-6">Rp 125.000</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layanan 2 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge badge-info-accessible p-3 rounded-3 fs-4">
+              <i class="bi bi-cpu" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Pergantian Suku Cadang</h6>
+              <span class="badge bg-light text-secondary border">Komponen Fisik</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Pergantian baterai, keyboard laptop, modul pendingin, dan layar panel LCD yang bergaransi resmi distributor.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Jasa Teknisi:</span>
+            <strong class="text-primary fs-6">Rp 100.000 + Part</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layanan 3 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge badge-success-accessible p-3 rounded-3 fs-4">
+              <i class="bi bi-hdd-network" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Upgrade SSD & RAM</h6>
+              <span class="badge bg-light text-secondary border">Peningkatan Kecepatan</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Kloning sistem operasi tanpa kehilangan data, pemasangan memori DDR4/DDR5, dan instalasi SSD NVMe PCIe Gen 4.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Jasa Pasang:</span>
+            <strong class="text-primary fs-6">Rp 75.000 + Part</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layanan 4 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge badge-warning-accessible p-3 rounded-3 fs-4">
+              <i class="bi bi-lightning-charge" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Perbaikan Motherboard & Jalur IC</h6>
+              <span class="badge bg-light text-secondary border">Micro-Soldering</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Penanganan korsleting jalur power, solder ulang IC regulator, penggantian kapasitor, dan pemulihan corrupt BIOS.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Mulai dari:</span>
+            <strong class="text-primary fs-6">Rp 250.000</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layanan 5 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge bg-secondary-subtle text-secondary-emphasis p-3 rounded-3 fs-4">
+              <i class="bi bi-pc-display" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Perakitan PC Desktop</h6>
+              <span class="badge bg-light text-secondary border">Custom Rakitan</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Perakitan unit PC kantor atau editing, perapihan kabel, pengaturan kurva kipas BIOS, dan stress test stabilitas.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Tarif Jasa:</span>
+            <strong class="text-primary fs-6">Rp 150.000</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layanan 6 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="badge bg-dark-subtle text-dark-emphasis p-3 rounded-3 fs-4">
+              <i class="bi bi-windows" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Instalasi Bersih Sistem Operasi</h6>
+              <span class="badge bg-light text-secondary border">Software & Driver</span>
+            </div>
+          </div>
+          <p class="small text-muted mb-3">
+            Instalasi bersih Windows 11 atau Linux, pembaruan driver resmi dari vendor, dan pencadangan data dokumen penting.
+          </p>
+          <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Tarif Jasa:</span>
+            <strong class="text-primary fs-6">Rp 80.000</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION GARANSI 90 HARI -->
+<section id="garansi" class="py-5 bg-white border-bottom">
+  <div class="container py-lg-3">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge badge-success-accessible px-3 py-1 rounded-pill fw-bold text-uppercase small mb-2">
+          Komitmen Garansi
+        </span>
+        <h2 class="fw-bold text-dark mb-3">
+          Masa Uji 24 Jam & Garansi 90 Hari
+        </h2>
+        <p class="text-muted small mb-4">
+          Status purnajual terstandarisasi untuk menjamin kepastian kualitas hasil servis dan perlindungan perangkat Anda.
+        </p>
+
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3">
+            <div class="badge bg-primary-subtle text-primary p-2.5 rounded-3 align-self-start fs-5">
+              <i class="bi bi-clock-history" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong class="text-dark d-block">Toleransi Uji 24 Jam Pasca-Penyerahan</strong>
+              <p class="text-muted small mb-0">
+                Setelah unit diterima, konsumen memiliki waktu 24 jam untuk pengujian. Jika tidak terdapat kendala lanjutan, tiket ditutup secara otomatis untuk memulai periode garansi.
+              </p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="badge badge-success-accessible p-2.5 rounded-3 align-self-start fs-5">
+              <i class="bi bi-patch-check" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong class="text-dark d-block">Garansi Resmi 90 Hari</strong>
+              <p class="text-muted small mb-0">
+                Nomor garansi tercatat pada sistem digital dan tertera pada faktur invoice resmi untuk klaim cepat tanpa kartu fisik.
+              </p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="badge bg-danger-subtle text-danger p-2.5 rounded-3 align-self-start fs-5">
+              <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong class="text-dark d-block">Standar Keamanan Dokumen Pribadi</strong>
+              <p class="text-muted small mb-0">
+                Pemeriksaan komponen dilakukan menggunakan media boot diagnostik khusus tanpa membuka berkas personal pengguna.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-center">
+        <div class="p-4 p-md-5 bg-gradient-hero rounded-4 text-white shadow-lg text-start">
+          <div class="badge badge-info-accessible fw-bold mb-3 px-3 py-2">
+            Reservasi Cepat
+          </div>
+          <h3 class="fw-bold mb-3">Perangkat Anda Butuh Penanganan Teknisi?</h3>
+          <p class="text-light text-opacity-75 small mb-4">
+            Isi formulir reservasi online untuk membuat nomor resi pelacakan unit servis Anda.
+          </p>
+          <a href="http://localhost:8000/booking" class="btn btn-primary btn-lg fw-bold px-4 py-3 shadow w-100 text-center">
+            <i class="bi bi-pencil-square me-2" aria-hidden="true"></i> Buka Formulir Reservasi Servis
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-5 mt-auto border-top" style="background-color: var(--sc-navy-dark); color: #94a3b8; border-color: #1e293b !important;">
+    <div class="container">
+      <div class="row g-4 justify-content-between">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="brand-box">SC</div>
+            <span class="fw-bold fs-5 text-white">Ser<span class="text-primary">Comp</span></span>
+          </div>
+          <p class="small text-light text-opacity-75 mb-3">
+            Platform servis laptop dan PC transparan berbasis estimasi di muka, approval wajib konsumen, pembayaran digital QRIS, dan jaminan purnajual digital.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-primary-subtle border border-primary-subtle">No Hidden Cost</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle">Garansi 90 Hari</span>
+            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">Privasi Terjaga</span>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <h6 class="text-white fw-bold mb-3 small text-uppercase">Navigasi</h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-2"><a href="http://localhost:8000" class="text-decoration-none text-light text-opacity-75">Beranda</a></li>
+            <li class="mb-2"><a href="http://localhost:8000/#layanan" class="text-decoration-none text-light text-opacity-75">Katalog Servis</a></li>
+            <li class="mb-2"><a href="http://localhost:8000/booking" class="text-decoration-none text-light text-opacity-75">Form Reservasi</a></li>
+            <li class="mb-2"><a href="http://localhost:8000/user-panel" class="text-decoration-none text-light text-opacity-75">Portal Pelanggan</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <h6 class="text-white fw-bold mb-3 small text-uppercase">Internal & Teknisi</h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-2">
+              <a href="http://localhost:8000/teknisi/login" class="text-decoration-none text-info d-flex align-items-center gap-1">
+                <i class="bi bi-tools"></i> Login Workshop Teknisi
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="http://localhost:8000/invoice" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
+                <i class="bi bi-receipt"></i> Sampel Faktur Invoice
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="http://localhost:8000/portal" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
+                <i class="bi bi-layout-split"></i> Navigasi Prototipe
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3">
+          <h6 class="text-white fw-bold mb-3 small text-uppercase">Akademik & Pengembang</h6>
+          <p class="small text-light text-opacity-75 mb-1">
+            <strong>Proyek:</strong> Rintisan Bisnis Digital & Proyek SI 2
+          </p>
+          <p class="small text-light text-opacity-75 mb-0">
+            <strong>Institusi:</strong> Program Studi S1 Sistem Informasi
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small" style="border-top: 1px solid #1e293b;">
+        <div class="text-light text-opacity-50">&copy; 2026 SerComp Indonesia. Seluruh hak cipta dilindungi.</div>
+        <div class="text-light text-opacity-50">Standardized Laptop & PC Desktop Workshop Environment</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+  function handleQuickTrack(e) {
+    e.preventDefault();
+    const input = document.getElementById('quickTicketInput').value.trim();
+    if (!input) return;
+
+    const active = localStorage.getItem('sercomp_active_order');
+    if (!active) {
+      const sample = {
+        ticketNo: input,
+        createdAt: new Date().toISOString(),
+        customerName: "Pelanggan SerComp",
+        customerPhone: "081298765432",
+        deviceType: "Laptop",
+        deviceBrand: "Asus",
+        deviceModel: "ROG Strix G15",
+        issueChronology: "Kipas pendingin aus dan suhu overheat.",
+        addonCleaning: true,
+        addonRepasta: true,
+        deliveryMethod: "Diantar Sendiri",
+        pickupAddress: "",
+        step: 3,
+        status: "Menunggu Persetujuan Biaya",
+        technician: "Budi Santoso (Hardware Specialist)",
+        diagnosis: "Kipas pendingin (fan cooler) aus & bearing macet, menyebabkan CPU thermal throttling (suhu mencapai 95°C).",
+        actionPlan: "1) Penggantian modul fan cooler original baru; 2) Deep cleaning debu heatsink; 3) Repasta thermal Arctic MX-4; 4) Running test suhu 60 menit.",
+        technicianNote: "Motherboard normal bebas korsleting. Seluruh data SSD aman dan tidak disentuh.",
+        costLabor: 150000,
+        costParts: 220000,
+        costCleaning: 50000,
+        costRepasta: 75000,
+        paymentStatus: "Unpaid",
+        isApproved: false,
+        isCompleted: false,
+        unitHandedOver: false,
+        unitHandedOverTime: null,
+        isClosed: false,
+        evidenceLaptopFixed: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
+        evidenceReplacedPart: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80",
+        invoiceNo: "INV-SC-2026-9042"
+      };
+      localStorage.setItem('sercomp_active_order', JSON.stringify(sample));
+    }
+    window.location.href = "http://localhost:8000/user-panel";
+  }
+</script>
+  </body>
+</html>

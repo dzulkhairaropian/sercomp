@@ -430,40 +430,41 @@
       } else {
         const stored = localStorage.getItem('sercomp_active_order');
         if (stored) {
-          currentOrder = JSON.parse(stored);
+          try {
+            currentOrder = JSON.parse(stored);
+          } catch(e) {
+            currentOrder = null;
+          }
         } else {
-          currentOrder = {
-            ticketNo: "#SC-2026-9042",
-            createdAt: new Date().toISOString(),
-            customerName: "Dzul Khair Aropian",
-            customerPhone: "081298765432",
-            deviceType: "Laptop",
-            deviceBrand: "Asus",
-            deviceModel: "ROG Strix G15",
-            issueChronology: "Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas.",
-            addonCleaning: true,
-            addonRepasta: true,
-            deliveryMethod: "Diantar Sendiri",
-            step: 1,
-            status: "Menunggu Unit Tiba di Workshop",
-            technician: "Budi Santoso (Hardware Specialist)",
-            diagnosis: "Menunggu pemeriksaan fisik teknisi di meja workshop.",
-            actionPlan: "Akan ditentukan setelah teknisi memeriksa komponen dan jalur tegangan.",
-            technicianNote: "Motherboard normal bebas korsleting. Seluruh data SSD terlindungi 100%.",
-            costLabor: 0,
-            costParts: 0,
-            costCleaning: 50000,
-            costRepasta: 75000,
-            paymentStatus: "Unpaid",
-            isApproved: false,
-            isCompleted: false,
-            unitHandedOver: false,
-            unitHandedOverTime: null,
-            isClosed: false,
-            invoiceNo: "INV-SC-2026-9042"
-          };
-          localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+          currentOrder = null;
         }
+      }
+
+      if (!currentOrder) {
+        document.getElementById('displayTicketNo').innerText = "Belum Ada Tiket";
+        document.getElementById('badgeStatus').innerText = "Menunggu Input Nomor Tiket";
+        document.getElementById('displayDevice').innerText = "-";
+        document.getElementById('displayCustomer').innerText = "-";
+        document.getElementById('approvalSection').innerHTML = `
+          <div class="card-body p-5 text-center">
+            <div class="badge badge-info-accessible fs-1 p-3 rounded-circle mb-3">
+              <i class="bi bi-search" aria-hidden="true"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Belum Ada Tiket yang Dilacak</h5>
+            <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
+              Silakan masukkan nomor resi tiket servis Anda atau buat reservasi servis baru.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+              <button onclick="searchOtherTicket()" class="btn btn-outline-primary btn-sm fw-semibold px-3 py-2">
+                <i class="bi bi-search me-1" aria-hidden="true"></i> Masukkan Nomor Tiket
+              </button>
+              <a href="{{ url('/booking') }}" class="btn btn-primary btn-sm fw-bold px-3 py-2 shadow-sm">
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Buat Reservasi Servis Baru
+              </a>
+            </div>
+          </div>
+        `;
+        return;
       }
 
       renderUI();
