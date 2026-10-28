@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SerComp - Portal Pelacakan Pengguna & Lembar Persetujuan</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .brand-box { width: 40px; height: 40px; background: #0d233a; color: #fff; font-weight: 900; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .step-node { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; margin: 0 auto; }
+    .step-line { height: 3px; flex-grow: 1; background: #dee2e6; margin-top: 16px; }
+    .step-active { background: #0d6efd; color: #fff; }
+    .step-done { background: #198754; color: #fff; }
+    .step-idle { background: #e9ecef; color: #6c757d; }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-between">
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="sercomp_landing.html">
+        <div class="brand-box">SC</div>
+        <div>
+          <span class="fw-bold fs-5 text-dark">Ser<span class="text-primary">Comp</span></span>
+          <span class="d-block text-muted small fw-semibold" style="font-size: 10px; margin-top:-3px;">PORTAL PENGGUNA</span>
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="sercomp_landing.html" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-plus-circle me-1"></i> Buat Tiket Baru
+        </a>
+        <a href="sercomp_admin_teknisi.html" class="btn btn-sm btn-dark">
+          <i class="bi bi-tools me-1"></i> Panel Teknisi
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container-xl py-4 flex-grow-1">
+
+    <!-- 1. HEADER STATUS TIKET -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="text-muted small fw-bold text-uppercase">Nomor Tiket:</span>
+            <span id="displayTicketNo" class="fs-5 fw-bold font-monospace text-primary">#SC-2026-9042</span>
+            <span id="badgeStatus" class="badge bg-warning text-dark px-2.5 py-1.5 fw-bold">
+              Menunggu Persetujuan Biaya
+            </span>
+          </div>
+          <p class="mb-0 text-secondary small">
+            Perangkat: <strong id="displayDevice" class="text-dark">Laptop Asus ROG Strix G15</strong> • Pelanggan: <strong id="displayCustomer" class="text-dark">Dzul Khair</strong>
+          </p>
+        </div>
+
+        <!-- ALERT SLA 1x24 JAM PASCA-PENYERAHAN UNIT -->
+        <div id="slaAlertBox" class="p-2.5 px-3 rounded-3 border d-flex align-items-center gap-3 bg-light text-muted" style="min-width: 320px;">
+          <div class="fs-3 text-warning">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <div>
+            <span class="d-block fw-bold small text-dark" id="slaTitle">SLA Auto-Close (Pasca-Terima Unit):</span>
+            <span id="slaCountdown" class="fw-bold font-monospace text-secondary fs-6">Menunggu Unit Diserahkan</span>
+            <span class="d-block text-muted" style="font-size: 11px;">Otomatis <b>Closed/Completed</b> dalam 1x24 jam jika lupa tutup tiket</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. STEPPER PROGRESS 7 TAHAP -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+      <div class="card-body p-4">
+        <h6 class="text-uppercase text-muted fw-bold small mb-3">Pelacakan Tahapan Servis Real-Time:</h6>
+        <div class="d-flex align-items-start justify-content-between text-center overflow-auto pb-2" style="min-width: 760px;">
+          
+          <div style="width: 90px;">
+            <div id="step1Node" class="step-node step-done"><i class="bi bi-check-lg"></i></div>
+            <div class="small fw-bold mt-2 text-dark">1. Booking</div>
+            <span class="text-muted" style="font-size: 10px;">Kronologi & Foto</span>
+          </div>
+          <div id="line1" class="step-line bg-success"></div>
+
+          <div style="width: 90px;">
+            <div id="step2Node" class="step-node step-done"><i class="bi bi-check-lg"></i></div>
+            <div class="small fw-bold mt-2 text-dark">2. Workshop</div>
+            <span class="text-muted" style="font-size: 10px;">Analisa Fisik</span>
+          </div>
+          <div id="line2" class="step-line bg-primary"></div>
+
+          <div style="width: 100px;">
+            <div id="step3Node" class="step-node step-active">3</div>
+            <div class="small fw-bold mt-2 text-primary">3. Approval</div>
+            <span class="text-muted" style="font-size: 10px;">Biaya Terkunci</span>
+          </div>
+          <div id="line3" class="step-line"></div>
+
+          <div style="width: 90px;">
+            <div id="step4Node" class="step-node step-idle">4</div>
+            <div class="small fw-bold mt-2 text-muted">4. Bayar QRIS</div>
+            <span class="text-muted" style="font-size: 10px;">Lunas di Muka</span>
+          </div>
+          <div id="line4" class="step-line"></div>
+
+          <div style="width: 100px;">
+            <div id="step5Node" class="step-node step-idle">5</div>
+            <div class="small fw-bold mt-2 text-muted">5. Reparasi</div>
+            <span class="text-muted" style="font-size: 10px;">Troubleshoot</span>
+          </div>
+          <div id="line5" class="step-line"></div>
+
+          <div style="width: 100px;">
+            <div id="step6Node" class="step-node step-idle">6</div>
+            <div class="small fw-bold mt-2 text-muted">6. Bukti Part</div>
+            <span class="text-muted" style="font-size: 10px;">Running Test</span>
+          </div>
+          <div id="line6" class="step-line"></div>
+
+          <div style="width: 110px;">
+            <div id="step7Node" class="step-node step-idle">7</div>
+            <div class="small fw-bold mt-2 text-muted">7. Unit Diterima</div>
+            <span class="text-muted" style="font-size: 10px;">SLA 24h & Invoice</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- BANNER UNIT DITERIMA USER & TOMBOL TUTUP TIKET (MUNCUL PASCA SERAH TERIMA) -->
+    <div id="handoverNotice" class="card border-success bg-success-subtle mb-4 d-none">
+      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="fs-1 text-success"><i class="bi bi-box2-check-fill"></i></div>
+          <div>
+            <h6 class="fw-bold text-success-emphasis mb-1">Unit Laptop / PC Telah Anda Terima!</h6>
+            <p class="small text-secondary mb-0">
+              Silakan tes perangkat Anda. Jika sudah normal, klik <strong>Konfirmasi Terima & Tutup Tiket</strong>. Bila Anda lupa, sistem otomatis menyelesaikannya dalam <strong id="handoverTimerText">23:59:59</strong>.
+            </p>
+          </div>
+        </div>
+        <button onclick="confirmCloseTicket()" class="btn btn-success fw-bold px-4 py-2 text-nowrap">
+          <i class="bi bi-check2-circle me-1"></i> Konfirmasi Terima & Tutup Tiket
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. LEMBAR PERSETUJUAN TEKNISI -->
+    <div id="approvalSection" class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+      <div class="card-header bg-dark text-white p-3 px-4 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-file-earmark-text text-warning fs-5"></i>
+          <div>
+            <h6 class="fw-bold mb-0">Lembar Persetujuan Kerusakan & Estimasi Biaya</h6>
+            <span class="text-light-50 small" style="font-size: 11px;">Teknisi menunggu persetujuan Anda sebelum membongkar hardware</span>
+          </div>
+        </div>
+        <span class="badge bg-primary text-uppercase px-2.5 py-1">Zero Hidden Cost</span>
+      </div>
+
+      <div class="card-body p-4">
+        <!-- Kronologi vs Analisis -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-light border h-100">
+              <span class="text-muted fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
+                <i class="bi bi-chat-left-text me-1"></i> Kronologi Gejala Dari Anda:
+              </span>
+              <p id="displayChronology" class="small text-dark fst-italic mb-2">
+                "Layar mendadak mati saat render tugas, lampu nyala tapi kipas berisik dan laptop panas..."
+              </p>
+              <div class="small text-muted">
+                Metode Serah Terima: <strong id="displayDelivery" class="text-dark">Diantar Sendiri ke Workshop</strong>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-primary-subtle border border-primary-subtle h-100">
+              <span class="text-primary fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
+                <i class="bi bi-search me-1"></i> Hasil Analisis & Diagnosa Teknisi:
+              </span>
+              <p id="displayDiagnosis" class="small text-dark fw-semibold mb-2">
+                Kipas pendingin (fan cooler) aus, bearing macet akibat debu tebal, memicu thermal throttling darurat.
+              </p>
+              <div class="small text-secondary">
+                Teknisi Pemeriksa: <strong class="text-dark">Budi Santoso (Certified Hardware)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rencana Tindakan -->
+        <div class="p-3 rounded-3 bg-light border mb-4">
+          <span class="text-muted fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
+            <i class="bi bi-tools me-1"></i> Rencana Tindakan Perbaikan:
+          </span>
+          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0">
+            1) Penggantian unit modul fan cooler original baru; 2) Deep cleaning debu saluran heatsink; 3) Repasta thermal Arctic MX-4; 4) Stress test suhu 60 menit.
+          </p>
+        </div>
+
+        <!-- Tabel Rincian Biaya -->
+        <h6 class="text-uppercase text-muted fw-bold small mb-2">Rincian Estimasi Biaya Terkunci Resmi:</h6>
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Komponen Layanan / Suku Cadang</th>
+                <th>Kategori</th>
+                <th class="text-end">Biaya (Rp)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-semibold">Jasa Servis & Bongkar Pasang Heatsink Modul</td>
+                <td class="text-muted">Jasa Profesional</td>
+                <td id="costLabor" class="text-end font-monospace">Rp 150.000</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Modul Fan Cooler Original DC 5V (Garansi 90 Hari)</td>
+                <td class="text-muted">Suku Cadang Baru</td>
+                <td id="costParts" class="text-end font-monospace">Rp 220.000</td>
+              </tr>
+              <tr id="rowCleaning">
+                <td class="fw-semibold">Additional: Deep Cleaning & Dust Heatsink Removal</td>
+                <td class="text-muted">Layanan Tambahan</td>
+                <td id="costCleaning" class="text-end font-monospace">Rp 50.000</td>
+              </tr>
+              <tr id="rowRepasta">
+                <td class="fw-semibold">Additional: Repasta Thermal Arctic MX-4 Premium</td>
+                <td class="text-muted">Layanan Tambahan</td>
+                <td id="costRepasta" class="text-end font-monospace">Rp 75.000</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="table-light">
+                <td colspan="2" class="fw-bold text-uppercase fs-6">Total Biaya Bersih (No Hidden Cost):</td>
+                <td id="costTotal" class="text-end fw-bold text-primary fs-6 font-monospace">Rp 495.000</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Catatan Teknisi -->
+        <div class="alert alert-warning d-flex align-items-center gap-2 small mb-4">
+          <i class="bi bi-info-circle-fill fs-5"></i>
+          <div>
+            <strong>Catatan Khusus Teknisi (Note): </strong>
+            <span id="displayNote">Motherboard normal bebas short circuit. Seluruh data storage (SSD) aman dan tidak disentuh.</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="approvalActionBtns" class="d-flex flex-column flex-sm-row justify-content-end gap-2">
+          <button onclick="handleReject()" class="btn btn-outline-danger btn-sm px-4 fw-bold">
+            Tolak & Batalkan Servis
+          </button>
+          <button onclick="openQrisModal()" class="btn btn-success px-4 py-2 fw-bold shadow-sm">
+            <i class="bi bi-qr-code-scan me-1"></i> Setujui Biaya & Lanjut Bayar QRIS
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SECTION BUKTI PENGERJAAN & PART LAMA (MUNCUL SETELAH TEKNISI SELESAI) -->
+    <div id="evidenceSection" class="card border-0 shadow-sm rounded-3 mb-4 d-none">
+      <div class="card-header bg-white p-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="fw-bold text-dark mb-0"><i class="bi bi-camera me-1 text-primary"></i> Bukti Pengerjaan Teknisi & Suku Cadang Lama</h6>
+          <span class="text-muted small">Transparansi purnajual: Dokumentasi unit normal dan komponen yang diganti</span>
+        </div>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1">QC Passed</span>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-4 text-center">
+          <div class="col-md-6">
+            <div class="border rounded-3 p-3 bg-light">
+              <div class="rounded-3 overflow-hidden bg-secondary mb-2" style="height: 220px;">
+                <img id="imgFixed" src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Laptop Running Test">
+              </div>
+              <strong class="d-block small text-dark">Bukti 1: Unit Nyala Normal & Lulus Running Test</strong>
+              <span class="text-muted" style="font-size: 11px;">Suhu idle stabil 41°C, stress test 68°C bebas throttling</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="border rounded-3 p-3 bg-light">
+              <div class="rounded-3 overflow-hidden bg-secondary mb-2" style="height: 220px;">
+                <img id="imgPart" src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Part Lama">
+              </div>
+              <strong class="d-block small text-dark">Bukti 2: Modul Fan Lama yang Rusak / Bearing Aus</strong>
+              <span class="text-muted" style="font-size: 11px;">Part bekas disertakan di dalam dus pengembalian unit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. BANNER AKSES INVOICE RESMI -->
+    <div id="invoiceAccessCard" class="card border-primary bg-primary-subtle mb-4 d-none">
+      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="fs-1 text-primary"><i class="bi bi-receipt-cutoff"></i></div>
+          <div>
+            <h6 class="fw-bold text-primary-emphasis mb-1">Invoice Resmi & E-Warranty 90 Hari Telah Terbit</h6>
+            <span class="small text-secondary">
+              Nomor Faktur: <strong id="invAccessNo" class="font-monospace text-dark">INV-SC-2026-8812</strong> • Status: <span class="badge bg-success">LUNAS QRIS</span>
+            </span>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="sercomp_invoice.html" target="_blank" class="btn btn-primary fw-bold px-3 py-2">
+            <i class="bi bi-printer me-1"></i> Buka & Cetak Invoice A4
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL PEMBAYARAN QRIS -->
+  <div class="modal fade" id="qrisModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow text-center p-3">
+        <div class="modal-header border-0 pb-0 justify-content-end">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <span class="badge bg-danger mb-2">QRIS Instan</span>
+          <h5 class="fw-bold mb-1">Pindai QRIS</h5>
+          <p class="text-muted small mb-3">Gunakan BCA, Mandiri, GoPay, OVO, Dana, atau ShopeePay</p>
+
+          <div class="p-3 bg-light rounded-3 border d-inline-block mb-3 cursor-pointer" onclick="simulatePaymentSuccess()" title="Klik untuk simulasi bayar">
+            <svg class="img-fluid" style="width: 170px; height: 170px;" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M0,0 h30 v30 h-30 z M5,5 v20 h20 v-20 z M10,10 h10 v10 h-10 z" />
+              <path d="M70,0 h30 v30 h-30 z M75,5 v20 h20 v-20 z M80,10 h10 v10 h-10 z" />
+              <path d="M0,70 h30 v30 h-30 z M5,75 v20 h20 v-20 z M10,80 h10 v10 h-10 z" />
+              <rect x="35" y="5" width="8" height="8" />
+              <rect x="50" y="10" width="12" height="6" />
+              <rect x="38" y="22" width="20" height="8" />
+              <rect x="10" y="38" width="15" height="15" />
+              <rect x="35" y="38" width="8" height="24" />
+              <rect x="52" y="38" width="16" height="8" />
+              <rect x="75" y="38" width="20" height="12" />
+              <rect x="52" y="52" width="22" height="12" />
+              <rect x="78" y="55" width="15" height="15" />
+              <rect x="38" y="70" width="12" height="20" />
+              <rect x="56" y="70" width="18" height="8" />
+              <rect x="56" y="82" width="35" height="10" />
+            </svg>
+            <div class="text-primary small fw-bold mt-2">
+              <i class="bi bi-hand-index-thumb"></i> Klik QR untuk Simulasi Lunas
+            </div>
+          </div>
+
+          <div class="bg-primary-subtle p-2.5 rounded-3 border border-primary-subtle mb-3">
+            <span class="text-muted d-block small">Total Terkunci:</span>
+            <span id="modalQrisAmount" class="fs-5 fw-bold font-monospace text-primary">Rp 495.000</span>
+          </div>
+
+          <button onclick="simulatePaymentSuccess()" class="btn btn-success w-100 fw-bold py-2">
+            Simulasikan Pembayaran Sukses
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-top py-3 text-center text-muted small">
+    SerComp • Sistem Informasi Monitoring Jasa Servis Terpadu • Universitas Nusa Mandiri
+  </footer>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let currentOrder = null;
+    let bsQrisModal = null;
+
+    function loadOrder() {
+      const stored = localStorage.getItem('sercomp_active_order');
+      if (stored) {
+        currentOrder = JSON.parse(stored);
+      } else {
+        currentOrder = {
+          ticketNo: "#SC-2026-9042",
+          createdAt: new Date().toISOString(),
+          customerName: "Dzul Khair Aropian",
+          customerPhone: "081298765432",
+          deviceType: "Laptop",
+          deviceBrand: "Asus",
+          deviceModel: "ROG Strix G15 (Core i7 / RTX 3060)",
+          issueChronology: "Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas.",
+          addonCleaning: true,
+          addonRepasta: true,
+          deliveryMethod: "Diantar Sendiri",
+          step: 3,
+          status: "Menunggu Persetujuan Biaya",
+          diagnosis: "Kipas pendingin (fan cooler) aus & bearing macet, menyebabkan CPU thermal throttling darurat.",
+          actionPlan: "1) Penggantian unit modul fan cooler original baru; 2) Deep cleaning debu heatsink; 3) Repasta thermal Arctic MX-4; 4) Running test suhu 60 menit.",
+          technicianNote: "Motherboard normal bebas korsleting. Data SSD terlindungi 100%.",
+          costLabor: 150000,
+          costParts: 220000,
+          costCleaning: 50000,
+          costRepasta: 75000,
+          paymentStatus: "Unpaid",
+          isApproved: false,
+          isCompleted: false,
+          unitHandedOver: false,
+          unitHandedOverTime: null,
+          isClosed: false,
+          invoiceNo: "INV-SC-2026-8812"
+        };
+        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+      }
+      renderUI();
+    }
+
+    function renderUI() {
+      document.getElementById('displayTicketNo').innerText = currentOrder.ticketNo;
+      document.getElementById('displayDevice').innerText = `${currentOrder.deviceType} ${currentOrder.deviceBrand} ${currentOrder.deviceModel}`;
+      document.getElementById('displayCustomer').innerText = currentOrder.customerName;
+      document.getElementById('displayChronology').innerText = `\"${currentOrder.issueChronology}\"`;
+      document.getElementById('displayDelivery').innerText = currentOrder.deliveryMethod;
+
+      document.getElementById('displayDiagnosis').innerText = currentOrder.diagnosis;
+      document.getElementById('displayActionPlan').innerText = currentOrder.actionPlan;
+      document.getElementById('displayNote').innerText = currentOrder.technicianNote;
+
+      document.getElementById('costLabor').innerText = "Rp " + (currentOrder.costLabor || 150000).toLocaleString('id-ID');
+      document.getElementById('costParts').innerText = "Rp " + (currentOrder.costParts || 220000).toLocaleString('id-ID');
+
+      if (!currentOrder.addonCleaning) {
+        document.getElementById('rowCleaning').style.display = 'none';
+      } else {
+        document.getElementById('rowCleaning').style.display = '';
+        document.getElementById('costCleaning').innerText = "Rp " + (currentOrder.costCleaning || 50000).toLocaleString('id-ID');
+      }
+
+      if (!currentOrder.addonRepasta) {
+        document.getElementById('rowRepasta').style.display = 'none';
+      } else {
+        document.getElementById('rowRepasta').style.display = '';
+        document.getElementById('costRepasta').innerText = "Rp " + (currentOrder.costRepasta || 75000).toLocaleString('id-ID');
+      }
+
+      const total = (currentOrder.costLabor || 150000) + (currentOrder.costParts || 220000) +
+                    (currentOrder.addonCleaning ? (currentOrder.costCleaning || 50000) : 0) +
+                    (currentOrder.addonRepasta ? (currentOrder.costRepasta || 75000) : 0);
+      const totalStr = "Rp " + total.toLocaleString('id-ID');
+      document.getElementById('costTotal').innerText = totalStr;
+      document.getElementById('modalQrisAmount').innerText = totalStr;
+
+      // Update Stepper & Badges
+      if (currentOrder.paymentStatus === "Paid") {
+        document.getElementById('step3Node').className = "step-node step-done";
+        document.getElementById('step3Node').innerHTML = '<i class="bi bi-check-lg"></i>';
+        document.getElementById('line3').className = "step-line bg-success";
+
+        document.getElementById('step4Node').className = "step-node step-done";
+        document.getElementById('step4Node').innerHTML = '<i class="bi bi-check-lg"></i>';
+        document.getElementById('line4').className = "step-line bg-success";
+
+        document.getElementById('step5Node').className = "step-node step-active";
+
+        document.getElementById('approvalActionBtns').innerHTML = `
+          <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2 px-3 small w-100">
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            <div>Biaya telah disetujui & Pembayaran QRIS Lunas. Teknisi sedang troubleshoot hardware.</div>
+          </div>
+        `;
+        document.getElementById('badgeStatus').className = "badge bg-info text-dark px-2.5 py-1.5 fw-bold";
+        document.getElementById('badgeStatus').innerText = "Dalam Troubleshooting";
+      }
+
+      if (currentOrder.isCompleted) {
+        document.getElementById('step5Node').className = "step-node step-done";
+        document.getElementById('step5Node').innerHTML = '<i class="bi bi-check-lg"></i>';
+        document.getElementById('line5').className = "step-line bg-success";
+
+        document.getElementById('step6Node').className = "step-node step-done";
+        document.getElementById('step6Node').innerHTML = '<i class="bi bi-check-lg"></i>';
+        document.getElementById('line6').className = "step-line bg-success";
+
+        document.getElementById('step7Node').className = "step-node step-active";
+
+        document.getElementById('badgeStatus').className = "badge bg-primary px-2.5 py-1.5 fw-bold";
+        document.getElementById('badgeStatus').innerText = "Selesai - Siap Diambil / Dikirim";
+
+        document.getElementById('evidenceSection').classList.remove('d-none');
+        document.getElementById('invoiceAccessCard').classList.remove('d-none');
+        document.getElementById('invAccessNo').innerText = currentOrder.invoiceNo || "INV-SC-2026-8812";
+      }
+
+      // Handover & SLA 1x24 jam Pasca Terima
+      if (currentOrder.unitHandedOver && !currentOrder.isClosed) {
+        document.getElementById('handoverNotice').classList.remove('d-none');
+        document.getElementById('badgeStatus').className = "badge bg-warning text-dark px-2.5 py-1.5 fw-bold";
+        document.getElementById('badgeStatus').innerText = "Unit Diterima - Menunggu Tutup Tiket";
+      }
+
+      if (currentOrder.isClosed) {
+        document.getElementById('handoverNotice').classList.add('d-none');
+        document.getElementById('step7Node').className = "step-node step-done";
+        document.getElementById('step7Node').innerHTML = '<i class="bi bi-check-lg"></i>';
+        document.getElementById('badgeStatus').className = "badge bg-success px-2.5 py-1.5 fw-bold";
+        document.getElementById('badgeStatus').innerText = "Tiket Closed / Completed";
+        document.getElementById('slaCountdown').innerText = "Tiket Selesai Permanen";
+        document.getElementById('slaAlertBox').className = "p-2.5 px-3 rounded-3 border d-flex align-items-center gap-3 bg-success-subtle text-success border-success-subtle";
+      }
+    }
+
+    function openQrisModal() {
+      if (!bsQrisModal) {
+        bsQrisModal = new bootstrap.Modal(document.getElementById('qrisModal'));
+      }
+      bsQrisModal.show();
+    }
+
+    function simulatePaymentSuccess() {
+      currentOrder.paymentStatus = "Paid";
+      currentOrder.isApproved = true;
+      currentOrder.step = 5;
+      currentOrder.status = "Pembayaran Terverifikasi - Sedang Dikerjakan Teknisi";
+      localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+
+      if (bsQrisModal) bsQrisModal.hide();
+      alert("Pembayaran QRIS Berhasil Diverifikasi! Teknisi segera memulai proses troubleshoot.");
+      renderUI();
+    }
+
+    function handleReject() {
+      if (confirm("Apakah Anda yakin ingin membatalkan servis? Unit akan dirakit kembali tanpa biaya reparasi.")) {
+        currentOrder.status = "Dibatalkan Pelanggan";
+        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+        alert("Pengerjaan dibatalkan.");
+        renderUI();
+      }
+    }
+
+    function confirmCloseTicket() {
+      currentOrder.isClosed = true;
+      currentOrder.status = "Closed / Completed oleh Pengguna";
+      localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+      alert("Terima kasih! Tiket servis resmi ditutup. Garansi e-warranty 90 hari aktif!");
+      renderUI();
+    }
+
+    // SLA 1x24 jam Pasca-Penyerahan Unit Countdown Timer
+    setInterval(() => {
+      if (currentOrder && currentOrder.unitHandedOver && !currentOrder.isClosed && currentOrder.unitHandedOverTime) {
+        const deadline = new Date(currentOrder.unitHandedOverTime).getTime() + (24 * 60 * 60 * 1000);
+        const distance = deadline - new Date().getTime();
+
+        if (distance < 0) {
+          currentOrder.isClosed = true;
+          currentOrder.status = "Auto-Closed by SLA (1x24 Jam Lewat Pasca-Terima Unit)";
+          localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+          renderUI();
+        } else {
+          const h = Math.floor((distance / (1000 * 60 * 60)) % 24);
+          const m = Math.floor((distance / (1000 * 60)) % 60);
+          const s = Math.floor((distance / 1000) % 60);
+          const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          document.getElementById('slaCountdown').innerText = timeStr;
+          document.getElementById('handoverTimerText').innerText = timeStr;
+          document.getElementById('slaAlertBox').className = "p-2.5 px-3 rounded-3 border d-flex align-items-center gap-3 bg-warning-subtle text-dark border-warning-subtle";
+        }
+      }
+    }, 1000);
+
+    window.onload = loadOrder;
+  </script>
+</body>
+</html>

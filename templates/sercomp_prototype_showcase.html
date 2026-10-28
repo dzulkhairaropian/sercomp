@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SerComp - Showcase 7 Layar Prototipe Figma UI/UX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- TOP BAR SWITCHER (FIGMA CONTROLLER) -->
+  <header class="bg-slate-950 border-b border-slate-800 px-4 py-3 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-teal-500 text-slate-950 font-extrabold flex items-center justify-center text-sm">SC</div>
+      <div>
+        <span class="font-extrabold text-sm text-white">SerComp</span>
+        <span class="text-[10px] text-teal-400 font-semibold uppercase ml-1">Figma UI/UX Mockup Set</span>
+      </div>
+    </div>
+
+    <!-- TABS TO SWITCH SCREENS -->
+    <div class="flex flex-wrap items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+      <button onclick="switchScreen(0)" id="tab-0" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        0. Login / Auth
+      </button>
+      <button onclick="switchScreen(1)" id="tab-1" class="px-2.5 py-1.5 rounded-lg bg-teal-500 text-slate-950 font-bold transition">
+        1. Landing & Booking
+      </button>
+      <button onclick="switchScreen(2)" id="tab-2" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        2. Diagnosa Biaya
+      </button>
+      <button onclick="switchScreen(3)" id="tab-3" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        3. Live Tracking
+      </button>
+      <button onclick="switchScreen(4)" id="tab-4" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        4. Approval & QRIS
+      </button>
+      <button onclick="switchScreen(5)" id="tab-5" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        5. E-Warranty
+      </button>
+      <button onclick="switchScreen(6)" id="tab-6" class="px-2.5 py-1.5 rounded-lg text-amber-400 hover:text-white transition">
+        6. Dasbor Teknisi
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a href="sercomp_screen_1_landing.html" id="open-btn" target="_blank" class="px-3 py-1.5 text-xs font-bold text-teal-400 hover:text-teal-300 border border-teal-500/30 rounded-lg flex items-center gap-1">
+        <span>Buka File Sendiri</span> &UpperRightArrow;
+      </a>
+    </div>
+  </header>
+
+  <!-- IFRAME VIEWER CONTAINER -->
+  <div class="flex-1 bg-slate-950 p-3 sm:p-6 flex items-center justify-center">
+    <div class="w-full max-w-5xl h-[82vh] bg-white rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col">
+      <div class="bg-slate-100 border-b border-slate-200 px-4 py-2 flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+        <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+        <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+        <span id="current-url" class="text-[11px] font-mono text-slate-500 ml-2">https://sercomp.id/booking</span>
+      </div>
+      <iframe id="screen-frame" src="sercomp_screen_1_landing.html" class="w-full flex-1 border-0"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const screens = {
+      0: { file: "sercomp_screen_login.html", url: "https://sercomp.id/auth/login" },
+      1: { file: "sercomp_screen_1_landing.html", url: "https://sercomp.id/booking" },
+      2: { file: "sercomp_screen_2_diagnosa.html", url: "https://sercomp.id/diagnosa" },
+      3: { file: "sercomp_screen_3_tracking.html", url: "https://sercomp.id/tracking/SC-2026-JKT-0982" },
+      4: { file: "sercomp_screen_4_approval_qris.html", url: "https://sercomp.id/approval/checkout" },
+      5: { file: "sercomp_screen_5_warranty.html", url: "https://sercomp.id/warranty/WRN-2026-8812" },
+      6: { file: "sercomp_screen_teknisi_dashboard.html", url: "https://tech.sercomp.id/jobs/SC-2026-JKT-0982" }
+    };
+
+    function switchScreen(idx) {
+      document.getElementById('screen-frame').src = screens[idx].file;
+      document.getElementById('current-url').textContent = screens[idx].url;
+      document.getElementById('open-btn').href = screens[idx].file;
+
+      for (let i = 0; i <= 6; i++) {
+        const btn = document.getElementById('tab-' + i);
+        if (i === idx) {
+          btn.className = "px-2.5 py-1.5 rounded-lg bg-teal-500 text-slate-950 font-bold transition";
+        } else {
+          btn.className = "px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

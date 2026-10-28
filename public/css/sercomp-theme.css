@@ -1,0 +1,212 @@
+/* ========================================================
+   SerComp Unified Brand Design System (SI 2 / Bisnis Digital)
+   WCAG 2.2 Accessible & UI/UX Pro Max Aligned
+   ======================================================== */
+:root {
+  /* Brand Palette */
+  --sc-navy: #0d233a;
+  --sc-navy-dark: #071524;
+  --sc-navy-light: #16385d;
+  --sc-primary: #0284c7;       /* Tech Sapphire Blue */
+  --sc-primary-hover: #0369a1;
+  --sc-primary-subtle: #e0f2fe;
+  --sc-accent: #0ea5e9;        /* Electric Sky */
+  --sc-cyan: #06b6d4;
+  
+  /* Neutral Slate Scale */
+  --sc-slate-50: #f8fafc;
+  --sc-slate-100: #f1f5f9;
+  --sc-slate-200: #e2e8f0;
+  --sc-slate-300: #cbd5e1;
+  --sc-slate-400: #94a3b8;
+  --sc-slate-500: #64748b;
+  --sc-slate-600: #475569;
+  --sc-slate-700: #334155;
+  --sc-slate-800: #1e293b;
+  --sc-slate-900: #0f172a;
+
+  /* WCAG AA (4.5:1) Accessible Functional Accents */
+  --sc-emerald: #059669;
+  --sc-emerald-subtle: #d1fae5;
+  --sc-emerald-text: #065f46;   /* Contrast > 4.5:1 on light green */
+  
+  --sc-amber: #d97706;
+  --sc-amber-subtle: #fef3c7;
+  --sc-amber-text: #78350f;     /* Contrast > 5.5:1 on light amber */
+  
+  --sc-rose: #dc2626;
+  --sc-rose-subtle: #fee2e2;
+  --sc-rose-text: #991b1b;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: #0284c7;
+  --bs-primary-rgb: 2, 132, 199;
+  --bs-primary-border-subtle: #bae6fd;
+  --bs-primary-bg-subtle: #f0f9ff;
+  
+  --bs-body-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #f8fafc;
+  --bs-body-color: #0f172a;
+  --bs-border-color: #e2e8f0;
+  --bs-border-radius: 0.625rem;
+  --bs-border-radius-lg: 0.875rem;
+  --bs-border-radius-xl: 1.25rem;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--sc-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Brand Logo Box */
+.brand-box {
+  width: 40px;
+  height: 40px;
+  background: var(--sc-navy);
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(13, 35, 58, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Gradient Hero */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #071524 0%, #0d233a 55%, #16385d 100%) !important;
+}
+
+/* Academic Demo Bar (Sufficient touch targets >= 24px) */
+.sc-demo-bar {
+  background: #09121d;
+  border-bottom: 1px solid #1e293b;
+  font-size: 12px;
+  padding: 6px 16px;
+  color: #cbd5e1;
+}
+
+.sc-demo-bar .btn-demo {
+  font-size: 11px;
+  padding: 4px 12px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.sc-demo-bar .btn-demo:hover {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.sc-demo-bar .btn-demo.active {
+  background: var(--sc-primary);
+  color: #ffffff;
+  border-color: var(--sc-primary);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+}
+
+/* Accessible Status Badges */
+.badge-warning-accessible {
+  background-color: var(--sc-amber-subtle) !important;
+  color: var(--sc-amber-text) !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700;
+}
+
+.badge-success-accessible {
+  background-color: var(--sc-emerald-subtle) !important;
+  color: var(--sc-emerald-text) !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 700;
+}
+
+.badge-info-accessible {
+  background-color: var(--sc-primary-subtle) !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+  font-weight: 700;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+  background-color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--sc-primary-hover) !important;
+  border-color: var(--sc-primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--sc-primary) !important;
+  color: #ffffff !important;
+}
+
+.text-primary {
+  color: var(--sc-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--sc-primary) !important;
+}
+
+.bg-primary-subtle {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+}
+
+.border-primary-subtle {
+  border-color: #bae6fd !important;
+}
+
+/* Quick Track Banner */
+.bg-quick-track {
+  background: linear-gradient(90deg, #071524 0%, #0d233a 100%) !important;
+  border-bottom: 2px solid #0284c7;
+}
+
+/* Device Card Selection in Booking Form */
+.device-card-input:checked + .device-card-label {
+  border-color: var(--sc-primary) !important;
+  background-color: #f0f9ff !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+/* Card Enhancements */
+.card {
+  border-color: var(--sc-slate-200);
+}
+
+.card.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05) !important;
+}
+
+.card.shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
