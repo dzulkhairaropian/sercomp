@@ -26,7 +26,35 @@ class TrackingController extends Controller
                 ->first() ?? ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])->latest()->first();
         }
 
-        return view('user-panel', compact('ticket'));
+        $isVerified = $ticket ? ($request->session()->get('verified_ticket_' . $ticket->ticket_no) === true) : false;
+        return view('user-panel', compact('ticket', 'isVerified'));
+    }
+
+    protected function verifyCustomerOwnership(Request $request, ServiceOrder $order): bool
+    {
+        $sessionKey = 'verified_ticket_' . $order->ticket_no;
+        if ($request->session()->get($sessionKey) === true) {
+            return true;
+        }
+
+        $actualPhone = preg_replace('/[^0-9]/', '', $order->customer?->phone ?? '');
+        $inputVerification = preg_replace('/[^0-9]/', '', (string) $request->input('phone_verification', ''));
+
+        if (empty($actualPhone) || empty($inputVerification)) {
+            return false;
+        }
+
+        if (str_ends_with($actualPhone, $inputVerification) && strlen($inputVerification) >= 4) {
+            $request->session()->put($sessionKey, true);
+            return true;
+        }
+
+        if ($actualPhone === $inputVerification) {
+            $request->session()->put($sessionKey, true);
+            return true;
+        }
+
+        return false;
     }
 
     public function approve(Request $request, $ticketNo)
@@ -37,6 +65,16 @@ class TrackingController extends Controller
             ->with(['diagnostic', 'invoice'])
             ->firstOrFail();
 
+        if (!$this->verifyCustomerOwnership($request, $order)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'require_verification' => true,
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar pada tiket ini untuk menyetujui rincian biaya.',
+                ], 403);
+            }
+            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok dengan data pemilik unit.']);
+        }
         if ($order->diagnostic) {
             $order->diagnostic->update([
                 'is_approved_by_user' => true,
@@ -67,6 +105,16 @@ class TrackingController extends Controller
             ->with('diagnostic')
             ->firstOrFail();
 
+        if (!$this->verifyCustomerOwnership($request, $order)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'require_verification' => true,
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar pada tiket ini untuk membatalkan pengerjaan servis.',
+                ], 403);
+            }
+            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok dengan data pemilik unit.']);
+        }
         if ($order->diagnostic) {
             $order->diagnostic->update([
                 'is_approved_by_user' => false,
@@ -136,6 +184,16 @@ class TrackingController extends Controller
             ->with('invoice.warranty')
             ->firstOrFail();
 
+        if (!$this->verifyCustomerOwnership($request, $order)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'require_verification' => true,
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar untuk menutup tiket secara resmi.',
+                ], 403);
+            }
+            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok.']);
+        }
         $order->update([
             'order_status' => 'Closed',
         ]);

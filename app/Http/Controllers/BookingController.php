@@ -123,6 +123,9 @@ class BookingController extends Controller
             'payment_method' => 'QRIS Dinamis',
             'payment_status' => 'Unpaid',
         ]);
+        // Tandai pembuat reservasi telah terverifikasi secara aman di sesi browser ini
+        $request->session()->put('verified_ticket_' . $order->ticket_no, true);
+
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

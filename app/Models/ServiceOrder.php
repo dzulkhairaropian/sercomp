@@ -35,6 +35,7 @@ class ServiceOrder extends Model
         'status',
         'customer_name',
         'customer_phone',
+        'customer_phone_masked',
         'customer_email',
         'diagnosis',
         'action_plan',
@@ -120,6 +121,18 @@ class ServiceOrder extends Model
     public function getCustomerPhoneAttribute(): string
     {
         return $this->customer?->phone ?? '-';
+    }
+
+    public function getCustomerPhoneMaskedAttribute(): string
+    {
+        $phone = $this->customer?->phone;
+        if (!$phone || strlen($phone) < 7) {
+            return '08**-****-****';
+        }
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        $prefix = substr($clean, 0, 4);
+        $suffix = substr($clean, -4);
+        return $prefix . '-****-' . $suffix;
     }
 
     public function getCustomerEmailAttribute(): ?string

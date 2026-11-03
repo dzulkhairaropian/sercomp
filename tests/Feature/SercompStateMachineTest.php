@@ -155,4 +155,42 @@ class SercompStateMachineTest extends TestCase
         $techResponse = $this->actingAs($tech)->get('/teknisi');
         $techResponse->assertOk();
     }
+
+    public function test_stranger_cannot_approve_or_reject_ticket_without_customer_phone_verification(): void
+    {
+        // Buat customer & order
+        $customer = User::create([
+            'name' => 'Ahmad Fauzi',
+            'email' => 'ahmad.fauzi@gmail.com',
+            'phone' => '081233445566',
+            'password' => bcrypt('secret123'),
+            'role' => 'customer',
+            'is_active' => true,
+        ]);
+
+        $order = ServiceOrder::create([
+            'customer_id' => $customer->id,
+            'ticket_no' => 'SC-2026-7788',
+            'device_type' => 'Laptop',
+            'device_brand' => 'Asus',
+            'device_model' => 'Zenbook',
+            'issue_chronology' => 'Thermal throttling',
+            'order_status' => 'Approval Biaya',
+            'unit_handed_over' => false,
+        ]);
+
+        // Orang asing coba approve tanpa PIN / nomor telepon -> DICEGAT 403
+        $unauthorizedApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve");
+        $unauthorizedApprove->assertStatus(403);
+        $unauthorizedApprove->assertJson(['require_verification' => true]);
+
+        // Orang asing coba tebak PIN salah -> DICEGAT 403
+        $wrongPinApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['phone_verification' => '9999']);
+        $wrongPinApprove->assertStatus(403);
+
+        // Pemilik asli memasukkan 4 digit terakhir nomor HP yang benar (5566) -> BERHASIL
+        $legitApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['phone_verification' => '5566']);
+        $legitApprove->assertStatus(200);
+        $legitApprove->assertJson(['success' => true]);
+    }
 }

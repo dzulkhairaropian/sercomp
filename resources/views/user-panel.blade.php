@@ -400,6 +400,33 @@
       </div>
     </div>
   </div>
+  <!-- MODAL VERIFIKASI KEAMANAN PEMILIK TIKET -->
+  <div class="modal fade" id="modalVerifyOwner" tabindex="-1" aria-labelledby="modalVerifyOwnerLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow-lg text-center p-3 rounded-4">
+        <div class="modal-header border-0 pb-0 justify-content-end">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <div class="badge bg-primary-subtle text-primary p-3 rounded-circle mb-2">
+            <i class="bi bi-shield-lock-fill fs-3"></i>
+          </div>
+          <h6 class="fw-bold mb-1" id="modalVerifyOwnerLabel">Verifikasi Pemilik Tiket</h6>
+          <p class="text-muted small mb-3">
+            Untuk melindungi keputusan servis Anda, masukkan <strong>4 digit terakhir</strong> nomor WhatsApp terdaftar (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>):
+          </p>
+          <div id="verifyAlertError" class="alert alert-danger py-1.5 px-2 small mb-2 d-none"></div>
+          <div class="mb-3">
+            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-4 fw-bold" placeholder="••••" maxlength="4" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
+          </div>
+          <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
+            <i class="bi bi-check2-circle me-1"></i> Verifikasi & Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- FOOTER -->
   <footer class="bg-white text-muted py-3 text-center border-top small">
@@ -412,7 +439,37 @@
   <script>
     let currentOrder = null;
     let bsQrisModal = null;
+    let bsVerifyModal = null;
+    let isOwnerVerified = @json($isVerified ?? false);
+    let pendingActionCallback = null;
 
+    function executeWithSecurityCheck(callback) {
+      if (isOwnerVerified) {
+        callback('');
+        return;
+      }
+      pendingActionCallback = callback;
+      if (!bsVerifyModal) {
+        bsVerifyModal = new bootstrap.Modal(document.getElementById('modalVerifyOwner'));
+      }
+      document.getElementById('verifyPhoneHint').innerText = currentOrder.customerPhoneMasked || '08**-****-****';
+      document.getElementById('verifyAlertError').classList.add('d-none');
+      document.getElementById('inputVerifyPin').value = '';
+      bsVerifyModal.show();
+    }
+
+    function submitVerificationPin() {
+      const pin = document.getElementById('inputVerifyPin').value.trim();
+      if (!pin || pin.length < 4) {
+        const err = document.getElementById('verifyAlertError');
+        err.innerText = "Masukkan 4 digit nomor telepon terdaftar.";
+        err.classList.remove('d-none');
+        return;
+      }
+      if (pendingActionCallback) {
+        pendingActionCallback(pin);
+      }
+    }
     function searchOtherTicket() {
       const input = document.getElementById('pageTicketInput');
       if (input) {
@@ -430,7 +487,8 @@
           ticketNo: serverTicket.ticket_no,
           createdAt: serverTicket.created_at,
           customerName: serverTicket.customer_name,
-          customerPhone: serverTicket.customer_phone,
+          customerPhone: isOwnerVerified ? serverTicket.customer_phone : (serverTicket.customer_phone_masked || serverTicket.customer_phone),
+          customerPhoneMasked: serverTicket.customer_phone_masked || '08**-****-****',
           deviceType: serverTicket.device_type,
           deviceBrand: serverTicket.device_brand,
           deviceModel: serverTicket.device_model || '',
@@ -698,30 +756,41 @@
     }
 
     function handleApprove() {
-      fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/approve', {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          'Accept': 'application/json'
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        currentOrder.isApproved = true;
-        currentOrder.step = 4;
-        currentOrder.status = "Menunggu Pembayaran QRIS";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-        alert("Estimasi biaya disetujui! Silakan lanjutkan pembayaran via QRIS.");
-        renderUI();
-        openQrisModal();
-      })
-      .catch(err => {
-        currentOrder.isApproved = true;
-        currentOrder.step = 4;
-        currentOrder.status = "Menunggu Pembayaran QRIS";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-        renderUI();
-        openQrisModal();
+      executeWithSecurityCheck(function(pin) {
+        fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/approve', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ phone_verification: pin })
+        })
+        .then(res => {
+          if (res.status === 403) {
+            throw new Error("4 digit nomor WhatsApp tidak cocok dengan data pendaftaran tiket ini.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          isOwnerVerified = true;
+          if (bsVerifyModal) bsVerifyModal.hide();
+          currentOrder.isApproved = true;
+          currentOrder.step = 4;
+          currentOrder.status = "Menunggu Pembayaran QRIS";
+          localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+          renderUI();
+          openQrisModal();
+        })
+        .catch(err => {
+          const errEl = document.getElementById('verifyAlertError');
+          if (errEl && bsVerifyModal) {
+            errEl.innerText = err.message || "Verifikasi kepemilikan gagal.";
+            errEl.classList.remove('d-none');
+          } else {
+            alert(err.message);
+          }
+        });
       });
     }
 
@@ -760,44 +829,77 @@
 
     function handleReject() {
       if (confirm("Apakah Anda yakin ingin membatalkan servis? Unit akan dirakit kembali tanpa biaya reparasi.")) {
-        fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/reject', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-          }
+        executeWithSecurityCheck(function(pin) {
+          fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/reject', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ phone_verification: pin })
+          })
+          .then(res => {
+            if (res.status === 403) {
+              throw new Error("4 digit nomor WhatsApp tidak cocok.");
+            }
+            return res.json();
+          })
+          .then(data => {
+            isOwnerVerified = true;
+            if (bsVerifyModal) bsVerifyModal.hide();
+            currentOrder.status = "Dibatalkan Pelanggan";
+            localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+            renderUI();
+          })
+          .catch(err => {
+            const errEl = document.getElementById('verifyAlertError');
+            if (errEl && bsVerifyModal) {
+              errEl.innerText = err.message || "Verifikasi gagal.";
+              errEl.classList.remove('d-none');
+            } else {
+              alert(err.message);
+            }
+          });
         });
-        currentOrder.status = "Dibatalkan Pelanggan";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-        alert("Pengerjaan dibatalkan.");
-        renderUI();
       }
     }
 
     function confirmCloseTicket() {
-      fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/close', {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          'Accept': 'application/json'
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        currentOrder.isClosed = true;
-        currentOrder.step = 7;
-        currentOrder.status = "Closed / Completed";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-        alert("Terima kasih! Tiket servis resmi ditutup. Garansi e-warranty 90 hari aktif!");
-        renderUI();
-      })
-      .catch(err => {
-        currentOrder.isClosed = true;
-        currentOrder.step = 7;
-        currentOrder.status = "Closed / Completed";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-        alert("Terima kasih! Tiket servis resmi ditutup. Garansi e-warranty 90 hari aktif!");
-        renderUI();
+      executeWithSecurityCheck(function(pin) {
+        fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/close', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ phone_verification: pin })
+        })
+        .then(res => {
+          if (res.status === 403) {
+            throw new Error("4 digit nomor WhatsApp tidak cocok.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          isOwnerVerified = true;
+          if (bsVerifyModal) bsVerifyModal.hide();
+          currentOrder.isClosed = true;
+          currentOrder.step = 7;
+          currentOrder.status = "Closed / Completed";
+          localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+          renderUI();
+        })
+        .catch(err => {
+          const errEl = document.getElementById('verifyAlertError');
+          if (errEl && bsVerifyModal) {
+            errEl.innerText = err.message || "Verifikasi gagal.";
+            errEl.classList.remove('d-none');
+          } else {
+            alert(err.message);
+          }
+        });
       });
     }
 
