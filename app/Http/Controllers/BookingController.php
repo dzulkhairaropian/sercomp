@@ -25,7 +25,7 @@ class BookingController extends Controller
             'device_model' => 'required|string|max:120',
             'issue_chronology' => 'required|string',
             'delivery_method' => 'required|in:Diantar Sendiri,Ambil oleh Teknisi',
-            'pickup_address' => 'required_if:delivery_method,Ambil oleh Teknisi|nullable|string',
+            'pickup_address' => 'nullable|string',
             'customer_name' => 'required|string|max:100',
             'customer_phone' => 'required|string|max:30',
             'customer_email' => 'nullable|email|max:100',
@@ -34,25 +34,40 @@ class BookingController extends Controller
             'addon_repasta' => 'nullable|boolean',
         ]);
 
-        // Cari atau buat akun guest customer
-        $email = $validated['customer_email'] ?: ($validated['customer_phone'] . '@guest.sercomp.id');
-        $customer = User::firstOrCreate(
-            ['phone' => $validated['customer_phone']],
-            [
+        // Cari atau buat akun guest customer tanpa tabrakan email
+        $customer = User::where('phone', $validated['customer_phone'])->first();
+        if (!$customer && !empty($validated['customer_email'])) {
+            $customer = User::where('email', $validated['customer_email'])->first();
+        }
+
+        if (!$customer) {
+            $email = $validated['customer_email'] ?: ($validated['customer_phone'] . '@guest.sercomp.id');
+            if (User::where('email', $email)->exists()) {
+                $email = $validated['customer_phone'] . '_' . time() . '@guest.sercomp.id';
+            }
+            $customer = User::create([
                 'name' => $validated['customer_name'],
+                'phone' => $validated['customer_phone'],
                 'email' => $email,
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'customer',
-            ]
-        );
-        if ($validated['customer_name'] && $customer->name !== $validated['customer_name']) {
+            ]);
+        } else {
             $customer->update(['name' => $validated['customer_name']]);
+        }
+
+        $pickupAddress = $validated['pickup_address'] ?? null;
+        if ($validated['delivery_method'] === 'Ambil oleh Teknisi' && empty($pickupAddress)) {
+            $pickupAddress = 'Alamat penjemputan akan dikonfirmasi langsung oleh teknisi via WhatsApp.';
         }
 
         // Generate nomor tiket SC-YYYY-XXXX
         do {
             $ticketNo = 'SC-' . date('Y') . '-' . mt_rand(1000, 9999);
         } while (ServiceOrder::where('ticket_no', $ticketNo)->exists());
+
+        // Generate 4-digit kode PIN rahasia acak untuk diingat dan diverifikasi konsumen
+        $securityPin = (string) mt_rand(1000, 9999);
 
         // Simpan foto kerusakan awal jika diunggah
         $photoUrl = null;
@@ -70,6 +85,7 @@ class BookingController extends Controller
         $order = ServiceOrder::create([
             'customer_id' => $customer->id,
             'ticket_no' => $ticketNo,
+            'security_pin' => $securityPin,
             'device_type' => $validated['device_type'],
             'device_brand' => $validated['device_brand'],
             'device_model' => $validated['device_model'],
@@ -78,7 +94,7 @@ class BookingController extends Controller
             'addon_cleaning' => $addonCleaning,
             'addon_repasta' => $addonRepasta,
             'delivery_method' => $validated['delivery_method'],
-            'pickup_address' => $validated['pickup_address'] ?? null,
+            'pickup_address' => $pickupAddress,
             'order_status' => 'Booking',
             'unit_handed_over' => false,
         ]);
@@ -131,6 +147,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'ticket_no' => $order->ticket_no,
+                'security_pin' => $order->security_pin,
                 'order' => $order,
                 'ticket' => $order,
                 'redirect_url' => route('user.panel', ['ticket' => $order->ticket_no]),

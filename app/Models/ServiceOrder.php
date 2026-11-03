@@ -16,6 +16,7 @@ class ServiceOrder extends Model
         'customer_id',
         'technician_id',
         'ticket_no',
+        'security_pin',
         'device_type',
         'device_brand',
         'device_model',

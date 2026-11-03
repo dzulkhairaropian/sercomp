@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->foreignId('customer_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('technician_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('ticket_no', 32)->unique();
+            $table->string('security_pin', 10)->default('1234');
             $table->enum('device_type', ['Laptop', 'PC Desktop']);
             $table->string('device_brand', 80);
             $table->string('device_model', 120);

@@ -414,14 +414,17 @@
           <div class="badge bg-primary-subtle text-primary p-3 rounded-circle mb-2">
             <i class="bi bi-shield-lock-fill fs-3"></i>
           </div>
-          <h6 class="fw-bold mb-1" id="modalVerifyOwnerLabel">Verifikasi Pemilik Tiket</h6>
-          <p class="text-muted small mb-3">
-            Untuk melindungi keputusan servis Anda, masukkan <strong>4 digit terakhir</strong> nomor WhatsApp terdaftar (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>):
+          <h6 class="fw-bold mb-1" id="modalVerifyOwnerLabel">Verifikasi Kode PIN Tiket</h6>
+          <p class="text-muted small mb-2">
+            Masukkan <strong>4 Digit Kode PIN Keamanan</strong> yang Anda peroleh saat membuat tiket reservasi ini:
           </p>
           <div id="verifyAlertError" class="alert alert-danger py-1.5 px-2 small mb-2 d-none"></div>
-          <div class="mb-3">
-            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-4 fw-bold" placeholder="••••" maxlength="4" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
+          <div class="mb-2">
+            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-3 fw-bold" placeholder="••••" maxlength="6" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
           </div>
+          <span class="text-muted d-block small mb-3" style="font-size: 11px;">
+            *Lupa kode PIN? Anda juga dapat menggunakan 4 digit terakhir nomor WhatsApp pemilik (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>).
+          </span>
           <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
             <i class="bi bi-check2-circle me-1"></i> Verifikasi & Lanjutkan
           </button>
@@ -465,7 +468,7 @@
       const pin = document.getElementById('inputVerifyPin').value.trim();
       if (!pin || pin.length < 4) {
         const err = document.getElementById('verifyAlertError');
-        err.innerText = "Masukkan 4 digit nomor telepon terdaftar.";
+        err.innerText = "Masukkan 4 kode PIN keamanan tiket.";
         err.classList.remove('d-none');
         return;
       }
@@ -521,19 +524,10 @@
           evidenceRunningPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_running_test_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_running_test_photo) : null,
           evidenceReplacedPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo) : null
         };
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
       } else {
-        const stored = localStorage.getItem('sercomp_active_order');
-        if (stored) {
-          try {
-            currentOrder = JSON.parse(stored);
-          } catch(e) {
-            currentOrder = null;
-          }
-        } else {
-          currentOrder = null;
-        }
+        currentOrder = null;
       }
+      try { localStorage.removeItem('sercomp_active_order'); } catch(e) {}
 
       if (!currentOrder) {
         document.getElementById('displayTicketNo').innerText = "Belum Ada Tiket";
@@ -780,11 +774,11 @@
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ phone_verification: pin })
+          body: JSON.stringify({ security_pin: pin, phone_verification: pin })
         })
         .then(res => {
           if (res.status === 403) {
-            throw new Error("4 digit nomor WhatsApp tidak cocok dengan data pendaftaran tiket ini.");
+            throw new Error("Kode PIN Keamanan 4 digit tidak cocok dengan tiket ini.");
           }
           return res.json();
         })
@@ -853,11 +847,11 @@
               'X-CSRF-TOKEN': '{{ csrf_token() }}',
               'Accept': 'application/json'
             },
-            body: JSON.stringify({ phone_verification: pin })
+            body: JSON.stringify({ security_pin: pin, phone_verification: pin })
           })
           .then(res => {
             if (res.status === 403) {
-              throw new Error("4 digit nomor WhatsApp tidak cocok.");
+              throw new Error("Kode PIN Keamanan 4 digit tidak cocok dengan tiket ini.");
             }
             return res.json();
           })
@@ -890,11 +884,11 @@
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ phone_verification: pin })
+          body: JSON.stringify({ security_pin: pin, phone_verification: pin })
         })
         .then(res => {
           if (res.status === 403) {
-            throw new Error("4 digit nomor WhatsApp tidak cocok.");
+            throw new Error("Kode PIN Keamanan 4 digit tidak cocok dengan tiket ini.");
           }
           return res.json();
         })

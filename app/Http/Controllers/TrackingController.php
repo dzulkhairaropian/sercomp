@@ -37,19 +37,22 @@ class TrackingController extends Controller
             return true;
         }
 
-        $actualPhone = preg_replace('/[^0-9]/', '', $order->customer?->phone ?? '');
-        $inputVerification = preg_replace('/[^0-9]/', '', (string) $request->input('phone_verification', ''));
+        $inputPin = trim((string) $request->input('security_pin', $request->input('phone_verification', '')));
+        $actualPin = (string) ($order->security_pin ?? '');
 
-        if (empty($actualPhone) || empty($inputVerification)) {
+        if (empty($inputPin)) {
             return false;
         }
 
-        if (str_ends_with($actualPhone, $inputVerification) && strlen($inputVerification) >= 4) {
+        // 1. Verifikasi utama: Cocokkan 4 kode PIN rahasia tiket
+        if (!empty($actualPin) && $actualPin === $inputPin) {
             $request->session()->put($sessionKey, true);
             return true;
         }
 
-        if ($actualPhone === $inputVerification) {
+        // 2. Fallback darurat: 4 digit nomor telepon pelanggan
+        $actualPhone = preg_replace('/[^0-9]/', '', $order->customer?->phone ?? '');
+        if (!empty($actualPhone) && strlen($inputPin) >= 4 && str_ends_with($actualPhone, $inputPin)) {
             $request->session()->put($sessionKey, true);
             return true;
         }
@@ -70,10 +73,10 @@ class TrackingController extends Controller
                 return response()->json([
                     'success' => false,
                     'require_verification' => true,
-                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar pada tiket ini untuk menyetujui rincian biaya.',
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit Kode PIN Keamanan tiket ini.',
                 ], 403);
             }
-            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok dengan data pemilik unit.']);
+            return back()->withErrors(['security_pin' => 'Kode PIN Keamanan 4 digit tidak cocok.']);
         }
         if ($order->diagnostic) {
             $order->diagnostic->update([
@@ -110,10 +113,10 @@ class TrackingController extends Controller
                 return response()->json([
                     'success' => false,
                     'require_verification' => true,
-                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar pada tiket ini untuk membatalkan pengerjaan servis.',
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit Kode PIN Keamanan tiket ini.',
                 ], 403);
             }
-            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok dengan data pemilik unit.']);
+            return back()->withErrors(['security_pin' => 'Kode PIN Keamanan 4 digit tidak cocok.']);
         }
         if ($order->diagnostic) {
             $order->diagnostic->update([
@@ -195,10 +198,10 @@ class TrackingController extends Controller
                 return response()->json([
                     'success' => false,
                     'require_verification' => true,
-                    'message' => 'Otorisasi ditolak. Masukkan 4 digit terakhir nomor WhatsApp terdaftar untuk menutup tiket secara resmi.',
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit Kode PIN Keamanan tiket ini.',
                 ], 403);
             }
-            return back()->withErrors(['phone_verification' => '4 digit nomor WhatsApp tidak cocok.']);
+            return back()->withErrors(['security_pin' => 'Kode PIN Keamanan 4 digit tidak cocok.']);
         }
         $order->update([
             'order_status' => 'Closed',

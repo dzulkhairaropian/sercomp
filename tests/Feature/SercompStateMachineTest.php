@@ -176,6 +176,7 @@ class SercompStateMachineTest extends TestCase
             'device_model' => 'Zenbook',
             'issue_chronology' => 'Thermal throttling',
             'order_status' => 'Approval Biaya',
+            'security_pin' => '4829',
             'unit_handed_over' => false,
         ]);
 
@@ -185,11 +186,11 @@ class SercompStateMachineTest extends TestCase
         $unauthorizedApprove->assertJson(['require_verification' => true]);
 
         // Orang asing coba tebak PIN salah -> DICEGAT 403
-        $wrongPinApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['phone_verification' => '9999']);
+        $wrongPinApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['security_pin' => '9999']);
         $wrongPinApprove->assertStatus(403);
 
-        // Pemilik asli memasukkan 4 digit terakhir nomor HP yang benar (5566) -> BERHASIL
-        $legitApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['phone_verification' => '5566']);
+        // Pemilik asli memasukkan 4 kode PIN acak yang benar (4829) -> BERHASIL
+        $legitApprove = $this->postJson("/user-panel/{$order->ticket_no}/approve", ['security_pin' => '4829']);
         $legitApprove->assertStatus(200);
         $legitApprove->assertJson(['success' => true]);
     }

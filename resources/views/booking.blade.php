@@ -320,10 +320,23 @@
         <h4 class="fw-bold mb-1" id="successModalLabel">Tiket Reservasi Terbit</h4>
         <p class="text-muted small mb-3">Nomor resi pelacakan unit servis Anda:</p>
         
-        <div class="p-3 bg-light border rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-          <span id="createdTicketNo" class="fs-4 fw-bold font-monospace text-primary">#SC-2026-9042</span>
+        <div class="p-3 bg-light border rounded-3 mb-2 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+          <div class="text-start">
+            <span class="text-muted d-block small" style="font-size: 11px;">Nomor Resi Tiket:</span>
+            <span id="createdTicketNo" class="fs-4 fw-bold font-monospace text-primary">#SC-2026-9042</span>
+          </div>
           <button type="button" id="btnCopyTicket" onclick="copyTicketCode()" class="btn btn-outline-primary btn-sm fw-semibold py-1.5 px-3">
-            <i class="bi bi-clipboard me-1" id="iconCopyTicket"></i> <span id="btnCopyText">Salin Kode</span>
+            <i class="bi bi-clipboard me-1" id="iconCopyTicket"></i> <span id="btnCopyText">Salin Tiket</span>
+          </button>
+        </div>
+
+        <div class="p-3 bg-warning-subtle border border-warning-subtle rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+          <div class="text-start">
+            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Ingat 4 Kode Ini):</span>
+            <span id="createdSecurityPin" class="fs-4 fw-bold font-monospace text-dark">1234</span>
+          </div>
+          <button type="button" id="btnCopyPin" onclick="copySecurityPin()" class="btn btn-outline-dark btn-sm fw-semibold py-1.5 px-3">
+            <i class="bi bi-clipboard me-1" id="iconCopyPin"></i> <span id="btnCopyPinText">Salin PIN</span>
           </button>
         </div>
 
@@ -429,52 +442,34 @@
         "Accept": "application/json"
       }
     })
-    .then(res => res.json())
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        let errorMsg = data.message || "Gagal menyimpan data reservasi.";
+        if (data.errors) {
+          const detail = Object.values(data.errors).flat().join("\n• ");
+          errorMsg += "\n• " + detail;
+        }
+        throw new Error(errorMsg);
+      }
+      return data;
+    })
     .then(data => {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
 
-      const serverTicket = data.ticket;
-      const ticketNo = serverTicket ? serverTicket.ticket_no : (data.ticket_no || ("#SC-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000)));
-
-      const orderData = {
-        ticketNo: ticketNo,
-        createdAt: serverTicket ? serverTicket.created_at : new Date().toISOString(),
-        customerName: formData.get('customer_name'),
-        customerPhone: formData.get('customer_phone'),
-        deviceType: formData.get('device_type'),
-        deviceBrand: formData.get('device_brand'),
-        deviceModel: formData.get('device_model'),
-        issueChronology: formData.get('issue_chronology'),
-        addonCleaning: formData.has('addon_cleaning'),
-        addonRepasta: formData.has('addon_repasta'),
-        deliveryMethod: formData.get('delivery_method'),
-        pickupAddress: formData.get('pickup_address') || '',
-        step: 1,
-        status: serverTicket ? serverTicket.status : (formData.get('delivery_method') === 'Diantar Sendiri' ? 'Menunggu Unit Tiba di Workshop' : 'Menunggu Penjemputan Unit oleh Teknisi'),
-        technician: "Menunggu Penugasan Teknisi",
-        diagnosis: "Unit belum diperiksa fisik oleh teknisi di workshop.",
-        actionPlan: "Menunggu hasil pembongkaran awal dan pengecekan tegangan.",
-        technicianNote: "Penyimpanan SSD aman dan terlindungi SOP.",
-        costLabor: 0,
-        costParts: 0,
-        costCleaning: formData.has('addon_cleaning') ? 50000 : 0,
-        costRepasta: formData.has('addon_repasta') ? 75000 : 0,
-        paymentStatus: "Unpaid",
-        isApproved: false,
-        isCompleted: false,
-        unitHandedOver: false,
-        unitHandedOverTime: null,
-        isClosed: false,
-        invoiceNo: serverTicket ? serverTicket.invoice_no : ("INV-SC-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000))
-      };
-
-      localStorage.setItem('sercomp_active_order', JSON.stringify(orderData));
+      const ticketNo = data.ticket_no || (data.ticket && data.ticket.ticket_no);
       document.getElementById('createdTicketNo').innerText = ticketNo;
+      if (data.security_pin) {
+        document.getElementById('createdSecurityPin').innerText = data.security_pin;
+      }
       const btnOpen = document.getElementById('btnOpenUserPanel');
       if (btnOpen) {
         btnOpen.href = data.redirect_url || ("{{ url('/user-panel') }}?ticket=" + encodeURIComponent(ticketNo));
       }
+
+      // Bersihkan data lokal lama agar tidak tercampur
+      try { localStorage.removeItem('sercomp_active_order'); } catch(e) {}
 
       if (!bsSuccessModal) {
         bsSuccessModal = new bootstrap.Modal(document.getElementById('successModal'));
@@ -485,17 +480,35 @@
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
       console.error(err);
-      alert('Terjadi kendala saat menyimpan tiket. Menggunakan mode demonstrasi lokal.');
-      
-      const ticketNo = "#SC-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
-      document.getElementById('createdTicketNo').innerText = ticketNo;
-      if (!bsSuccessModal) {
-        bsSuccessModal = new bootstrap.Modal(document.getElementById('successModal'));
-      }
-      bsSuccessModal.show();
+      alert(err.message || 'Terjadi kendala saat memproses tiket di database.');
     });
   }
 
+
+  function copySecurityPin() {
+    const pin = document.getElementById('createdSecurityPin').innerText.trim();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pin).then(() => {
+        showPinCopiedFeedback();
+      }).catch(() => {
+        fallbackCopy(pin);
+      });
+    } else {
+      fallbackCopy(pin);
+    }
+  }
+
+  function showPinCopiedFeedback() {
+    const btnText = document.getElementById('btnCopyPinText');
+    const icon = document.getElementById('iconCopyPin');
+    const original = btnText.innerText;
+    btnText.innerText = "Tersalin!";
+    icon.className = "bi bi-check2 me-1";
+    setTimeout(() => {
+      btnText.innerText = original;
+      icon.className = "bi bi-clipboard me-1";
+    }, 2000);
+  }
   function copyTicketCode() {
     const ticketText = document.getElementById('createdTicketNo').innerText.trim();
     if (navigator.clipboard && navigator.clipboard.writeText) {
