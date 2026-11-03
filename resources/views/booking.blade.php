@@ -320,8 +320,11 @@
         <h4 class="fw-bold mb-1" id="successModalLabel">Tiket Reservasi Terbit</h4>
         <p class="text-muted small mb-3">Nomor resi pelacakan unit servis Anda:</p>
         
-        <div class="p-3 bg-light border rounded-3 mb-3">
+        <div class="p-3 bg-light border rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
           <span id="createdTicketNo" class="fs-4 fw-bold font-monospace text-primary">#SC-2026-9042</span>
+          <button type="button" id="btnCopyTicket" onclick="copyTicketCode()" class="btn btn-outline-primary btn-sm fw-semibold py-1.5 px-3">
+            <i class="bi bi-clipboard me-1" id="iconCopyTicket"></i> <span id="btnCopyText">Salin Kode</span>
+          </button>
         </div>
 
         <p class="small text-secondary mb-4">
@@ -491,6 +494,41 @@
       }
       bsSuccessModal.show();
     });
+  }
+
+  function copyTicketCode() {
+    const ticketText = document.getElementById('createdTicketNo').innerText.trim();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ticketText).then(() => {
+        showCopiedFeedback();
+      }).catch(() => {
+        fallbackCopy(ticketText);
+      });
+    } else {
+      fallbackCopy(ticketText);
+    }
+  }
+
+  function showCopiedFeedback() {
+    const btnText = document.getElementById('btnCopyText');
+    const icon = document.getElementById('iconCopyTicket');
+    const original = btnText.innerText;
+    btnText.innerText = "Tersalin!";
+    icon.className = "bi bi-check2 me-1";
+    setTimeout(() => {
+      btnText.innerText = original;
+      icon.className = "bi bi-clipboard me-1";
+    }, 2000);
+  }
+
+  function fallbackCopy(text) {
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    showCopiedFeedback();
   }
 </script>
 @endsection

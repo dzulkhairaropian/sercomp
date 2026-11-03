@@ -102,6 +102,9 @@
           <div class="d-flex align-items-center gap-2 mb-1">
             <span class="text-muted small fw-bold text-uppercase">Nomor Tiket:</span>
             <span id="displayTicketNo" class="fs-5 fw-bold font-monospace text-primary">#SC-2026-9042</span>
+            <button type="button" onclick="copyCurrentTicket()" class="btn btn-sm btn-outline-secondary py-0.5 px-2" title="Salin Nomor Tiket" style="font-size: 11px;">
+              <i class="bi bi-clipboard" id="iconCopyUserPanel"></i> <span id="textCopyUserPanel">Salin</span>
+            </button>
             <span id="badgeStatus" class="badge badge-warning-accessible px-2.5 py-1.5 fw-bold">
               Menunggu Pemeriksaan
             </span>
@@ -939,6 +942,41 @@
         }
       }
     }, 1000);
+
+    function copyCurrentTicket() {
+      const text = document.getElementById('displayTicketNo').innerText.trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          feedbackCopyUserPanel();
+        }).catch(() => {
+          fallbackCopyUser(text);
+        });
+      } else {
+        fallbackCopyUser(text);
+      }
+    }
+
+    function feedbackCopyUserPanel() {
+      const text = document.getElementById('textCopyUserPanel');
+      const icon = document.getElementById('iconCopyUserPanel');
+      const original = text.innerText;
+      text.innerText = "Tersalin!";
+      icon.className = "bi bi-check2";
+      setTimeout(() => {
+        text.innerText = original;
+        icon.className = "bi bi-clipboard";
+      }, 2000);
+    }
+
+    function fallbackCopyUser(text) {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      feedbackCopyUserPanel();
+    }
 
     window.onload = loadOrder;
   </script>
