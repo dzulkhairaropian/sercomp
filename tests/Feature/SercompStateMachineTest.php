@@ -193,4 +193,53 @@ class SercompStateMachineTest extends TestCase
         $legitApprove->assertStatus(200);
         $legitApprove->assertJson(['success' => true]);
     }
+
+    public function test_service_order_cancellation_flow(): void
+    {
+        $customer = User::create([
+            'name' => 'Dewi Sartika',
+            'email' => 'dewi.sartika@gmail.com',
+            'phone' => '087811223344',
+            'password' => bcrypt('secret123'),
+            'role' => 'customer',
+            'is_active' => true,
+        ]);
+
+        $order = ServiceOrder::create([
+            'customer_id' => $customer->id,
+            'ticket_no' => 'SC-2026-9911',
+            'device_type' => 'Laptop',
+            'device_brand' => 'Acer',
+            'device_model' => 'Swift 3',
+            'issue_chronology' => 'Engsel patah dan layar goyang',
+            'order_status' => 'Approval Biaya',
+            'unit_handed_over' => false,
+        ]);
+
+        $invoice = Invoice::create([
+            'service_order_id' => $order->id,
+            'invoice_no' => 'INV-SC-2026-9911',
+            'amount_total' => 350000,
+            'payment_status' => 'Unpaid',
+        ]);
+
+        // Konsumen menolak rincian biaya dengan verifikasi 4 digit nomor HP
+        $rejectResponse = $this->postJson("/user-panel/{$order->ticket_no}/reject", [
+            'phone_verification' => '3344',
+        ]);
+
+        $rejectResponse->assertStatus(200);
+        $rejectResponse->assertJson(['success' => true]);
+
+        $order->refresh();
+        $invoice->refresh();
+
+        // Status order berubah menjadi Dibatalkan
+        $this->assertEquals('Dibatalkan', $order->order_status);
+        // Invoice menjadi Cancelled dan tagihan dinolkan (Rp 0)
+        $this->assertEquals('Cancelled', $invoice->payment_status);
+        $this->assertEquals(0, $invoice->amount_total);
+        // Garansi tidak boleh terbit
+        $this->assertNull($invoice->warranty);
+    }
 }

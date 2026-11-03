@@ -641,7 +641,20 @@
       // DYNAMIC ACTION BUTTONS PER STEP
       const actionContainer = document.getElementById('approvalActionBtns');
 
-      if (step <= 2) {
+      if (currentOrder.status === 'Dibatalkan' || step === 0) {
+        document.getElementById('badgeStatus').className = "badge bg-danger text-white px-2.5 py-1.5 fw-bold";
+        document.getElementById('badgeStatus').innerText = "Servis Dibatalkan";
+        actionContainer.innerHTML = `
+          <div class="alert alert-danger border border-danger-subtle bg-danger-subtle text-dark d-flex align-items-center gap-3 mb-0 py-3 px-3 small w-100 rounded-3">
+            <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+            <div>
+              <strong class="d-block text-danger fs-6 mb-1">Servis Resmi Dibatalkan</strong>
+              <span>Konsumen menolak rincian biaya estimasi. Sesuai komitmen transparansi SerComp (No Hidden Cost), unit dirakit kembali ke kondisi semula <strong>tanpa dipungut biaya perbaikan</strong> (Rp 0). Silakan ambil unit fisik Anda di meja workshop.</span>
+            </div>
+          </div>
+        `;
+        document.getElementById('costTotal').innerText = "Rp 0 (Batal)";
+      } else if (step <= 2) {
         actionContainer.innerHTML = `
           <div class="alert alert-info border border-info-subtle bg-primary-subtle text-dark d-flex align-items-center gap-3 mb-0 py-2.5 px-3 small w-100">
             <i class="bi bi-hourglass-split fs-3 text-primary"></i>

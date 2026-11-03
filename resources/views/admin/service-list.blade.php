@@ -37,6 +37,9 @@
         <button onclick="applyFilter('Selesai', this)" class="btn btn-sm btn-outline-secondary fw-semibold px-3 py-1.5">
           <i class="bi bi-check-circle me-1" aria-hidden="true"></i> Selesai & Closed ({{ $countCompleted ?? 0 }})
         </button>
+        <button onclick="applyFilter('Dibatalkan', this)" class="btn btn-sm btn-outline-danger fw-semibold px-3 py-1.5">
+          <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Dibatalkan ({{ $countCancelled ?? 0 }})
+        </button>
       </div>
     </div>
 
@@ -117,13 +120,16 @@
             </td>
             <td>
               @php
-                $badgeClass = match($t->step) {
-                  1, 2 => 'badge-info-accessible',
-                  3, 4 => 'badge-warning-accessible',
-                  5 => 'badge-info-accessible',
-                  6 => 'badge bg-primary text-white',
-                  7 => 'badge-success-accessible',
-                  default => 'badge bg-light text-dark border'
+                $badgeClass = match($t->status) {
+                  'Dibatalkan' => 'badge bg-danger text-white',
+                  default => match($t->step) {
+                    1, 2 => 'badge-info-accessible',
+                    3, 4 => 'badge-warning-accessible',
+                    5 => 'badge-info-accessible',
+                    6 => 'badge bg-primary text-white',
+                    7 => 'badge-success-accessible',
+                    default => 'badge bg-light text-dark border'
+                  }
                 };
               @endphp
               <span class="badge {{ $badgeClass }} px-2.5 py-1.5 fw-bold">

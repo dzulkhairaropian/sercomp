@@ -99,6 +99,7 @@ class ServiceOrder extends Model
             'Reparasi' => 5,
             'Selesai' => 6,
             'Diserahkan', 'Closed' => 7,
+            'Dibatalkan' => 0,
             default => 1,
         };
     }

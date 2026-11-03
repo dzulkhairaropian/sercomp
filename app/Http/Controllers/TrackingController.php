@@ -102,7 +102,7 @@ class TrackingController extends Controller
         $ticketNoClean = ltrim($ticketNo, '#');
         $order = ServiceOrder::where('ticket_no', $ticketNoClean)
             ->orWhere('ticket_no', '#' . $ticketNoClean)
-            ->with('diagnostic')
+            ->with(['diagnostic', 'invoice'])
             ->firstOrFail();
 
         if (!$this->verifyCustomerOwnership($request, $order)) {
@@ -122,9 +122,15 @@ class TrackingController extends Controller
         }
 
         $order->update([
-            'order_status' => 'Booking',
+            'order_status' => 'Dibatalkan',
         ]);
 
+        if ($order->invoice) {
+            $order->invoice->update([
+                'payment_status' => 'Cancelled',
+                'amount_total' => 0,
+            ]);
+        }
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,

@@ -46,6 +46,7 @@ class ServiceOrderController extends Controller
         $countApproval = ServiceOrder::where('order_status', 'Approval Biaya')->count();
         $countProgress = ServiceOrder::where('order_status', 'Reparasi')->count();
         $countCompleted = ServiceOrder::whereIn('order_status', ['Selesai', 'Diserahkan', 'Closed'])->count();
+        $countCancelled = ServiceOrder::where('order_status', 'Dibatalkan')->count();
 
         return view('admin.service-list', compact(
             'tickets',
@@ -54,7 +55,8 @@ class ServiceOrderController extends Controller
             'countPc',
             'countApproval',
             'countProgress',
-            'countCompleted'
+            'countCompleted',
+            'countCancelled'
         ));
     }
 

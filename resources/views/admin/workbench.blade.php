@@ -288,7 +288,10 @@
     const payBox = document.getElementById('tekPaymentBox');
     const payText = document.getElementById('tekPaymentText');
 
-    if (order.paymentStatus === 'Paid') {
+    if (order.status === 'Dibatalkan') {
+      payBox.className = "p-3 rounded-3 border border-danger-subtle bg-danger-subtle text-dark small mb-3";
+      payText.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-5"></i> <span class="fw-bold text-danger">Servis Dibatalkan Konsumen - Rakit Kembali Unit Tanpa Pergantian Part</span>';
+    } else if (order.paymentStatus === 'Paid') {
       payBox.className = "p-3 rounded-3 border border-success-subtle bg-success-subtle text-dark small mb-3";
       payText.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-5"></i> <span class="fw-bold text-success">Lunas QRIS - Teknisi Diizinkan Bongkar & Selesaikan Unit</span>';
     } else {

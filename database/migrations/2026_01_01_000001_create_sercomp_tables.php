@@ -32,7 +32,7 @@ return new class extends Migration {
             $table->enum('delivery_method', ['Diantar Sendiri', 'Ambil oleh Teknisi'])->default('Diantar Sendiri');
             $table->text('pickup_address')->nullable();
             $table->enum('order_status', [
-                'Booking', 'Di Workshop', 'Approval Biaya', 'Paid', 'Reparasi', 'Selesai', 'Diserahkan', 'Closed'
+                'Booking', 'Di Workshop', 'Approval Biaya', 'Paid', 'Reparasi', 'Selesai', 'Diserahkan', 'Closed', 'Dibatalkan'
             ])->default('Booking');
             $table->boolean('unit_handed_over')->default(false);
             $table->timestamp('handed_over_at')->nullable();
@@ -74,7 +74,7 @@ return new class extends Migration {
             $table->string('invoice_no', 32)->unique();
             $table->decimal('amount_total', 12, 2);
             $table->enum('payment_method', ['QRIS Dinamis'])->default('QRIS Dinamis');
-            $table->enum('payment_status', ['Unpaid', 'Paid', 'Expired'])->default('Unpaid');
+            $table->enum('payment_status', ['Unpaid', 'Paid', 'Expired', 'Cancelled'])->default('Unpaid');
             $table->string('qris_transaction_id')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
