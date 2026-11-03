@@ -50,12 +50,16 @@
         </div>
       </a>
       <div class="d-flex align-items-center gap-2">
+        <form action="{{ url('/user-panel') }}" method="GET" class="d-none d-md-flex align-items-center me-1">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
+            <input type="text" name="ticket" class="form-control border-start-0 font-monospace" placeholder="Cth: SC-2026-9042" value="{{ request('ticket', $ticket?->ticket_no) }}" style="width: 170px;" required>
+            <button type="submit" class="btn btn-outline-primary fw-semibold">Lacak</button>
+          </div>
+        </form>
         <a href="{{ url('/') }}" class="btn btn-sm btn-outline-secondary">
           <i class="bi bi-house me-1"></i> Beranda
         </a>
-        <button onclick="searchOtherTicket()" class="btn btn-sm btn-outline-primary fw-semibold">
-          <i class="bi bi-search me-1"></i> Lacak No. Lain
-        </button>
         <a href="{{ url('/booking') }}" class="btn btn-sm btn-primary fw-semibold">
           <i class="bi bi-plus-circle me-1"></i> Reservasi Baru
         </a>
@@ -65,6 +69,31 @@
 
   <!-- MAIN CONTAINER -->
   <main class="container-xl py-4 flex-grow-1">
+    <!-- INLINE SEARCH CARD ON PAGE (NO POPUP) -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+      <form action="{{ url('/user-panel') }}" method="GET" class="row g-2 align-items-center">
+        <div class="col-md-7 col-lg-8">
+          <div class="d-flex align-items-center gap-2">
+            <div class="badge bg-primary-subtle text-primary p-2 rounded-3">
+              <i class="bi bi-ticket-perforated fs-5"></i>
+            </div>
+            <div>
+              <span class="fw-bold text-dark d-block" style="font-size: 14px;">Lacak Nomor Tiket Servis Lain</span>
+              <span class="text-muted small">Ketik nomor tiket servis Anda (Contoh: SC-2026-9042 atau #SC-2026-9042) tanpa pop-up browser.</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 col-lg-4">
+          <div class="input-group">
+            <input type="text" name="ticket" id="pageTicketInput" class="form-control font-monospace" placeholder="Contoh: SC-2026-9042" value="{{ request('ticket', $ticket?->ticket_no) }}" required>
+            <button type="submit" class="btn btn-primary fw-bold px-3">
+              <i class="bi bi-search me-1"></i> Lacak
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
 
     <!-- 1. HEADER STATUS TIKET -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
@@ -385,9 +414,11 @@
     let bsQrisModal = null;
 
     function searchOtherTicket() {
-      const no = prompt("Masukkan Nomor Tiket Servis Anda (Contoh: #SC-2026-0982):", currentOrder ? currentOrder.ticketNo : "#SC-2026-9042");
-      if (no && no.trim()) {
-        window.location.href = "{{ url('/user-panel') }}?ticket=" + encodeURIComponent(no.trim());
+      const input = document.getElementById('pageTicketInput');
+      if (input) {
+        input.focus();
+        input.select();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
 
@@ -453,12 +484,15 @@
             <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
               Silakan masukkan nomor resi tiket servis Anda atau buat reservasi servis baru.
             </p>
-            <div class="d-flex justify-content-center gap-2">
-              <button onclick="searchOtherTicket()" class="btn btn-outline-primary btn-sm fw-semibold px-3 py-2">
-                <i class="bi bi-search me-1" aria-hidden="true"></i> Masukkan Nomor Tiket
+            <form action="{{ url('/user-panel') }}" method="GET" class="d-flex flex-column flex-sm-row justify-content-center gap-2 mx-auto mb-3" style="max-width: 440px;">
+              <input type="text" name="ticket" class="form-control font-monospace" placeholder="Cth: SC-2026-9042" required>
+              <button type="submit" class="btn btn-primary fw-bold px-3 text-nowrap">
+                <i class="bi bi-search me-1"></i> Lacak Tiket
               </button>
-              <a href="{{ url('/booking') }}" class="btn btn-primary btn-sm fw-bold px-3 py-2 shadow-sm">
-                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Buat Reservasi Servis Baru
+            </form>
+            <div>
+              <a href="{{ url('/booking') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> Buat Reservasi Servis Baru
               </a>
             </div>
           </div>
