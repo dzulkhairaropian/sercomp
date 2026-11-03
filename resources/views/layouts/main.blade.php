@@ -37,11 +37,8 @@
         <a href="{{ url('/user-panel') }}" class="btn-demo {{ request()->is('user-panel') ? 'active' : '' }}">
           3. Portal Pelanggan
         </a>
-        <a href="{{ url('/teknisi') }}" class="btn-demo {{ request()->is('teknisi') ? 'active' : '' }}">
-          4. Panel Teknisi
-        </a>
         <a href="{{ url('/invoice') }}" class="btn-demo {{ request()->is('invoice') ? 'active' : '' }}">
-          5. Faktur Invoice
+          4. Sampel Faktur
         </a>
       </div>
     </div>
@@ -126,21 +123,21 @@
         </div>
 
         <div class="col-6 col-lg-3">
-          <h6 class="text-white fw-bold mb-3 small text-uppercase">Internal & Teknisi</h6>
+          <h6 class="text-white fw-bold mb-3 small text-uppercase">Bantuan & Informasi</h6>
           <ul class="list-unstyled small mb-0">
             <li class="mb-2">
-              <a href="{{ url('/teknisi/login') }}" class="text-decoration-none text-info d-flex align-items-center gap-1">
-                <i class="bi bi-tools"></i> Login Workshop Teknisi
+              <a href="{{ url('/#garansi') }}" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
+                <i class="bi bi-shield-check"></i> Jaminan e-Warranty 90 Hari
+              </a>
+            </li>
+            <li class="mb-2">
+              <a href="{{ url('/#alur-kerja') }}" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
+                <i class="bi bi-diagram-3"></i> 7 Alur Servis Transparan
               </a>
             </li>
             <li class="mb-2">
               <a href="{{ url('/invoice') }}" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
-                <i class="bi bi-receipt"></i> Sampel Faktur Invoice
-              </a>
-            </li>
-            <li class="mb-2">
-              <a href="{{ url('/portal') }}" class="text-decoration-none text-light text-opacity-75 d-flex align-items-center gap-1">
-                <i class="bi bi-layout-split"></i> Navigasi Prototipe
+                <i class="bi bi-receipt"></i> Format Faktur Resmi A4
               </a>
             </li>
           </ul>

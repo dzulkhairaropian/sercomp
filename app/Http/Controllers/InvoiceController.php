@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ServiceTicket;
+use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Tampilkan lembar faktur invoice resmi format cetak A4.
-     */
     public function show(Request $request, $invoiceNo = null)
     {
-        $invoiceNo = $invoiceNo ?? $request->query('inv') ?? $request->query('ticket');
+        $param = $invoiceNo ?? $request->query('inv') ?? $request->query('ticket');
 
-        if ($invoiceNo) {
-            $ticket = ServiceTicket::with(['technician', 'items'])
-                ->where('invoice_no', $invoiceNo)
-                ->orWhere('ticket_no', $invoiceNo)
-                ->orWhere('ticket_no', '#' . ltrim($invoiceNo, '#'))
+        if ($param) {
+            $cleanParam = ltrim($param, '#');
+            $ticket = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])
+                ->where('ticket_no', $cleanParam)
+                ->orWhere('ticket_no', '#' . $cleanParam)
+                ->orWhereHas('invoice', function ($iq) use ($param, $cleanParam) {
+                    $iq->where('invoice_no', $param)->orWhere('invoice_no', $cleanParam);
+                })
                 ->first();
         } else {
-            $ticket = ServiceTicket::with(['technician', 'items'])
-                ->where('ticket_no', '#SC-2026-9042')
-                ->first() ?? ServiceTicket::with(['technician', 'items'])->latest()->first();
+            $ticket = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])
+                ->where('ticket_no', 'SC-2026-9042')
+                ->first() ?? ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])->latest()->first();
         }
 
         return view('invoice', compact('ticket'));

@@ -2,30 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ServiceTicket;
-use App\Models\ServiceTicketItem;
+use App\Models\Diagnostic;
+use App\Models\Invoice;
+use App\Models\OrderItem;
+use App\Models\ServiceOrder;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
-    /**
-     * Tampilkan formulir reservasi tiket servis.
-     */
     public function create()
     {
         return view('booking');
     }
 
-    /**
-     * Simpan data tiket reservasi baru ke database.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'device_type' => 'required|in:Laptop,PC Desktop',
-            'device_brand' => 'required|string|max:100',
-            'device_model' => 'required|string|max:150',
+            'device_brand' => 'required|string|max:80',
+            'device_model' => 'required|string|max:120',
             'issue_chronology' => 'required|string',
             'delivery_method' => 'required|in:Diantar Sendiri,Ambil oleh Teknisi',
             'pickup_address' => 'required_if:delivery_method,Ambil oleh Teknisi|nullable|string',
@@ -37,61 +34,70 @@ class BookingController extends Controller
             'addon_repasta' => 'nullable|boolean',
         ]);
 
-        // Generate nomor tiket acak unik
-        do {
-            $ticketNo = '#SC-' . date('Y') . '-' . mt_rand(1000, 9999);
-        } while (ServiceTicket::where('ticket_no', $ticketNo)->exists());
+        // Cari atau buat akun guest customer
+        $email = $validated['customer_email'] ?: ($validated['customer_phone'] . '@guest.sercomp.id');
+        $customer = User::firstOrCreate(
+            ['phone' => $validated['customer_phone']],
+            [
+                'name' => $validated['customer_name'],
+                'email' => $email,
+                'password' => bcrypt(Str::random(16)),
+                'role' => 'customer',
+            ]
+        );
+        if ($validated['customer_name'] && $customer->name !== $validated['customer_name']) {
+            $customer->update(['name' => $validated['customer_name']]);
+        }
 
-        // Handle upload foto kerusakan fisik (jika ada)
-        $photoPath = null;
+        // Generate nomor tiket SC-YYYY-XXXX
+        do {
+            $ticketNo = 'SC-' . date('Y') . '-' . mt_rand(1000, 9999);
+        } while (ServiceOrder::where('ticket_no', $ticketNo)->exists());
+
+        // Simpan foto kerusakan awal jika diunggah
+        $photoUrl = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('issues', 'public');
+            $photoUrl = $request->file('photo')->store('issues', 'public');
         }
 
         $addonCleaning = $request->boolean('addon_cleaning');
         $addonRepasta = $request->boolean('addon_repasta');
-
         $costCleaning = $addonCleaning ? 50000 : 0;
         $costRepasta = $addonRepasta ? 75000 : 0;
         $totalInitialCost = $costCleaning + $costRepasta;
 
-        // Generate nomor invoice awal
-        $invoiceNo = 'INV-SC-' . date('Y') . '-' . mt_rand(1000, 9999);
-
-        $initialStatus = $validated['delivery_method'] === 'Diantar Sendiri' 
-            ? 'Menunggu Unit Tiba di Workshop' 
-            : 'Menunggu Penjemputan Unit oleh Teknisi';
-
-        // Buat record tiket servis di MySQL
-        $ticket = ServiceTicket::create([
+        // Buat ServiceOrder (Status: Booking)
+        $order = ServiceOrder::create([
+            'customer_id' => $customer->id,
             'ticket_no' => $ticketNo,
-            'customer_name' => $validated['customer_name'],
-            'customer_phone' => $validated['customer_phone'],
-            'customer_email' => $validated['customer_email'] ?? null,
             'device_type' => $validated['device_type'],
             'device_brand' => $validated['device_brand'],
             'device_model' => $validated['device_model'],
             'issue_chronology' => $validated['issue_chronology'],
-            'issue_photo_path' => $photoPath,
+            'issue_photo_url' => $photoUrl,
+            'addon_cleaning' => $addonCleaning,
+            'addon_repasta' => $addonRepasta,
             'delivery_method' => $validated['delivery_method'],
             'pickup_address' => $validated['pickup_address'] ?? null,
-            'cost_cleaning' => $costCleaning,
-            'cost_repasta' => $costRepasta,
-            'cost_labor' => 0,
-            'cost_parts' => 0,
-            'total_cost' => $totalInitialCost,
-            'step' => 1,
-            'status' => $initialStatus,
-            'payment_status' => 'Unpaid',
-            'payment_method' => 'QRIS',
-            'invoice_no' => $invoiceNo,
+            'order_status' => 'Booking',
+            'unit_handed_over' => false,
         ]);
 
-        // Simpan item add-on jika dipilih
+        // Buat Diagnostic awal
+        Diagnostic::create([
+            'service_order_id' => $order->id,
+            'labor_cost' => 0,
+            'parts_cost' => 0,
+            'addon_cleaning_cost' => $costCleaning,
+            'addon_repasta_cost' => $costRepasta,
+            'net_total_cost' => $totalInitialCost,
+            'is_approved_by_user' => false,
+        ]);
+
+        // Item Add-on ke order_items
         if ($addonCleaning) {
-            ServiceTicketItem::create([
-                'service_ticket_id' => $ticket->id,
-                'item_type' => 'addon',
+            OrderItem::create([
+                'service_order_id' => $order->id,
                 'item_name' => 'Add-on: Deep Cleaning & Dust Removal',
                 'quantity' => 1,
                 'unit_price' => 50000,
@@ -100,9 +106,8 @@ class BookingController extends Controller
         }
 
         if ($addonRepasta) {
-            ServiceTicketItem::create([
-                'service_ticket_id' => $ticket->id,
-                'item_type' => 'addon',
+            OrderItem::create([
+                'service_order_id' => $order->id,
                 'item_name' => 'Add-on: Repasta Thermal Arctic MX-4 High-Performance',
                 'quantity' => 1,
                 'unit_price' => 75000,
@@ -110,16 +115,25 @@ class BookingController extends Controller
             ]);
         }
 
+        // Terbitkan Invoice awal
+        Invoice::create([
+            'service_order_id' => $order->id,
+            'invoice_no' => 'INV-' . $ticketNo,
+            'amount_total' => $totalInitialCost,
+            'payment_method' => 'QRIS Dinamis',
+            'payment_status' => 'Unpaid',
+        ]);
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'ticket_no' => $ticket->ticket_no,
-                'ticket' => $ticket,
-                'redirect_url' => route('user.panel', ['ticket' => $ticket->ticket_no]),
+                'ticket_no' => $order->ticket_no,
+                'order' => $order,
+                'redirect_url' => route('user.panel', ['ticket' => $order->ticket_no]),
             ]);
         }
 
-        return redirect()->route('user.panel', ['ticket' => $ticket->ticket_no])
-            ->with('success', "Tiket reservasi {$ticket->ticket_no} berhasil diterbitkan!");
+        return redirect()->route('user.panel', ['ticket' => $order->ticket_no])
+            ->with('success', "Tiket reservasi {$order->ticket_no} berhasil diterbitkan!");
     }
 }

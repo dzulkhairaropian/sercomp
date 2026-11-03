@@ -87,8 +87,7 @@
         <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
         <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
         <a href="{{ url('/user-panel') }}" class="btn-demo">3. Portal Pelanggan</a>
-        <a href="{{ url('/teknisi') }}" class="btn-demo">4. Panel Teknisi</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo active">5. Faktur Invoice</a>
+        <a href="{{ url('/invoice') }}" class="btn-demo active">4. Faktur Invoice</a>
       </div>
     </div>
   </div>
@@ -350,6 +349,9 @@
 
         const grand = labor + parts + clean + repasta;
         document.getElementById('invGrandTotal').innerText = "Rp " + grand.toLocaleString('id-ID');
+        if (serverTicket && serverTicket.invoice && serverTicket.invoice.warranty) {
+          document.getElementById('invWarrantyCode').innerText = serverTicket.invoice.warranty.warranty_code;
+        }
       }
     }
     window.onload = loadInvoiceData;

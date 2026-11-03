@@ -31,23 +31,24 @@ Route::post('/user-panel/{ticket}/close', [TrackingController::class, 'closeTick
 
 Route::get('/invoice/{invoice?}', [InvoiceController::class, 'show'])->name('invoice');
 
-// Workshop Technician & Admin Authentication
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+// Dedicated Technician & Workshop Staff Authentication
+Route::get('/login', fn () => redirect()->route('teknisi.login'))->name('login');
+Route::get('/admin/login', fn () => redirect()->route('teknisi.login'))->name('admin.login');
 Route::get('/teknisi/login', [AuthController::class, 'showLogin'])->name('teknisi.login');
-Route::post('/teknisi/login', [AuthController::class, 'login'])->name('teknisi.login.post');
+Route::post('/teknisi/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('teknisi.login.post');
 Route::post('/teknisi/logout', [AuthController::class, 'logout'])->name('teknisi.logout');
 
-// Workshop Technician & Admin Control Panel
-Route::prefix('teknisi')->group(function () {
+// Workshop Technician & Admin Control Panel (Protected by Auth & Staff Role)
+Route::prefix('teknisi')->middleware(['auth', 'staff'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.teknisi');
     Route::get('/servis', [ServiceOrderController::class, 'index'])->name('admin.servis');
+    Route::get('/export-bi', [DashboardController::class, 'exportBiCsv'])->name('admin.export.bi');
     Route::get('/meja-kerja/{ticket?}', [ServiceOrderController::class, 'showWorkbench'])->name('admin.workbench');
     Route::post('/meja-kerja/{ticket}/diagnosis', [ServiceOrderController::class, 'updateDiagnosis'])->name('admin.workbench.diagnosis');
     Route::post('/meja-kerja/{ticket}/complete', [ServiceOrderController::class, 'complete'])->name('admin.workbench.complete');
     Route::post('/meja-kerja/{ticket}/handover', [ServiceOrderController::class, 'handover'])->name('admin.workbench.handover');
     Route::post('/meja-kerja/{ticket}/trigger-sla', [ServiceOrderController::class, 'triggerSla'])->name('admin.workbench.triggerSla');
-    
+
     Route::get('/sparepart', [SparepartController::class, 'index'])->name('admin.sparepart');
     Route::post('/sparepart', [SparepartController::class, 'store'])->name('admin.sparepart.store');
     Route::put('/sparepart/{id}', [SparepartController::class, 'update'])->name('admin.sparepart.update');

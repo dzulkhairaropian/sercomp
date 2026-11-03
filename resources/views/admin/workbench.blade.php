@@ -213,7 +213,7 @@
           addonCleaning: serverTicket.cost_cleaning > 0,
           addonRepasta: serverTicket.cost_repasta > 0,
           deliveryMethod: serverTicket.delivery_method,
-          step: serverTicket.step,
+          step: serverTicket.status_step || serverTicket.step,
           status: serverTicket.status,
           diagnosis: serverTicket.diagnosis || "Menunggu pemeriksaan fisik teknisi di workshop.",
           actionPlan: serverTicket.action_plan || "",
@@ -228,8 +228,8 @@
           unitHandedOver: serverTicket.unit_handed_over,
           unitHandedOverTime: serverTicket.unit_handed_over_at,
           isClosed: serverTicket.is_closed,
-          evidenceLaptopFixed: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
-          evidenceReplacedPart: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80",
+          evidenceLaptopFixed: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_running_test_photo) ? '/storage/' + serverTicket.diagnostic.evidence_running_test_photo : "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
+          evidenceReplacedPart: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? '/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo : "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80",
           invoiceNo: serverTicket.invoice_no
         };
         localStorage.setItem('sercomp_active_order', JSON.stringify(order));

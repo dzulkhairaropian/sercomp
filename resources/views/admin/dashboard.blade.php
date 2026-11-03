@@ -5,6 +5,9 @@
 @section('page-subtitle', 'Monitoring indikator performa perbaikan, kepatuhan SLA 1x24 jam, dan omzet bengkel.')
 
 @section('page-actions')
+<a href="{{ route('admin.export.bi') }}" class="btn btn-outline-success btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1">
+  <i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Ekspor CSV (Business Intelligence)
+</a>
 <a href="{{ url('/teknisi/servis') }}" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1">
   <i class="bi bi-list-check" aria-hidden="true"></i> Kelola Antrean Servis
 </a>
@@ -24,7 +27,7 @@
           <i class="bi bi-inbox-fill fs-5" aria-hidden="true"></i>
         </div>
       </div>
-      <div class="fs-2 fw-bold text-dark mb-1">{{ $totalOrders ?? 14 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
+      <div class="fs-2 fw-bold text-dark mb-1">{{ $totalOrders ?? 0 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
       <div class="d-flex align-items-center text-success small fw-semibold">
         <i class="bi bi-arrow-up-right me-1" aria-hidden="true"></i> Terdata di Database
       </div>
@@ -40,7 +43,7 @@
           <i class="bi bi-tools fs-5" aria-hidden="true"></i>
         </div>
       </div>
-      <div class="fs-2 fw-bold text-dark mb-1">{{ $inProgress ?? 5 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
+      <div class="fs-2 fw-bold text-dark mb-1">{{ $inProgress ?? 0 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
       <div class="d-flex align-items-center text-muted small">
         <span class="text-success fw-bold me-1">Lunas QRIS:</span> Di meja reparasi
       </div>
@@ -56,7 +59,7 @@
           <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
         </div>
       </div>
-      <div class="fs-2 fw-bold text-warning mb-1">{{ $waitingApproval ?? 4 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
+      <div class="fs-2 fw-bold text-warning mb-1">{{ $waitingApproval ?? 0 }} <span class="fs-6 text-muted fw-normal">Unit</span></div>
       <div class="d-flex align-items-center text-muted small">
         Menunggu konfirmasi konsumen
       </div>
@@ -72,7 +75,7 @@
           <i class="bi bi-cash-stack fs-5" aria-hidden="true"></i>
         </div>
       </div>
-      <div class="fs-2 fw-bold text-primary mb-1">Rp {{ number_format(($totalRevenue ?? 4850000), 0, ',', '.') }}</div>
+      <div class="fs-2 fw-bold text-primary mb-1">Rp {{ number_format(($totalRevenue ?? 0), 0, ',', '.') }}</div>
       <div class="d-flex align-items-center text-muted small">
         Berdasarkan transaksi QRIS tervalidasi
       </div>

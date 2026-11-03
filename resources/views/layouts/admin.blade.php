@@ -146,7 +146,7 @@
         <a href="{{ url('/teknisi/servis') }}" class="sidebar-link {{ request()->is('teknisi/servis*') ? 'active' : '' }}">
           <i class="bi bi-laptop"></i>
           <span>Daftar Servis Unit</span>
-          <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">14</span>
+          <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
         </a>
 
         <a href="{{ url('/teknisi/meja-kerja') }}" class="sidebar-link {{ request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
@@ -183,8 +183,8 @@
             <i class="bi bi-person-fill"></i>
           </div>
           <div class="lh-1 overflow-hidden">
-            <strong class="d-block text-dark text-truncate small">Budi Santoso</strong>
-            <span class="text-muted" style="font-size: 11px;">Hardware Specialist</span>
+            <strong class="d-block text-dark text-truncate small">{{ auth()->user()?->name ?? 'Staf Teknisi' }}</strong>
+            <span class="text-muted" style="font-size: 11px;">{{ auth()->user()?->specialization ?? (auth()->user()?->role === 'admin' ? 'Workshop Manager' : 'Teknisi Workshop') }}</span>
           </div>
         </div>
 
@@ -192,9 +192,12 @@
           <a href="{{ url('/user-panel') }}" class="btn btn-sm btn-outline-primary py-1.5 fw-semibold" style="font-size: 12px;">
             <i class="bi bi-person-circle me-1"></i> Mode Pelanggan
           </a>
-          <a href="{{ url('/teknisi/login') }}" class="btn btn-sm btn-outline-danger py-1.5 fw-semibold" style="font-size: 12px;">
-            <i class="bi bi-box-arrow-right me-1"></i> Keluar Sistem
-          </a>
+          <form action="{{ route('teknisi.logout') }}" method="POST" class="w-100">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1.5 fw-semibold" style="font-size: 12px;">
+              <i class="bi bi-box-arrow-right me-1"></i> Keluar Sistem
+            </button>
+          </form>
         </div>
       </div>
 

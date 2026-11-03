@@ -31,8 +31,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function serviceTickets(): HasMany
+    public function assignedServiceOrders(): HasMany
     {
-        return $this->hasMany(ServiceTicket::class, 'technician_id');
+        return $this->hasMany(ServiceOrder::class, 'technician_id');
+    }
+
+    public function customerServiceOrders(): HasMany
+    {
+        return $this->hasMany(ServiceOrder::class, 'customer_id');
     }
 }

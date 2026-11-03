@@ -17,28 +17,28 @@
   <div class="col-sm-6 col-md-3">
     <div class="card-kpi">
       <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total SKU Item</span>
-      <div class="fs-3 fw-bold text-dark mt-1">{{ $totalSku ?? 24 }} Jenis</div>
+      <div class="fs-3 fw-bold text-dark mt-1">{{ $totalSku ?? 0 }} Jenis</div>
       <span class="text-primary small">Suku Cadang & Add-on</span>
     </div>
   </div>
   <div class="col-sm-6 col-md-3">
     <div class="card-kpi">
       <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Unit Fisik</span>
-      <div class="fs-3 fw-bold text-success mt-1">{{ $totalPcs ?? 142 }} Pcs</div>
+      <div class="fs-3 fw-bold text-success mt-1">{{ $totalPcs ?? 0 }} Pcs</div>
       <span class="text-muted small">Tersedia di Rak Workshop</span>
     </div>
   </div>
   <div class="col-sm-6 col-md-3">
     <div class="card-kpi">
       <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Stok Menipis</span>
-      <div class="fs-3 fw-bold text-warning mt-1">{{ $lowStockCount ?? 2 }} Item</div>
+      <div class="fs-3 fw-bold text-warning mt-1">{{ $lowStockCount ?? 0 }} Item</div>
       <span class="text-warning small fw-semibold">Perlu Restock</span>
     </div>
   </div>
   <div class="col-sm-6 col-md-3">
     <div class="card-kpi bg-primary-subtle border-primary-subtle">
       <span class="text-primary text-uppercase fw-bold" style="font-size: 11px;">Estimasi Valuasi Stok</span>
-      <div class="fs-3 fw-bold text-primary mt-1">Rp {{ number_format(($totalValuation ?? 12800000), 0, ',', '.') }}</div>
+      <div class="fs-3 fw-bold text-primary mt-1">Rp {{ number_format(($totalValuation ?? 0), 0, ',', '.') }}</div>
       <span class="text-muted small">Nilai Aset Komponen</span>
     </div>
   </div>
@@ -95,17 +95,7 @@
           @endforeach
         @else
           <tr>
-            <td><code class="text-primary fw-bold">FAN-ASUS-G15</code></td>
-            <td><strong>Modul Fan Cooler Original Asus ROG Strix G15</strong></td>
-            <td><span class="badge bg-light text-dark border">Cooling</span></td>
-            <td><strong class="fs-6 text-dark">5</strong> Pcs</td>
-            <td>Rp 160.000</td>
-            <td class="text-primary fw-bold">Rp 220.000</td>
-            <td><span class="text-success fw-semibold">+Rp 60.000</span></td>
-            <td><span class="badge badge-success-accessible">Tersedia</span></td>
-            <td class="text-end">
-              <button onclick="alert('Update stok FAN-ASUS-G15')" class="btn btn-sm btn-outline-secondary py-1 px-2">Edit</button>
-            </td>
+            <td colspan="7" class="text-center text-muted py-4">Belum ada suku cadang terdaftar di database.</td>
           </tr>
         @endif
       </tbody>

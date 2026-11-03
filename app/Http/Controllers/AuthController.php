@@ -36,9 +36,19 @@ class AuthController extends Controller
         $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'tech_code';
 
         if (Auth::attempt([$field => $loginInput, 'password' => $credentials['password'], 'is_active' => true], $request->boolean('remember'))) {
+            $user = Auth::user();
+            if (!in_array($user->role, ['technician', 'admin'])) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'tech_id' => 'Akses ditolak. Portal ini khusus untuk staf teknisi dan admin workshop.',
+                ])->onlyInput('tech_id');
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('admin.teknisi'))
-                ->with('success', 'Selamat datang di Meja Kerja Workshop SerComp, ' . Auth::user()->name . '!');
+                ->with('success', 'Selamat datang di Meja Kerja Workshop SerComp, ' . $user->name . '!');
         }
 
         return back()->withErrors([

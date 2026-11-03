@@ -2,145 +2,166 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ServiceTicket;
-use App\Models\SlaLog;
+use App\Models\ServiceOrder;
+use App\Models\Warranty;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class TrackingController extends Controller
 {
-    /**
-     * Tampilkan portal pelacakan tiket pelanggan.
-     */
     public function index(Request $request)
     {
         $ticketNo = $request->query('ticket');
 
         if ($ticketNo) {
-            $ticket = ServiceTicket::with(['technician', 'items'])
-                ->where('ticket_no', $ticketNo)
-                ->orWhere('ticket_no', '#' . ltrim($ticketNo, '#'))
+            $ticketNoClean = ltrim($ticketNo, '#');
+            $ticket = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])
+                ->where('ticket_no', $ticketNoClean)
+                ->orWhere('ticket_no', '#' . $ticketNoClean)
                 ->first();
         } else {
-            // Ambil tiket aktif terbaru dari database sebagai default tampilan
-            $ticket = ServiceTicket::with(['technician', 'items'])
-                ->where('ticket_no', '#SC-2026-9042')
-                ->first() ?? ServiceTicket::with(['technician', 'items'])->latest()->first();
+            $ticket = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])
+                ->where('ticket_no', 'SC-2026-9042')
+                ->first() ?? ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])->latest()->first();
         }
 
         return view('user-panel', compact('ticket'));
     }
 
-    /**
-     * Pelanggan menyetujui lembar rincian biaya teknisi.
-     */
     public function approve(Request $request, $ticketNo)
     {
-        $ticket = ServiceTicket::where('ticket_no', $ticketNo)->firstOrFail();
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with(['diagnostic', 'invoice'])
+            ->firstOrFail();
 
-        $ticket->update([
-            'is_approved' => true,
-            'approved_at' => Carbon::now(),
-            'step' => 4,
-            'status' => 'Menunggu Pembayaran QRIS',
+        if ($order->diagnostic) {
+            $order->diagnostic->update([
+                'is_approved_by_user' => true,
+                'approved_at' => Carbon::now(),
+            ]);
+        }
+
+        $order->update([
+            'order_status' => 'Approval Biaya',
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Estimasi biaya berhasil disetujui. Silakan lanjutkan pembayaran QRIS.',
-                'ticket' => $ticket,
+                'ticket' => $order,
             ]);
         }
 
         return back()->with('success', 'Rincian biaya berhasil disetujui.');
     }
 
-    /**
-     * Pelanggan membatalkan perbaikan servis.
-     */
     public function reject(Request $request, $ticketNo)
     {
-        $ticket = ServiceTicket::where('ticket_no', $ticketNo)->firstOrFail();
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with('diagnostic')
+            ->firstOrFail();
 
-        $ticket->update([
-            'is_approved' => false,
-            'status' => 'Dibatalkan Pelanggan',
+        if ($order->diagnostic) {
+            $order->diagnostic->update([
+                'is_approved_by_user' => false,
+            ]);
+        }
+
+        $order->update([
+            'order_status' => 'Booking',
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Pengerjaan servis dibatalkan. Unit akan dirakit kembali tanpa biaya reparasi.',
-                'ticket' => $ticket,
+                'ticket' => $order,
             ]);
         }
 
         return back()->with('info', 'Pengerjaan servis dibatalkan.');
     }
 
-    /**
-     * Simulasi pembayaran QRIS lunas secara instan.
-     */
     public function payQris(Request $request, $ticketNo)
     {
-        $ticket = ServiceTicket::where('ticket_no', $ticketNo)->firstOrFail();
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with(['diagnostic', 'invoice'])
+            ->firstOrFail();
 
-        $ticket->update([
-            'payment_status' => 'Paid',
-            'payment_method' => 'QRIS',
-            'payment_reference' => 'QRIS-TRX-' . strtoupper(Str::random(10)),
-            'paid_at' => Carbon::now(),
-            'is_approved' => true,
-            'step' => 5,
-            'status' => 'Sedang Dikerjakan',
+        if ($order->diagnostic) {
+            $order->diagnostic->update([
+                'is_approved_by_user' => true,
+                'approved_at' => $order->diagnostic->approved_at ?? Carbon::now(),
+            ]);
+        }
+
+        if ($order->invoice) {
+            $order->invoice->update([
+                'payment_status' => 'Paid',
+                'payment_method' => 'QRIS Dinamis',
+                'qris_transaction_id' => 'QRIS-TRX-' . strtoupper(Str::random(10)),
+                'paid_at' => Carbon::now(),
+            ]);
+        }
+
+        // Status beralih ke Paid lalu Reparasi
+        $order->update([
+            'order_status' => 'Reparasi',
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Pembayaran QRIS Berhasil Diverifikasi! Teknisi segera memulai proses perbaikan.',
-                'ticket' => $ticket,
+                'message' => 'Pembayaran QRIS Berhasil Diverifikasi! Webhook Midtrans terkonfirmasi, teknisi memulai reparasi.',
+                'ticket' => $order,
             ]);
         }
 
         return back()->with('success', 'Pembayaran QRIS berhasil diverifikasi.');
     }
 
-    /**
-     * Pelanggan menutup tiket (konfirmasi selesai) dan mengaktifkan e-Warranty 90 hari.
-     */
     public function closeTicket(Request $request, $ticketNo)
     {
-        $ticket = ServiceTicket::where('ticket_no', $ticketNo)->firstOrFail();
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with('invoice.warranty')
+            ->firstOrFail();
 
-        $warrantyCode = 'WRN-' . date('Y') . '-' . mt_rand(1000, 9999);
-
-        $ticket->update([
-            'is_closed' => true,
-            'closed_at' => Carbon::now(),
-            'closed_by' => 'customer',
-            'step' => 7,
-            'status' => 'Closed / Completed',
-            'warranty_code' => $warrantyCode,
-            'warranty_valid_until' => Carbon::now()->addDays(90),
+        $order->update([
+            'order_status' => 'Closed',
         ]);
 
-        SlaLog::create([
-            'service_ticket_id' => $ticket->id,
-            'event_type' => 'customer_confirmed',
-            'description' => 'Konsumen mengonfirmasi unit normal dan menutup tiket secara manual. Garansi e-Warranty 90 hari aktif.',
-        ]);
+        $warranty = null;
+        if ($order->invoice && !$order->invoice->warranty) {
+            $warranty = Warranty::create([
+                'invoice_id' => $order->invoice->id,
+                'warranty_code' => 'WAR-' . date('Y') . '-' . strtoupper(substr(uniqid(), -6)),
+                'warranty_duration_days' => 90,
+                'starts_at' => Carbon::today(),
+                'expires_at' => Carbon::today()->addDays(90),
+                'warranty_status' => 'Active',
+            ]);
+        }
+
+        $warrantyCode = $warranty ? $warranty->warranty_code : optional($order->invoice->warranty)->warranty_code;
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => "Terima kasih! Tiket resmi ditutup. Garansi digital {$warrantyCode} aktif selama 90 hari.",
-                'ticket' => $ticket,
+                'message' => "Terima kasih! Tiket resmi ditutup. Sertifikat digital garansi {$warrantyCode} aktif 90 hari.",
+                'ticket' => $order,
             ]);
         }
 
-        return back()->with('success', 'Tiket resmi ditutup dan garansi aktif.');
+        return back()->with('success', 'Tiket resmi ditutup dan garansi 90 hari aktif.');
     }
 }

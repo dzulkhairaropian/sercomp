@@ -39,11 +39,9 @@
         <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
       </div>
       <div class="d-flex align-items-center gap-1">
-        <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
+        <a href="{{ url('/') }}" class="btn-demo">1. Beranda Publik</a>
         <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
         <a href="{{ url('/user-panel') }}" class="btn-demo">3. Portal Pelanggan</a>
-        <a href="{{ url('/teknisi') }}" class="btn-demo">4. Panel Teknisi</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo">5. Faktur Invoice</a>
       </div>
     </div>
   </div>

@@ -34,8 +34,7 @@
         <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
         <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
         <a href="{{ url('/user-panel') }}" class="btn-demo active">3. Portal Pelanggan</a>
-        <a href="{{ url('/teknisi') }}" class="btn-demo">4. Panel Teknisi</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo">5. Faktur Invoice</a>
+        <a href="{{ url('/invoice') }}" class="btn-demo">4. Faktur Invoice</a>
       </div>
     </div>
   </div>
@@ -408,7 +407,7 @@
           addonCleaning: serverTicket.cost_cleaning > 0,
           addonRepasta: serverTicket.cost_repasta > 0,
           deliveryMethod: serverTicket.delivery_method,
-          step: serverTicket.step,
+          step: serverTicket.status_step || serverTicket.step,
           status: serverTicket.status,
           technician: serverTicket.technician ? serverTicket.technician.name : 'Budi Santoso (Hardware Specialist)',
           diagnosis: serverTicket.diagnosis || "Menunggu pemeriksaan fisik teknisi di meja workshop.",
