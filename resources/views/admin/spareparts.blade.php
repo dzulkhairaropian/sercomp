@@ -5,7 +5,7 @@
 @section('page-subtitle', 'Monitoring stok suku cadang original, pasta pendingin, dan add-ons perbaikan workshop.')
 
 @section('page-actions')
-<button onclick="alert('Modal Tambah Suku Cadang Baru siap diintegrasikan!')" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1">
+<button type="button" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalAddPart">
   <i class="bi bi-plus-circle"></i> Tambah Item Part
 </button>
 @endsection
@@ -63,46 +63,146 @@
           <th>Nama Komponen</th>
           <th>Kategori</th>
           <th>Stok Tersedia</th>
-          <th>Harga Beli (Modal)</th>
           <th>Harga Jual Konsumen</th>
-          <th>Margin / Unit</th>
           <th>Status</th>
           <th class="text-end">Aksi</th>
         </tr>
       </thead>
       <tbody id="sparepartBody">
-        @if(isset($spareparts) && $spareparts->count() > 0)
-          @foreach($spareparts as $part)
-            <tr>
-              <td><code class="text-primary fw-bold">{{ $part->part_code }}</code></td>
-              <td><strong>{{ $part->name }}</strong></td>
-              <td><span class="badge bg-light text-dark border">{{ ucfirst($part->category) }}</span></td>
-              <td><strong class="fs-6 {{ $part->stock <= $part->min_stock_alert ? 'text-warning' : 'text-dark' }}">{{ $part->stock }}</strong> Pcs</td>
-              <td>Rp {{ number_format($part->cost_price, 0, ',', '.') }}</td>
-              <td class="text-primary fw-bold">Rp {{ number_format($part->selling_price, 0, ',', '.') }}</td>
-              <td><span class="text-success fw-semibold">+Rp {{ number_format($part->selling_price - $part->cost_price, 0, ',', '.') }}</span></td>
-              <td>
-                @if($part->stock <= $part->min_stock_alert)
-                  <span class="badge badge-warning-accessible">Menipis</span>
-                @else
-                  <span class="badge badge-success-accessible">Tersedia</span>
-                @endif
-              </td>
-              <td class="text-end">
-                <button onclick="alert('Kelola stok {{ $part->part_code }}')" class="btn btn-sm btn-outline-secondary py-1 px-2" aria-label="Kelola stok {{ $part->name }}">Edit</button>
-              </td>
-            </tr>
-          @endforeach
-        @else
+        @forelse($spareparts ?? [] as $part)
+          <tr>
+            <td><code class="text-primary fw-bold">{{ $part->part_code }}</code></td>
+            <td><strong>{{ $part->part_name }}</strong></td>
+            <td><span class="badge bg-light text-dark border">{{ ucfirst($part->category) }}</span></td>
+            <td><strong class="fs-6 {{ $part->stock_qty <= 3 ? 'text-warning' : 'text-dark' }}">{{ $part->stock_qty }}</strong> Pcs</td>
+            <td class="text-primary fw-bold">Rp {{ number_format($part->unit_price, 0, ',', '.') }}</td>
+            <td>
+              @if($part->stock_qty <= 3)
+                <span class="badge badge-warning-accessible">Menipis</span>
+              @else
+                <span class="badge badge-success-accessible">Tersedia</span>
+              @endif
+            </td>
+            <td class="text-end">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-secondary py-1 px-2.5" 
+                      onclick="openEditModal({{ $part->id }}, '{{ addslashes($part->part_code) }}', '{{ addslashes($part->part_name) }}', '{{ $part->category }}', {{ $part->stock_qty }}, {{ $part->unit_price }})">
+                <i class="bi bi-pencil-square me-1"></i> Edit
+              </button>
+            </td>
+          </tr>
+        @empty
           <tr>
             <td colspan="7" class="text-center text-muted py-4">Belum ada suku cadang terdaftar di database.</td>
           </tr>
-        @endif
+        @endforelse
       </tbody>
     </table>
   </div>
 </div>
-    </table>
+
+<!-- MODAL TAMBAH SUKU CADANG BARU -->
+<div class="modal fade" id="modalAddPart" tabindex="-1" aria-labelledby="modalAddPartLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow rounded-4">
+      <form action="{{ route('admin.sparepart.store') }}" method="POST">
+        @csrf
+        <div class="modal-header border-bottom">
+          <h6 class="modal-title fw-bold text-dark" id="modalAddPartLabel">
+            <i class="bi bi-plus-circle-fill text-primary me-2"></i> Tambah Item Suku Cadang Baru
+          </h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 row g-3 small">
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Kode Part (Unique SKU):</label>
+            <input type="text" name="part_code" class="form-control font-monospace" placeholder="Contoh: FAN-ASUS-G15" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Komponen Part:</label>
+            <input type="text" name="part_name" class="form-control" placeholder="Contoh: Modul Dual Fan Cooler Lenovo Legion 5" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Kategori Sesuai Spec 3NF:</label>
+            <select name="category" class="form-select" required>
+              <option value="Fan">Fan</option>
+              <option value="RAM">RAM</option>
+              <option value="SSD">SSD</option>
+              <option value="Screen">Screen</option>
+              <option value="PSU">PSU</option>
+              <option value="Cable">Cable</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Stok Awal (Pcs):</label>
+            <input type="number" name="stock_qty" class="form-control" min="0" value="5" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Harga Jual Konsumen (Rp):</label>
+            <input type="number" name="unit_price" class="form-control" min="0" step="1000" placeholder="220000" required>
+          </div>
+        </div>
+        <div class="modal-footer border-top p-3">
+          <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
+            <i class="bi bi-save me-1"></i> Simpan Suku Cadang
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT / UPDATE STOK PART -->
+<div class="modal fade" id="modalEditPart" tabindex="-1" aria-labelledby="modalEditPartLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow rounded-4">
+      <form id="formEditPart" method="POST">
+        @csrf
+        @method('PUT')
+        <div class="modal-header border-bottom">
+          <h6 class="modal-title fw-bold text-dark" id="modalEditPartLabel">
+            <i class="bi bi-pencil-square text-primary me-2"></i> Update Stok Suku Cadang
+          </h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 row g-3 small">
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Kode Part (SKU):</label>
+            <input type="text" id="editPartCode" class="form-control font-monospace bg-light" readonly>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Komponen:</label>
+            <input type="text" name="part_name" id="editPartName" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Kategori:</label>
+            <select name="category" id="editCategory" class="form-select" required>
+              <option value="Fan">Fan</option>
+              <option value="RAM">RAM</option>
+              <option value="SSD">SSD</option>
+              <option value="Screen">Screen</option>
+              <option value="PSU">PSU</option>
+              <option value="Cable">Cable</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Stok Fisik Tersedia (Pcs):</label>
+            <input type="number" name="stock_qty" id="editStockQty" class="form-control" min="0" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Harga Satuan (Rp):</label>
+            <input type="number" name="unit_price" id="editUnitPrice" class="form-control" min="0" step="1000" required>
+          </div>
+        </div>
+        <div class="modal-footer border-top p-3">
+          <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
+            <i class="bi bi-check2-circle me-1"></i> Perbarui Stok Part
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -116,6 +216,18 @@
     rows.forEach(r => {
       r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
     });
+  }
+
+  function openEditModal(id, code, name, category, stock, price) {
+    document.getElementById('formEditPart').action = "{{ url('/teknisi/sparepart') }}/" + id;
+    document.getElementById('editPartCode').value = code;
+    document.getElementById('editPartName').value = name;
+    document.getElementById('editCategory').value = category;
+    document.getElementById('editStockQty').value = stock;
+    document.getElementById('editUnitPrice').value = price;
+
+    const modal = new bootstrap.Modal(document.getElementById('modalEditPart'));
+    modal.show();
   }
 </script>
 @endsection

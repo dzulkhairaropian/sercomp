@@ -329,7 +329,7 @@
         </p>
 
         <div class="d-grid gap-2">
-          <a href="{{ url('/user-panel') }}" class="btn btn-primary fw-bold py-2.5">
+          <a id="btnOpenUserPanel" href="{{ url('/user-panel') }}" class="btn btn-primary fw-bold py-2.5">
             <i class="bi bi-box-arrow-up-right me-1" aria-hidden="true"></i> Buka Portal Pelanggan Sekarang
           </a>
           <a href="{{ url('/') }}" class="btn btn-outline-secondary fw-semibold">
@@ -468,6 +468,10 @@
 
       localStorage.setItem('sercomp_active_order', JSON.stringify(orderData));
       document.getElementById('createdTicketNo').innerText = ticketNo;
+      const btnOpen = document.getElementById('btnOpenUserPanel');
+      if (btnOpen) {
+        btnOpen.href = data.redirect_url || ("{{ url('/user-panel') }}?ticket=" + encodeURIComponent(ticketNo));
+      }
 
       if (!bsSuccessModal) {
         bsSuccessModal = new bootstrap.Modal(document.getElementById('successModal'));

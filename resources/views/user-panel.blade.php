@@ -347,7 +347,7 @@
           </p>
         </div>
         <div>
-          <a href="{{ url('/invoice') }}" target="_blank" class="btn btn-primary fw-bold px-4 py-2">
+          <a id="btnOpenInvoice" href="{{ url('/invoice') }}" target="_blank" class="btn btn-primary fw-bold px-4 py-2">
             <i class="bi bi-printer me-1"></i> Buka & Cetak Invoice A4
           </a>
         </div>
@@ -454,7 +454,11 @@
           unitHandedOver: serverTicket.unit_handed_over,
           unitHandedOverTime: serverTicket.unit_handed_over_at,
           isClosed: serverTicket.is_closed,
-          invoiceNo: serverTicket.invoice_no
+          invoiceNo: serverTicket.invoice_no,
+          warrantyCode: (serverTicket.invoice && serverTicket.invoice.warranty) ? serverTicket.invoice.warranty.warranty_code : null,
+          warrantyValidUntil: (serverTicket.invoice && serverTicket.invoice.warranty) ? serverTicket.invoice.warranty.expires_at : null,
+          evidenceRunningPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_running_test_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_running_test_photo) : null,
+          evidenceReplacedPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo) : null
         };
         localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
       } else {
@@ -643,8 +647,16 @@
         document.getElementById('badgeStatus').className = "badge bg-primary px-2.5 py-1.5 fw-bold text-white";
         document.getElementById('evidenceSection').classList.remove('d-none');
         document.getElementById('invoiceAccessCard').classList.remove('d-none');
-        document.getElementById('invAccessNo').innerText = currentOrder.invoiceNo || "INV-SC-2026-8812";
-      } else if (step === 7 || currentOrder.isClosed) {
+        document.getElementById('invAccessNo').innerText = currentOrder.invoiceNo || ('INV-' + currentOrder.ticketNo);
+        if (document.getElementById('btnOpenInvoice')) {
+          document.getElementById('btnOpenInvoice').href = "{{ url('/invoice') }}?ticket=" + encodeURIComponent(currentOrder.ticketNo);
+        }
+        if (currentOrder.evidenceRunningPhoto) {
+          document.getElementById('imgLaptopFixed').src = currentOrder.evidenceRunningPhoto;
+        }
+        if (currentOrder.evidenceReplacedPhoto) {
+          document.getElementById('imgPartOld').src = currentOrder.evidenceReplacedPhoto;
+        }
         actionContainer.innerHTML = `
           <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2.5 px-3 small w-100">
             <i class="bi bi-patch-check-fill fs-4 text-success"></i>

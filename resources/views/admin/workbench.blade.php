@@ -143,6 +143,14 @@
           <input type="number" id="inputParts" class="form-control bg-light small">
         </div>
         <div class="col-12">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Suku Cadang Dari Stok Workshop (Opsional):</label>
+          <select id="selectSparepart" class="form-select bg-light small" onchange="handleSelectPart(this)">
+            <option value="">-- Tanpa Part Baru / Input Manual --</option>
+            @foreach($spareparts ?? [] as $sp)
+              <option value="{{ $sp->id }}" data-price="{{ $sp->unit_price }}">{{ $sp->part_code }} - {{ $sp->part_name }} (Rp {{ number_format($sp->unit_price, 0, ',', '.') }})</option>
+            @endforeach
+          </select>
+        </div>
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Khusus Teknisi (Note):</label>
           <input type="text" id="inputNote" class="form-control bg-light small">
         </div>
@@ -168,18 +176,20 @@
         <div class="col-md-6">
           <div class="p-3 rounded-3 bg-light border text-center">
             <span class="text-primary fw-bold text-uppercase d-block mb-2" style="font-size: 10px;">Bukti 1: Unit Nyala (Running Test)</span>
-            <div class="rounded-2 overflow-hidden bg-secondary-subtle mb-2 border" style="height: 130px;">
-              <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Running Test">
+            <div class="rounded-2 overflow-hidden bg-secondary-subtle mb-2 border position-relative" style="height: 130px;">
+              <img id="previewEvidenceRunning" src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Running Test">
             </div>
+            <input type="file" id="fileEvidenceRunningTest" accept="image/*" class="form-control form-control-sm mb-1" onchange="previewFile(this, 'previewEvidenceRunning')">
             <span class="badge bg-success-subtle text-success small">Suhu Stabil 68°C</span>
           </div>
         </div>
         <div class="col-md-6">
           <div class="p-3 rounded-3 bg-light border text-center">
-            <span class="text-primary fw-bold text-uppercase d-block mb-2" style="font-size: 10px;">Bukti 2: Modul Fan Rusak Lama</span>
-            <div class="rounded-2 overflow-hidden bg-secondary-subtle mb-2 border" style="height: 130px;">
-              <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Part Lama">
+            <span class="text-primary fw-bold text-uppercase d-block mb-2" style="font-size: 10px;">Bukti 2: Modul Suku Cadang Rusak Lama</span>
+            <div class="rounded-2 overflow-hidden bg-secondary-subtle mb-2 border position-relative" style="height: 130px;">
+              <img id="previewEvidenceReplaced" src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80" class="w-100 h-100 object-fit-cover" alt="Part Lama">
             </div>
+            <input type="file" id="fileEvidenceReplacedPart" accept="image/*" class="form-control form-control-sm mb-1" onchange="previewFile(this, 'previewEvidenceReplaced')">
             <span class="badge bg-secondary-subtle text-dark small">Diserahkan ke Konsumen</span>
           </div>
         </div>
@@ -329,7 +339,8 @@
         action_plan: actionPlan,
         cost_labor: labor,
         cost_parts: parts,
-        technician_notes: note
+        technician_notes: note,
+        sparepart_id: document.getElementById('selectSparepart') ? document.getElementById('selectSparepart').value : null
       })
     })
     .then(res => res.json())
@@ -378,24 +389,47 @@
     order.step = 6;
     order.status = "Selesai Dikerjakan - Siap Diserahkan";
 
+    const formData = new FormData();
+    const f1 = document.getElementById('fileEvidenceRunningTest');
+    const f2 = document.getElementById('fileEvidenceReplacedPart');
+    if (f1 && f1.files[0]) formData.append('evidence_running_test', f1.files[0]);
+    if (f2 && f2.files[0]) formData.append('evidence_replaced_part', f2.files[0]);
+
     fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/complete', {
       method: 'POST',
       headers: {
         'X-CSRF-TOKEN': '{{ csrf_token() }}',
         'Accept': 'application/json'
-      }
+      },
+      body: formData
     })
     .then(res => res.json())
     .then(data => {
       localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      alert("Pengerjaan reparasi selesai! Bukti terlampir dan invoice resmi siap dicetak.");
       renderTeknisi();
     })
     .catch(err => {
       localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      alert("Pengerjaan reparasi selesai!");
       renderTeknisi();
     });
+  }
+
+  function handleSelectPart(select) {
+    const selected = select.options[select.selectedIndex];
+    const price = selected.getAttribute('data-price');
+    if (price) {
+      document.getElementById('inputParts').value = price;
+    }
+  }
+
+  function previewFile(input, targetId) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById(targetId).src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
   }
 
   function triggerSlaTimeout() {

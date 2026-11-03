@@ -129,6 +129,7 @@ class BookingController extends Controller
                 'success' => true,
                 'ticket_no' => $order->ticket_no,
                 'order' => $order,
+                'ticket' => $order,
                 'redirect_url' => route('user.panel', ['ticket' => $order->ticket_no]),
             ]);
         }
