@@ -189,17 +189,23 @@
 
             <!-- 7. Identitas Pelanggan -->
             <div class="row g-3 mb-4">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="customer_name" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
                   Nama Lengkap Pelanggan <span class="text-danger">*</span>
                 </label>
                 <input type="text" name="customer_name" id="customer_name" required class="form-control" placeholder="Nama Anda" oninput="updateSummary()">
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="customer_phone" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
                   Nomor WhatsApp Aktif <span class="text-danger">*</span>
                 </label>
                 <input type="tel" name="customer_phone" id="customer_phone" required class="form-control" placeholder="08xxxxxxxxxx">
+              </div>
+              <div class="col-md-4">
+                <label for="customer_email" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
+                  Alamat Email (Opsional)
+                </label>
+                <input type="email" name="customer_email" id="customer_email" class="form-control" placeholder="nama@email.com">
               </div>
             </div>
 

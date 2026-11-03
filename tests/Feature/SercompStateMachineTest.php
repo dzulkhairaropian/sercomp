@@ -243,4 +243,28 @@ class SercompStateMachineTest extends TestCase
         // Garansi tidak boleh terbit
         $this->assertNull($invoice->warranty);
     }
+
+    public function test_booking_without_email_and_with_pickup_service_creates_order_cleanly(): void
+    {
+        $payload = [
+            'device_type' => 'Laptop',
+            'device_brand' => 'HP',
+            'device_model' => 'Envy 13',
+            'issue_chronology' => 'Layar bergaris dan kipas berbunyi keras',
+            'delivery_method' => 'Ambil oleh Teknisi',
+            'customer_name' => 'Kareem Higgins',
+            'customer_phone' => '+1 (143) 741-9991',
+        ];
+
+        $response = $this->postJson('/booking', $payload);
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $order = ServiceOrder::where('device_brand', 'HP')->where('device_model', 'Envy 13')->first();
+        $this->assertNotNull($order);
+        $this->assertNotNull($order->security_pin);
+        $this->assertEquals(4, strlen($order->security_pin));
+        $this->assertNotNull($order->customer);
+        $this->assertEquals('Kareem Higgins', $order->customer->name);
+    }
 }

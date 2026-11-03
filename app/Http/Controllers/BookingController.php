@@ -34,16 +34,20 @@ class BookingController extends Controller
             'addon_repasta' => 'nullable|boolean',
         ]);
 
-        // Cari atau buat akun guest customer tanpa tabrakan email
+        // Cari atau buat akun guest customer tanpa tabrakan email atau error key
+        $customerEmail = $validated['customer_email'] ?? null;
+        $cleanPhone = preg_replace('/[^0-9]/', '', $validated['customer_phone']);
+
         $customer = User::where('phone', $validated['customer_phone'])->first();
-        if (!$customer && !empty($validated['customer_email'])) {
-            $customer = User::where('email', $validated['customer_email'])->first();
+        if (!$customer && !empty($customerEmail)) {
+            $customer = User::where('email', $customerEmail)->first();
         }
 
         if (!$customer) {
-            $email = $validated['customer_email'] ?: ($validated['customer_phone'] . '@guest.sercomp.id');
+            $fallbackPrefix = !empty($cleanPhone) ? $cleanPhone : ('guest_' . Str::random(8));
+            $email = $customerEmail ?: ($fallbackPrefix . '@guest.sercomp.id');
             if (User::where('email', $email)->exists()) {
-                $email = $validated['customer_phone'] . '_' . time() . '@guest.sercomp.id';
+                $email = $fallbackPrefix . '_' . time() . '_' . mt_rand(100, 999) . '@guest.sercomp.id';
             }
             $customer = User::create([
                 'name' => $validated['customer_name'],
