@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\ServiceOrder;
 use App\Models\Sparepart;
 use App\Models\Warranty;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -113,6 +114,9 @@ class ServiceOrderController extends Controller
             'addon_cleaning_cost' => $addonCleaning,
             'addon_repasta_cost' => $addonRepasta,
             'net_total_cost' => $netTotal,
+            'estimated_by' => auth()->id(),
+            'admin_notes' => $request->input('admin_notes', $diagnostic->admin_notes),
+            'is_price_locked' => true,
         ])->save();
 
         // Tambah item sparepart jika dipilih
@@ -141,6 +145,9 @@ class ServiceOrderController extends Controller
         $order->update([
             'order_status' => 'Approval Biaya',
         ]);
+
+        // Otomatis kirim notifikasi WA & Email ke pelanggan mengenai rilis estimasi resmi
+        NotificationService::notifyEstimateReady($order);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -181,6 +188,8 @@ class ServiceOrderController extends Controller
             'order_status' => 'Selesai',
         ]);
 
+        // Otomatis notif WA & Email: unit selesai & lolos running test
+        NotificationService::notifyOrderCompleted($order);
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -205,7 +214,13 @@ class ServiceOrderController extends Controller
             'unit_handed_over' => true,
             'handed_over_at' => $now,
             'sla_auto_close_at' => $now->copy()->addHours(24),
+            'courier_name' => $request->input('courier_name', $order->courier_name ?? 'Kurir Workshop SerComp'),
+            'receiver_name' => $request->input('receiver_name', $order->customer?->name ?? 'Pelanggan'),
+            'signature_data' => $request->input('signature_data', $order->signature_data),
         ]);
+
+        // Otomatis notif WA & Email serah terima dengan kurir & tanda tangan
+        NotificationService::notifyOrderHandedOver($order);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -216,6 +231,67 @@ class ServiceOrderController extends Controller
         }
 
         return back()->with('success', 'Unit diserahkan. SLA timer 24 jam aktif.');
+    }
+
+    public function resolveNegotiation(Request $request, $ticketNo)
+    {
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with(['diagnostic', 'invoice'])
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'decision' => 'required|in:approve,reject',
+            'admin_notes' => 'required|string',
+            'adjusted_labor' => 'nullable|numeric|min:0',
+            'adjusted_parts' => 'nullable|numeric|min:0',
+        ]);
+
+        $diagnostic = $order->diagnostic ?? new Diagnostic(['service_order_id' => $order->id]);
+        $isApproved = $validated['decision'] === 'approve';
+
+        if ($isApproved) {
+            $labor = $validated['adjusted_labor'] !== null ? (float)$validated['adjusted_labor'] : (float)$diagnostic->labor_cost;
+            $parts = $validated['adjusted_parts'] !== null ? (float)$validated['adjusted_parts'] : (float)$diagnostic->parts_cost;
+            $addonCleaning = (float)($diagnostic->addon_cleaning_cost ?? 0);
+            $addonRepasta = (float)($diagnostic->addon_repasta_cost ?? 0);
+            $netTotal = $labor + $parts + $addonCleaning + $addonRepasta;
+
+            $diagnostic->labor_cost = $labor;
+            $diagnostic->parts_cost = $parts;
+            $diagnostic->net_total_cost = $netTotal;
+            $diagnostic->admin_notes = $validated['admin_notes'];
+            $diagnostic->save();
+
+            if ($order->invoice) {
+                $order->invoice->update(['amount_total' => $netTotal]);
+            }
+
+            $order->update([
+                'negotiation_status' => 'Approved',
+                'order_status' => 'Approval Biaya',
+            ]);
+        } else {
+            $diagnostic->admin_notes = $validated['admin_notes'];
+            $diagnostic->save();
+
+            $order->update([
+                'negotiation_status' => 'Rejected',
+            ]);
+        }
+
+        NotificationService::notifyNegotiationResolved($order, $isApproved);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $isApproved ? 'Negosiasi biaya disetujui dan harga diperbarui.' : 'Negosiasi ditolak. Customer dinotifikasi via WA & Email.',
+                'ticket' => $order->fresh(['diagnostic', 'invoice']),
+            ]);
+        }
+
+        return back()->with('success', $isApproved ? 'Negosiasi disetujui & harga disesuaikan.' : 'Negosiasi ditolak dengan catatan.');
     }
 
     public function triggerSla(Request $request, $ticketNo)

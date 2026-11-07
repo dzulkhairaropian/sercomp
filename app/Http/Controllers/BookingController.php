@@ -7,9 +7,9 @@ use App\Models\Invoice;
 use App\Models\OrderItem;
 use App\Models\ServiceOrder;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
 class BookingController extends Controller
 {
     public function create()
@@ -32,6 +32,8 @@ class BookingController extends Controller
             'photo' => 'nullable|image|max:5120',
             'addon_cleaning' => 'nullable|boolean',
             'addon_repasta' => 'nullable|boolean',
+            'customer_type' => 'nullable|in:Personal,Company',
+            'company_name' => 'nullable|string|max:150',
         ]);
 
         // Cari atau buat akun guest customer tanpa tabrakan email atau error key
@@ -42,6 +44,9 @@ class BookingController extends Controller
         if (!$customer && !empty($customerEmail)) {
             $customer = User::where('email', $customerEmail)->first();
         }
+
+        $customerType = $validated['customer_type'] ?? 'Personal';
+        $companyName = ($customerType === 'Company') ? ($validated['company_name'] ?? null) : null;
 
         if (!$customer) {
             $fallbackPrefix = !empty($cleanPhone) ? $cleanPhone : ('guest_' . Str::random(8));
@@ -55,9 +60,15 @@ class BookingController extends Controller
                 'email' => $email,
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'customer',
+                'customer_type' => $customerType,
+                'company_name' => $companyName,
             ]);
         } else {
-            $customer->update(['name' => $validated['customer_name']]);
+            $customer->update([
+                'name' => $validated['customer_name'],
+                'customer_type' => $customerType,
+                'company_name' => $companyName,
+            ]);
         }
 
         $pickupAddress = $validated['pickup_address'] ?? null;
@@ -88,8 +99,9 @@ class BookingController extends Controller
         // Buat ServiceOrder (Status: Booking)
         $order = ServiceOrder::create([
             'customer_id' => $customer->id,
+            'customer_type' => $customerType,
+            'company_name' => $companyName,
             'ticket_no' => $ticketNo,
-            'security_pin' => $securityPin,
             'device_type' => $validated['device_type'],
             'device_brand' => $validated['device_brand'],
             'device_model' => $validated['device_model'],
@@ -146,6 +158,8 @@ class BookingController extends Controller
         // Tandai pembuat reservasi telah terverifikasi secara aman di sesi browser ini
         $request->session()->put('verified_ticket_' . $order->ticket_no, true);
 
+        // Otomatis notifikasi WA & Email ke pelanggan
+        NotificationService::notifyBookingCreated($order);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

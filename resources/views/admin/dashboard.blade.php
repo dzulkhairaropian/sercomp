@@ -14,6 +14,49 @@
 @endsection
 
 @section('content')
+@if(!empty($waitingNego) && $waitingNego > 0)
+<div class="alert alert-warning border border-warning-subtle bg-warning-subtle text-dark rounded-4 p-3 mb-4 d-flex justify-content-between align-items-center gap-3 shadow-sm">
+  <div class="d-flex align-items-center gap-3">
+    <div class="badge bg-warning text-dark p-2 rounded-circle fs-5"><i class="bi bi-chat-quote-fill"></i></div>
+    <div>
+      <strong class="d-block text-warning-emphasis">Perhatian Admin: {{ $waitingNego }} Pelanggan Mengajukan Negosiasi Biaya!</strong>
+      <span class="small text-secondary">Pelanggan meminta penyesuaian biaya jasa & suku cadang. Tinjau lembar estimasi untuk memberikan respon/diskon.</span>
+    </div>
+  </div>
+  <a href="{{ route('admin.meja-kerja') }}" class="btn btn-warning btn-sm fw-bold px-3 py-2 text-nowrap">
+    <i class="bi bi-arrow-right-circle me-1"></i> Tinjau Permintaan Nego
+  </a>
+</div>
+@endif
+
+<!-- CRM & BI METRICS SUMMARY BAR -->
+<div class="card border-0 shadow-sm rounded-4 bg-white p-3 mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="badge bg-info-subtle text-info p-2.5 rounded-3">
+        <i class="bi bi-pie-chart-fill fs-5"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold text-dark mb-0">Database Pelanggan CRM (Tugas Business Intelligence)</h6>
+        <span class="text-muted small">Segmentasi loyalitas pelanggan untuk analisis frekuensi repeat-order vs prospek tanya-tanya</span>
+      </div>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill font-monospace fw-bold">
+        <i class="bi bi-star-fill me-1"></i> Setia: {{ $countSetia ?? 0 }}
+      </span>
+      <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill font-monospace fw-bold">
+        <i class="bi bi-lightning-fill me-1"></i> Aktif: {{ $countAktif ?? 0 }}
+      </span>
+      <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill font-monospace fw-bold">
+        <i class="bi bi-chat-dots-fill me-1"></i> Tanya2 Aja: {{ $countTanyaTanya ?? 0 }}
+      </span>
+      <a href="{{ route('admin.crm') }}" class="btn btn-outline-primary btn-sm fw-bold px-3 py-1.5">
+        Buka CRM <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+  </div>
+</div>
 
 <!-- 4 TOP KPI STATS -->
 <div class="row g-3 mb-4">

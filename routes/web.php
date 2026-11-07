@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CustomerCrmController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ServiceOrderController;
 use App\Http\Controllers\Admin\SparepartController;
@@ -26,21 +27,51 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 Route::get('/user-panel', [TrackingController::class, 'index'])->name('user.panel');
 Route::post('/user-panel/{ticket}/approve', [TrackingController::class, 'approve'])->name('user.approve');
 Route::post('/user-panel/{ticket}/reject', [TrackingController::class, 'reject'])->name('user.reject');
+Route::post('/user-panel/{ticket}/negotiate', [TrackingController::class, 'negotiate'])->name('user.negotiate');
 Route::post('/user-panel/{ticket}/pay-qris', [TrackingController::class, 'payQris'])->name('user.payQris');
 Route::post('/user-panel/{ticket}/close', [TrackingController::class, 'closeTicket'])->name('user.close');
 
 Route::get('/invoice/{invoice?}', [InvoiceController::class, 'show'])->name('invoice');
 
-// Dedicated Technician & Workshop Staff Authentication
+// Authentication for Technician & Workshop Staff
 Route::get('/login', fn () => redirect()->route('teknisi.login'))->name('login');
 Route::get('/admin/login', fn () => redirect()->route('teknisi.login'))->name('admin.login');
 Route::get('/teknisi/login', [AuthController::class, 'showLogin'])->name('teknisi.login');
 Route::post('/teknisi/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('teknisi.login.post');
 Route::post('/teknisi/logout', [AuthController::class, 'logout'])->name('teknisi.logout');
 
-// Workshop Technician & Admin Control Panel (Protected by Auth & Staff Role)
+// ==========================================
+// 1. ADMIN WORKSHOP CONTROL PANEL
+// ==========================================
+Route::prefix('admin')->middleware(['auth', 'staff'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/servis', [ServiceOrderController::class, 'index'])->name('admin.servis.list');
+    Route::get('/export-bi', [DashboardController::class, 'exportBiCsv'])->name('admin.bi.export');
+
+    // Estimasi & Lembar Persetujuan (Arahkan ke Admin)
+    Route::get('/meja-kerja/{ticket?}', [ServiceOrderController::class, 'showWorkbench'])->name('admin.meja-kerja');
+    Route::post('/meja-kerja/{ticket}/diagnosis', [ServiceOrderController::class, 'updateDiagnosis'])->name('admin.diagnosis.save');
+    Route::post('/meja-kerja/{ticket}/nego', [ServiceOrderController::class, 'resolveNegotiation'])->name('admin.nego.resolve');
+    Route::post('/meja-kerja/{ticket}/handover', [ServiceOrderController::class, 'handover'])->name('admin.courier.handover');
+
+    // Customer Relationship Management (CRM) & Tugas BI
+    Route::get('/crm', [CustomerCrmController::class, 'index'])->name('admin.crm');
+    Route::post('/crm', [CustomerCrmController::class, 'store'])->name('admin.crm.store');
+
+    // Inventori Suku Cadang
+    Route::get('/sparepart', [SparepartController::class, 'index'])->name('admin.sparepart.index');
+    Route::post('/sparepart', [SparepartController::class, 'store'])->name('admin.sparepart.save');
+    Route::put('/sparepart/{id}', [SparepartController::class, 'update'])->name('admin.sparepart.edit');
+});
+
+// ==========================================
+// 2. TEKNISI WORKSHOP CONTROL PANEL
+// ==========================================
 Route::prefix('teknisi')->middleware(['auth', 'staff'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.teknisi');
+    // Dashboard khusus teknisi (fokus operasional unit & perbaikan hardware)
+    Route::get('/', [DashboardController::class, 'technicianDashboard'])->name('admin.teknisi');
+    Route::get('/dashboard', [DashboardController::class, 'technicianDashboard'])->name('teknisi.dashboard');
+
     Route::get('/servis', [ServiceOrderController::class, 'index'])->name('admin.servis');
     Route::get('/export-bi', [DashboardController::class, 'exportBiCsv'])->name('admin.export.bi');
     Route::get('/meja-kerja/{ticket?}', [ServiceOrderController::class, 'showWorkbench'])->name('admin.workbench');
@@ -48,6 +79,7 @@ Route::prefix('teknisi')->middleware(['auth', 'staff'])->group(function () {
     Route::post('/meja-kerja/{ticket}/complete', [ServiceOrderController::class, 'complete'])->name('admin.workbench.complete');
     Route::post('/meja-kerja/{ticket}/handover', [ServiceOrderController::class, 'handover'])->name('admin.workbench.handover');
     Route::post('/meja-kerja/{ticket}/trigger-sla', [ServiceOrderController::class, 'triggerSla'])->name('admin.workbench.triggerSla');
+    Route::post('/meja-kerja/{ticket}/nego', [ServiceOrderController::class, 'resolveNegotiation'])->name('admin.workbench.nego');
 
     Route::get('/sparepart', [SparepartController::class, 'index'])->name('admin.sparepart');
     Route::post('/sparepart', [SparepartController::class, 'store'])->name('admin.sparepart.store');

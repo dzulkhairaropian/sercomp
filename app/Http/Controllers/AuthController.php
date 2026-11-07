@@ -45,10 +45,10 @@ class AuthController extends Controller
                     'tech_id' => 'Akses ditolak. Portal ini khusus untuk staf teknisi dan admin workshop.',
                 ])->onlyInput('tech_id');
             }
-
             $request->session()->regenerate();
-            return redirect()->intended(route('admin.teknisi'))
-                ->with('success', 'Selamat datang di Meja Kerja Workshop SerComp, ' . $user->name . '!');
+            $targetRoute = $user->role === 'admin' ? route('admin.dashboard') : route('teknisi.dashboard');
+            return redirect()->intended($targetRoute)
+                ->with('success', 'Selamat datang di Panel SerComp, ' . $user->name . ' (' . ucfirst($user->role) . ')!');
         }
 
         return back()->withErrors([

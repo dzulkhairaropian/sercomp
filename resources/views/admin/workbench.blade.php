@@ -1,16 +1,23 @@
 @extends('layouts.admin')
 
-@section('title', 'Meja Kerja Diagnosa Unit - SerComp')
-@section('page-title', 'Meja Kerja Diagnosa & Pelaporan')
-@section('page-subtitle', 'Pemeriksaan fisik unit, penetapan estimasi biaya di muka, dokumentasi foto, dan aktivasi SLA.')
+@section('title', 'Meja Kerja & Estimasi Biaya - SerComp')
+@section('page-title', auth()->user()?->role === 'admin' ? 'Estimasi Biaya & Persetujuan Admin' : 'Meja Kerja Diagnosa Teknisi')
+@section('page-subtitle', 'Pemeriksaan fisik meja kerja, penetapan estimasi jasa & suku cadang (Admin), resolusi nego, dan serah terima kurir ber-tandatangan.')
 
 @section('page-actions')
-<a href="{{ url('/teknisi/servis') }}" class="btn btn-outline-secondary btn-sm fw-semibold d-flex align-items-center gap-1">
+<a href="{{ route('admin.servis') }}" class="btn btn-outline-secondary btn-sm fw-semibold d-flex align-items-center gap-1">
   <i class="bi bi-arrow-left"></i> Kembali ke Daftar Servis
 </a>
 @endsection
 
 @section('content')
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert">
+  <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
 
 <!-- BANNER OTOMASI SLA 1X24 JAM PASCA-TERIMA -->
 <div class="alert alert-warning border border-warning-subtle bg-warning-subtle text-dark rounded-4 p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 shadow-sm">
@@ -21,7 +28,7 @@
     <div>
       <strong class="d-block small text-uppercase text-dark">Logika SLA 1x24 Jam Pasca-Penyerahan Unit:</strong>
       <span class="small text-secondary">
-        Setelah unit diserahkan teknisi ke pelanggan, sistem menjalankan hitung mundur 1x24 jam. Apabila pelanggan lupa menutup tiket secara manual, scheduler sistem otomatis mengubah tiket menjadi <b>Closed / Completed</b>.
+        Setelah unit diserahkan kurir ke pelanggan (dengan tanda tangan digital), timer 1x24 jam berjalan. Jika pelanggan tidak komplain, tiket otomatis <b>Closed</b> & e-Warranty 90 hari aktif.
       </span>
     </div>
   </div>
@@ -39,10 +46,10 @@
       <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <div>
           <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Tiket di Meja Kerja</span>
-          <h5 id="tekTicketNo" class="fw-bold text-primary font-monospace mb-0">#SC-2026-9042</h5>
+          <h5 id="tekTicketNo" class="fw-bold text-primary font-monospace mb-0">#{{ $ticket?->ticket_no ?? 'SC-2026-9042' }}</h5>
         </div>
         <span id="tekBadgeStatus" class="badge badge-warning-accessible px-2.5 py-1.5 fw-bold">
-          Menunggu Approval Biaya
+          {{ $ticket?->order_status ?? 'Menunggu Approval Biaya' }}
         </span>
       </div>
 
@@ -51,13 +58,13 @@
         <div class="col-6">
           <div class="p-2.5 rounded-3 bg-light border">
             <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10px;">Perangkat:</span>
-            <strong id="tekDevice" class="small text-dark">Laptop Asus ROG</strong>
+            <strong id="tekDevice" class="small text-dark">{{ $ticket?->device_type }} {{ $ticket?->device_brand }} {{ $ticket?->device_model }}</strong>
           </div>
         </div>
         <div class="col-6">
           <div class="p-2.5 rounded-3 bg-light border">
             <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10px;">Pemilik Unit:</span>
-            <strong id="tekCustomer" class="small text-dark">Dzul Khair (081298765432)</strong>
+            <strong id="tekCustomer" class="small text-dark">{{ $ticket?->customer?->name ?? 'Guest' }} ({{ $ticket?->customer?->phone ?? '-' }})</strong>
           </div>
         </div>
       </div>
@@ -68,7 +75,7 @@
           <i class="bi bi-card-text me-1"></i> Kronologi Kerusakan Dari Konsumen:
         </span>
         <p id="tekChronology" class="small text-secondary fst-italic mb-0">
-          "Layar tiba-tiba mati saat rendering tugas, lampu indikator menyala tapi kipas berisik sekali dan laptop panas."
+          "{{ $ticket?->issue_chronology ?? 'Belum ada kronologi.' }}"
         </p>
       </div>
 
@@ -76,15 +83,15 @@
       <div class="small mb-3 space-y-1">
         <div class="d-flex justify-content-between p-2 rounded-2 bg-light border mb-1">
           <span class="text-muted">Metode Pengantaran:</span>
-          <strong id="tekDelivery" class="text-dark">Diantar Sendiri</strong>
+          <strong id="tekDelivery" class="text-dark">{{ $ticket?->delivery_method ?? 'Diantar Sendiri' }}</strong>
         </div>
         <div class="d-flex justify-content-between p-2 rounded-2 bg-light border mb-1">
           <span class="text-muted">Add-on Deep Cleaning:</span>
-          <strong id="tekAddonCleaning" class="text-primary">Ya (+Rp 50.000)</strong>
+          <strong id="tekAddonCleaning" class="text-primary">{{ $ticket?->addon_cleaning ? 'Ya (+Rp 50.000)' : 'Tidak' }}</strong>
         </div>
         <div class="d-flex justify-content-between p-2 rounded-2 bg-light border">
           <span class="text-muted">Add-on Repasta Arctic:</span>
-          <strong id="tekAddonRepasta" class="text-primary">Ya (+Rp 75.000)</strong>
+          <strong id="tekAddonRepasta" class="text-primary">{{ $ticket?->addon_repasta ? 'Ya (+Rp 75.000)' : 'Tidak' }}</strong>
         </div>
       </div>
 
@@ -98,49 +105,138 @@
         <span class="text-secondary d-block mt-1" style="font-size: 11px;">SOP Workshop: Teknisi dilarang membongkar motherboard sebelum pembayaran QRIS diverifikasi.</span>
       </div>
 
-      <!-- Serah Terima Fisik Button -->
+      <!-- Quick WhatsApp CS Direct Link -->
+      @php
+        $custPhone = preg_replace('/[^0-9]/', '', $ticket?->customer?->phone ?? '');
+        if (str_starts_with($custPhone, '0')) $custPhone = '62' . substr($custPhone, 1);
+        $directWaText = rawurlencode("Halo Kak " . ($ticket?->customer?->name ?? 'Pelanggan') . ", kami dari SerComp ingin mengonfirmasi terkait servis unit " . ($ticket?->device_brand ?? '') . " (No. Tiket: " . ($ticket?->ticket_no ?? '') . ").");
+      @endphp
+      <div class="mb-3">
+        <a href="https://wa.me/{{ $custPhone }}?text={{ $directWaText }}" target="_blank" class="btn btn-outline-success btn-sm w-100 fw-semibold">
+          <i class="bi bi-whatsapp me-1"></i> Hubungi Pelanggan via WhatsApp
+        </a>
+      </div>
+
+      <!-- PENYERAHAN UNIT OLEH KURIR DENGAN TANDA TANGAN DIGITAL -->
       <div class="p-3 rounded-3 bg-light border">
         <span class="text-muted text-uppercase fw-bold d-block mb-2" style="font-size: 10px;">
-          Penyerahan Fisik Unit ke Pelanggan:
+          <i class="bi bi-truck me-1 text-primary"></i> Penyerahan Unit Oleh Kurir (Penerimaan):
         </span>
-        <button id="btnHandover" onclick="handoverUnitToCustomer()" class="btn btn-outline-primary w-100 btn-sm fw-bold">
-          <i class="bi bi-box-seam me-1"></i> Tandai Unit Telah Diserahkan (Mulai Timer SLA 1x24 Jam)
-        </button>
-        <div id="handoverStatusText" class="small text-muted mt-2 text-center" style="font-size: 11px;">
-          Unit belum diserahkan ke pelanggan.
-        </div>
+
+        @if($ticket && $ticket->unit_handed_over)
+          <div class="p-2.5 rounded-2 bg-success-subtle border border-success-subtle small text-success mb-2">
+            <div class="fw-bold mb-1"><i class="bi bi-check-circle-fill me-1"></i> Unit Telah Diserahkan Oleh Kurir</div>
+            <div>Kurir: <strong>{{ $ticket->courier_name ?? 'Kurir Workshop' }}</strong></div>
+            <div>Penerima: <strong>{{ $ticket->receiver_name ?? ($ticket->customer?->name ?? 'Pelanggan') }}</strong></div>
+            <div style="font-size: 10px;" class="text-muted">Waktu: {{ $ticket->handed_over_at?->format('d M Y H:i') }}</div>
+          </div>
+          @if($ticket->signature_data)
+            <div class="text-center p-2 bg-white rounded border">
+              <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 9px;">Tanda Tangan Digital Penerima:</span>
+              <img src="{{ $ticket->signature_data }}" alt="Tanda Tangan Digital" class="img-fluid" style="max-height: 80px;">
+            </div>
+          @endif
+        @else
+          <button type="button" class="btn btn-outline-primary w-100 btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalCourierHandover">
+            <i class="bi bi-pen-fill me-1"></i> Serah Terima Kurir & Tanda Tangan Konsumen
+          </button>
+          <div id="handoverStatusText" class="small text-muted mt-2 text-center" style="font-size: 11px;">
+            Unit belum diserahkan kurir. Selesaikan serah terima dengan tanda tangan digital konsumen.
+          </div>
+        @endif
       </div>
     </div>
   </div>
 
   <!-- KOLOM KANAN: FORM LEMBAR PERSETUJUAN & DOKUMENTASI (7 Kolom) -->
   <div class="col-lg-7">
-    <!-- Form Input Lembar Persetujuan -->
+
+    <!-- ALERT BANNER: CUSTOMER MENGAJUKAN NEGO HARGA -->
+    @if($ticket && $ticket->negotiation_status === 'Requested')
+    <div class="card border-warning border-2 shadow-sm rounded-4 mb-4 bg-warning-subtle">
+      <div class="card-body p-3 px-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i> PERMINTAAN NEGO KONSUMEN</span>
+          <span class="text-muted small">Konsumen meminta penyesuaian biaya estimasi</span>
+        </div>
+        <div class="p-3 bg-white rounded-3 border mb-3 small">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Tawaran / Budget Pelanggan:</span>
+            <strong class="text-warning-emphasis font-monospace fs-6">
+              Rp {{ number_format($ticket->negotiation_budget ?? 0, 0, ',', '.') }}
+            </strong>
+          </div>
+          <div class="mb-1">
+            <span class="text-muted">Alasan / Catatan Nego:</span>
+            <div class="fw-semibold text-dark fst-italic">"{{ $ticket->negotiation_notes }}"</div>
+          </div>
+        </div>
+
+        <!-- Form Tindakan Admin terhadap Negosiasi -->
+        <form action="{{ route('admin.nego.resolve', ['ticket' => $ticket->ticket_no]) }}" method="POST" class="row g-2 small">
+          @csrf
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Biaya Jasa (Rp):</label>
+            <input type="number" name="adjusted_labor" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->labor_cost ?? 150000 }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Suku Cadang (Rp):</label>
+            <input type="number" name="adjusted_parts" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->parts_cost ?? 0 }}" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Admin untuk Konsumen:</label>
+            <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="Cth: Diberikan diskon khusus pelanggan setia Rp 50.000 / part diganti opsi garansi 90 hari." required>
+          </div>
+          <div class="col-12 d-flex gap-2 mt-2">
+            <button type="submit" name="decision" value="approve" class="btn btn-success btn-sm fw-bold px-3">
+              <i class="bi bi-check-circle me-1"></i> Setujui Nego & Update Harga
+            </button>
+            <button type="submit" name="decision" value="reject" class="btn btn-outline-danger btn-sm fw-bold px-3">
+              <i class="bi bi-x-circle me-1"></i> Tolak Nego (Tetap Harga Normal)
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    @elseif($ticket && $ticket->negotiation_status === 'Approved')
+    <div class="alert alert-success border border-success-subtle rounded-3 small p-3 mb-4 d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <div>
+        <strong>Kesepakatan Nego Telah Disetujui Admin:</strong>
+        <span>Harga telah disesuaikan dan notifikasi terkirim ke WhatsApp & Email pelanggan.</span>
+      </div>
+    </div>
+    @endif
+
+    <!-- Form Input Lembar Persetujuan (Arahkan ke Admin) -->
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
       <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <div>
-          <h6 class="fw-bold text-dark mb-0"><i class="bi bi-clipboard-check me-2 text-primary"></i>Form Lembar Persetujuan Teknisi</h6>
-          <span class="text-muted small">Data akan tampil pada portal pelanggan bersama rincian biaya terkunci & pop-up QRIS.</span>
+          <h6 class="fw-bold text-dark mb-0">
+            <i class="bi bi-calculator me-2 text-primary"></i>
+            Estimasi Jasa & Suku Cadang (Otoritas Admin Workshop)
+          </h6>
+          <span class="text-muted small">Estimasi resmi disusun oleh Admin pasca-cek fisik meja kerja. Notifikasi WA & Email otomatis terkirim.</span>
         </div>
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Step 2 - 3</span>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Tahap 2 - 3</span>
       </div>
 
       <div class="row g-3 small">
         <div class="col-12">
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Hasil Diagnosa Kerusakan Fisik:</label>
-          <textarea id="inputDiagnosis" rows="2" class="form-control bg-light small"></textarea>
+          <textarea id="inputDiagnosis" rows="2" class="form-control bg-light small">{{ $ticket?->diagnostic?->physical_damage_analysis }}</textarea>
         </div>
         <div class="col-12">
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Rencana Tindakan Perbaikan:</label>
-          <textarea id="inputActionPlan" rows="2" class="form-control bg-light small"></textarea>
+          <textarea id="inputActionPlan" rows="2" class="form-control bg-light small">{{ $ticket?->diagnostic?->action_plan }}</textarea>
         </div>
         <div class="col-md-6">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Jasa Teknisi (Rp):</label>
-          <input type="number" id="inputLabor" class="form-control bg-light small">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Jasa Teknisi (Rp):</label>
+          <input type="number" id="inputLabor" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->labor_cost ?? 150000) }}">
         </div>
         <div class="col-md-6">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Suku Cadang Baru (Rp):</label>
-          <input type="number" id="inputParts" class="form-control bg-light small">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Suku Cadang Baru (Rp):</label>
+          <input type="number" id="inputParts" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->parts_cost ?? 0) }}">
         </div>
         <div class="col-12">
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Suku Cadang Dari Stok Workshop (Opsional):</label>
@@ -151,25 +247,26 @@
             @endforeach
           </select>
         </div>
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Khusus Teknisi (Note):</label>
-          <input type="text" id="inputNote" class="form-control bg-light small">
+        <div class="col-12">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Khusus Admin & Otorisasi Biaya:</label>
+          <input type="text" id="inputNote" class="form-control bg-light small" value="{{ $ticket?->diagnostic?->admin_notes ?? 'Pemeriksaan fisik selesai. Estimasi biaya terkunci garansi 90 hari.' }}">
         </div>
         <div class="col-12">
           <button onclick="saveApprovalSheet()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-            <i class="bi bi-save me-1"></i> Perbarui & Kirim Lembar Persetujuan ke Pengguna
+            <i class="bi bi-save me-1"></i> Tetapkan & Kirim Lembar Estimasi ke Pelanggan (Otomatis Notif WA & Email)
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Dokumentasi & Penyelesaian -->
+    <!-- Dokumentasi & Penyelesaian (Foto Dual-Evidence) -->
     <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
       <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <div>
           <h6 class="fw-bold text-dark mb-0"><i class="bi bi-camera me-2 text-success"></i>Lampiran Bukti Selesai Servis & Cetak Invoice</h6>
           <span class="text-muted small">Wajib melampirkan foto laptop menyala normal dan suku cadang lama.</span>
         </div>
-        <span class="badge bg-success-subtle text-success border border-success-subtle">Step 5 - 6</span>
+        <span class="badge bg-success-subtle text-success border border-success-subtle">Tahap 5 - 6</span>
       </div>
 
       <div class="row g-3 mb-3">
@@ -202,71 +299,196 @@
   </div>
 </div>
 
-@endsection
+<!-- MODAL SERAH TERIMA KURIR & TANDA TANGAN DIGITAL USER -->
+<div class="modal fade" id="modalCourierHandover" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom p-3 px-4">
+        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-truck text-primary me-2"></i>Serah Terima Kurir & Tanda Tangan Konsumen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 small">
+        <p class="text-secondary mb-3">
+          Sesuai SOP SerComp, penyerahan unit diselesaikan oleh kurir dan ditandatangani langsung secara digital oleh penerima di layar perangkat ini.
+        </p>
 
-@section('scripts')
-  <script>
-    let order = null;
+        <div class="mb-3">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Kurir / Petugas Pengantar:</label>
+          <input type="text" id="inputCourierName" class="form-control form-control-sm" value="Kurir SerComp Workshop" required>
+        </div>
 
-    function initTeknisi() {
-      const serverTicket = @json($ticket ?? null);
+        <div class="mb-3">
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Penerima Unit (Pelanggan / Perwakilan):</label>
+          <input type="text" id="inputReceiverName" class="form-control form-control-sm" value="{{ $ticket?->customer?->name ?? 'Pelanggan' }}" required>
+        </div>
 
-      if (serverTicket) {
-        order = {
-          ticketNo: serverTicket.ticket_no,
-          customerName: serverTicket.customer_name,
-          customerPhone: serverTicket.customer_phone,
-          deviceType: serverTicket.device_type,
-          deviceBrand: serverTicket.device_brand,
-          deviceModel: serverTicket.device_model || '',
-          issueChronology: serverTicket.issue_chronology,
-          addonCleaning: serverTicket.cost_cleaning > 0,
-          addonRepasta: serverTicket.cost_repasta > 0,
-          deliveryMethod: serverTicket.delivery_method,
-          step: serverTicket.status_step || serverTicket.step,
-          status: serverTicket.status,
-          diagnosis: serverTicket.diagnosis || "Menunggu pemeriksaan fisik teknisi di workshop.",
-          actionPlan: serverTicket.action_plan || "",
-          technicianNote: serverTicket.technician_notes || "Motherboard normal bebas korsleting. Seluruh data SSD terlindungi 100%.",
-          costLabor: serverTicket.cost_labor || 0,
-          costParts: serverTicket.cost_parts || 0,
-          costCleaning: serverTicket.cost_cleaning || 0,
-          costRepasta: serverTicket.cost_repasta || 0,
-          paymentStatus: serverTicket.payment_status,
-          isApproved: serverTicket.is_approved,
-          isCompleted: serverTicket.is_completed,
-          unitHandedOver: serverTicket.unit_handed_over,
-          unitHandedOverTime: serverTicket.unit_handed_over_at,
-          isClosed: serverTicket.is_closed,
-          evidenceLaptopFixed: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_running_test_photo) ? '/storage/' + serverTicket.diagnostic.evidence_running_test_photo : "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
-          evidenceReplacedPart: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? '/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo : "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&auto=format&fit=crop&q=80",
-          invoiceNo: serverTicket.invoice_no
-        };
-        localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      } else {
-        const stored = localStorage.getItem('sercomp_active_order');
-        if (stored) {
-          try {
-            order = JSON.parse(stored);
-          } catch(e) {
-            order = null;
-          }
-        } else {
-          order = null;
-        }
-      }
+        <div class="mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label text-muted fw-bold text-uppercase mb-0" style="font-size: 10px;">
+              Bubuhi Tanda Tangan Konsumen di Kotak Bawah:
+            </label>
+            <button type="button" onclick="clearSignatureCanvas()" class="btn btn-link btn-sm text-danger p-0" style="font-size: 11px;">
+              <i class="bi bi-eraser me-1"></i> Hapus / Reset
+            </button>
+          </div>
+          <div class="border rounded-3 p-1 bg-light position-relative">
+            <canvas id="signatureCanvas" width="450" height="150" class="w-100 bg-white rounded-2" style="touch-action: none; cursor: crosshair;"></canvas>
+            <div id="sigPlaceholder" class="position-absolute top-50 start-50 translate-middle text-muted pointer-events-none user-select-none small opacity-50">
+              <i class="bi bi-pencil me-1"></i> Tanda tangan di sini dengan jari / mouse
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top p-3 px-4">
+        <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
+        <button type="button" onclick="submitCourierHandover()" class="btn btn-primary btn-sm fw-bold px-3">
+          <i class="bi bi-check2-circle me-1"></i> Simpan & Mulai Timer SLA 1x24 Jam
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-      if (!order) {
-        document.getElementById('tekTicketNo').innerText = "-";
-        document.getElementById('tekBadgeStatus').innerText = "Belum Ada Unit Dipilih";
-        document.getElementById('tekDevice').innerText = "-";
-        document.getElementById('tekCustomer').innerText = "-";
-        document.getElementById('tekChronology').innerText = "Silakan buka menu Daftar Servis Unit dan pilih unit yang ingin dikerjakan di Meja Kerja.";
-        return;
-      }
+<script>
+  let order = null;
+  let serverTicketData = @json($ticket ?? null);
 
-      renderTeknisi();
+  // Digital Signature Canvas Handling
+  let canvas, ctx;
+  let isDrawing = false;
+  let hasSigned = false;
+
+  function initSignaturePad() {
+    canvas = document.getElementById('signatureCanvas');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
     }
+
+    function startDraw(e) {
+      e.preventDefault();
+      isDrawing = true;
+      hasSigned = true;
+      document.getElementById('sigPlaceholder')?.classList.add('d-none');
+      const pos = getCoords(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getCoords(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDraw(e) {
+      if (isDrawing) {
+        isDrawing = false;
+        ctx.closePath();
+      }
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+  }
+
+  function clearSignatureCanvas() {
+    if (!canvas || !ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasSigned = false;
+    document.getElementById('sigPlaceholder')?.classList.remove('d-none');
+  }
+
+  function submitCourierHandover() {
+    const courier = document.getElementById('inputCourierName').value.trim();
+    const receiver = document.getElementById('inputReceiverName').value.trim();
+    const sigData = hasSigned ? canvas.toDataURL('image/png') : null;
+
+    if (!courier || !receiver) {
+      alert("Harap lengkapi nama kurir dan nama penerima unit.");
+      return;
+    }
+
+    fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/handover', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        courier_name: courier,
+        receiver_name: receiver,
+        signature_data: sigData
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      bootstrap.Modal.getInstance(document.getElementById('modalCourierHandover'))?.hide();
+      alert("Unit berhasil diserahterimakan oleh kurir! Tanda tangan digital tersimpan & notifikasi otomatis terkirim via WA dan Email.");
+      location.reload();
+    })
+    .catch(err => {
+      alert("Gagal memproses serah terima unit.");
+    });
+  }
+
+  function initTeknisi() {
+    if (serverTicketData) {
+      order = {
+        ticketNo: serverTicketData.ticket_no,
+        deviceType: serverTicketData.device_type,
+        deviceBrand: serverTicketData.device_brand,
+        deviceModel: serverTicketData.device_model || '',
+        customerName: serverTicketData.customer ? serverTicketData.customer.name : 'Pelanggan',
+        customerPhone: serverTicketData.customer ? serverTicketData.customer.phone : '-',
+        issueChronology: serverTicketData.issue_chronology,
+        addonCleaning: serverTicketData.addon_cleaning,
+        addonRepasta: serverTicketData.addon_repasta,
+        deliveryMethod: serverTicketData.delivery_method,
+        status: serverTicketData.order_status,
+        step: serverTicketData.status_step || 2,
+        paymentStatus: serverTicketData.invoice ? serverTicketData.invoice.payment_status : 'Unpaid',
+        diagnosis: serverTicketData.diagnostic ? serverTicketData.diagnostic.physical_damage_analysis : '',
+        actionPlan: serverTicketData.diagnostic ? serverTicketData.diagnostic.action_plan : '',
+        costLabor: serverTicketData.diagnostic ? serverTicketData.diagnostic.labor_cost : 150000,
+        costParts: serverTicketData.diagnostic ? serverTicketData.diagnostic.parts_cost : 0,
+        technicianNote: serverTicketData.diagnostic ? serverTicketData.diagnostic.admin_notes : '',
+        unitHandedOver: serverTicketData.unit_handed_over,
+        unitHandedOverTime: serverTicketData.handed_over_at,
+        courierName: serverTicketData.courier_name,
+        receiverName: serverTicketData.receiver_name,
+        signatureData: serverTicketData.signature_data
+      };
+    } else {
+      order = null;
+    }
+
+    if (!order) return;
+    renderTeknisi();
+    initSignaturePad();
+  }
 
   function renderTeknisi() {
     document.getElementById('tekTicketNo').innerText = order.ticketNo;
@@ -278,12 +500,6 @@
 
     document.getElementById('tekAddonCleaning').innerText = order.addonCleaning ? "Ya (+Rp 50.000)" : "Tidak";
     document.getElementById('tekAddonRepasta').innerText = order.addonRepasta ? "Ya (+Rp 75.000)" : "Tidak";
-
-    document.getElementById('inputDiagnosis').value = order.diagnosis || "";
-    document.getElementById('inputActionPlan').value = order.actionPlan || "";
-    document.getElementById('inputLabor').value = order.costLabor || 0;
-    document.getElementById('inputParts').value = order.costParts || 0;
-    document.getElementById('inputNote').value = order.technicianNote || "";
 
     const payBox = document.getElementById('tekPaymentBox');
     const payText = document.getElementById('tekPaymentText');
@@ -298,20 +514,6 @@
       payBox.className = "p-3 rounded-3 border border-warning-subtle bg-warning-subtle text-dark small mb-3";
       payText.innerHTML = '<span class="spinner-grow spinner-grow-sm text-warning" role="status"></span> <span>Menunggu Pelanggan Menyetujui Biaya & Bayar QRIS</span>';
     }
-
-    const btnHandover = document.getElementById('btnHandover');
-    const textHandover = document.getElementById('handoverStatusText');
-    if (order.unitHandedOver) {
-      btnHandover.disabled = true;
-      btnHandover.className = "btn btn-secondary w-100 btn-sm";
-      btnHandover.innerHTML = '<i class="bi bi-check-all me-1"></i> Unit Telah Diserahkan Fisik ke Pelanggan';
-      textHandover.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle me-1"></i>Diserahkan pada: ${new Date(order.unitHandedOverTime).toLocaleTimeString('id-ID')}</span>`;
-    } else {
-      btnHandover.disabled = false;
-      btnHandover.className = "btn btn-outline-primary w-100 btn-sm fw-bold";
-      btnHandover.innerHTML = '<i class="bi bi-box-seam me-1"></i> Tandai Unit Telah Diserahkan (Mulai Timer SLA 1x24 Jam)';
-      textHandover.innerText = "Unit belum diserahkan ke pelanggan.";
-    }
   }
 
   function saveApprovalSheet() {
@@ -321,15 +523,6 @@
     const parts = parseInt(document.getElementById('inputParts').value) || 0;
     const note = document.getElementById('inputNote').value;
 
-    order.diagnosis = diagnosis;
-    order.actionPlan = actionPlan;
-    order.costLabor = labor;
-    order.costParts = parts;
-    order.technicianNote = note;
-    order.step = 3;
-    order.status = "Menunggu Persetujuan Biaya";
-
-    // Kirim pembaruan diagnosa ke database MySQL
     fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/diagnosis', {
       method: 'POST',
       headers: {
@@ -342,56 +535,22 @@
         action_plan: actionPlan,
         cost_labor: labor,
         cost_parts: parts,
-        technician_notes: note,
+        admin_notes: note,
         sparepart_id: document.getElementById('selectSparepart') ? document.getElementById('selectSparepart').value : null
       })
     })
     .then(res => res.json())
     .then(data => {
-      localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      alert("Lembar Persetujuan berhasil diperbarui dan dikirim ke portal pelanggan!");
-      renderTeknisi();
+      alert("Lembar Estimasi Biaya berhasil ditetapkan! Notifikasi otomatis telah dikirim ke WhatsApp dan Email pelanggan.");
+      location.reload();
     })
     .catch(err => {
-      localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      alert("Lembar Persetujuan berhasil diperbarui (disimpan di portal lokal).");
-      renderTeknisi();
+      alert("Lembar Estimasi Biaya berhasil disimpan.");
+      location.reload();
     });
   }
 
-  function handoverUnitToCustomer() {
-    if (confirm("Konfirmasi bahwa unit fisik telah diserahterimakan kepada pelanggan? Timer masa uji SLA 1x24 jam akan langsung berjalan.")) {
-      order.unitHandedOver = true;
-      order.unitHandedOverTime = new Date().toISOString();
-      order.step = 6;
-      order.status = "Unit Diterima - Menunggu Tutup Tiket";
-
-      fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/handover', {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          'Accept': 'application/json'
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-        alert("Unit ditandai telah diserahkan. Timer SLA 1x24 jam aktif di portal pelanggan!");
-        renderTeknisi();
-      })
-      .catch(err => {
-        localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-        alert("Unit ditandai telah diserahkan. Timer SLA 1x24 jam aktif!");
-        renderTeknisi();
-      });
-    }
-  }
-
   function completeServiceOrder() {
-    order.isCompleted = true;
-    order.step = 6;
-    order.status = "Selesai Dikerjakan - Siap Diserahkan";
-
     const formData = new FormData();
     const f1 = document.getElementById('fileEvidenceRunningTest');
     const f2 = document.getElementById('fileEvidenceReplacedPart');
@@ -408,12 +567,12 @@
     })
     .then(res => res.json())
     .then(data => {
-      localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      renderTeknisi();
+      alert("Servis ditandai selesai! Foto bukti running test & modul part tersimpan. Notifikasi WA & Email telah dikirim.");
+      location.reload();
     })
     .catch(err => {
-      localStorage.setItem('sercomp_active_order', JSON.stringify(order));
-      renderTeknisi();
+      alert("Servis selesai disimpan.");
+      location.reload();
     });
   }
 
@@ -437,12 +596,6 @@
 
   function triggerSlaTimeout() {
     if (confirm("Simulasikan waktu pengujian 1x24 jam pasca-penyerahan telah habis tanpa komplain pelanggan?")) {
-      order.unitHandedOver = true;
-      order.unitHandedOverTime = new Date(Date.now() - (25 * 3600 * 1000)).toISOString();
-      order.isClosed = true;
-      order.step = 7;
-      order.status = "Auto-Closed by SLA (1x24 Jam Lewat Pasca-Terima Unit)";
-
       fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/trigger-sla', {
         method: 'POST',
         headers: {
@@ -452,14 +605,12 @@
       })
       .then(res => res.json())
       .then(data => {
-        localStorage.setItem('sercomp_active_order', JSON.stringify(order));
         alert("SLA 1x24 Jam Lewat: Tiket otomatis ditutup (Auto-Closed) dan e-Warranty 90 hari resmi diaktifkan!");
-        renderTeknisi();
+        location.reload();
       })
       .catch(err => {
-        localStorage.setItem('sercomp_active_order', JSON.stringify(order));
         alert("SLA 1x24 Jam Lewat: Tiket otomatis ditutup!");
-        renderTeknisi();
+        location.reload();
       });
     }
   }

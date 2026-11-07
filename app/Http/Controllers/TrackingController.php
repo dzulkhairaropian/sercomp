@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ServiceOrder;
 use App\Models\Warranty;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -143,6 +144,50 @@ class TrackingController extends Controller
         }
 
         return back()->with('info', 'Pengerjaan servis dibatalkan.');
+    }
+
+    public function negotiate(Request $request, $ticketNo)
+    {
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with(['diagnostic', 'invoice', 'customer'])
+            ->firstOrFail();
+
+        if (!$this->verifyCustomerOwnership($request, $order)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'require_verification' => true,
+                    'message' => 'Otorisasi ditolak. Masukkan 4 digit Kode PIN Keamanan tiket ini.',
+                ], 403);
+            }
+            return back()->withErrors(['security_pin' => 'Kode PIN Keamanan 4 digit tidak cocok.']);
+        }
+
+        $validated = $request->validate([
+            'negotiation_notes' => 'required|string|max:500',
+            'negotiation_budget' => 'nullable|numeric|min:0',
+        ]);
+
+        $order->update([
+            'negotiation_status' => 'Requested',
+            'negotiation_notes' => $validated['negotiation_notes'],
+            'negotiation_budget' => $validated['negotiation_budget'] ?? null,
+        ]);
+
+        $notifData = NotificationService::notifyNegotiationRequested($order);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan negosiasi Anda berhasil dikirim ke Admin Workshop. Notifikasi otomatis terkirim via WA & Email.',
+                'wa_link' => $notifData['wa_link'] ?? null,
+                'ticket' => $order->fresh(['diagnostic', 'invoice']),
+            ]);
+        }
+
+        return back()->with('success', 'Pengajuan negosiasi biaya telah dikirim ke Admin Workshop.');
     }
 
     public function payQris(Request $request, $ticketNo)

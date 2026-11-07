@@ -187,20 +187,32 @@
     </div>
 
     <!-- BANNER UNIT DITERIMA USER & TOMBOL TUTUP TIKET (MUNCUL PASCA SERAH TERIMA) -->
+    <!-- BANNER UNIT DITERIMA USER & BUKTI SERAH TERIMA KURIR -->
     <div id="handoverNotice" class="card border-success bg-success-subtle mb-4 d-none">
-      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-        <div class="d-flex align-items-center gap-3">
-          <div class="fs-1 text-success"><i class="bi bi-box2-check-fill"></i></div>
+      <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="fs-1 text-success"><i class="bi bi-box2-check-fill"></i></div>
+            <div>
+              <h6 class="fw-bold text-success-emphasis mb-1">Unit Telah Diserahkan Oleh Kurir & Diterima!</h6>
+              <p class="small text-secondary mb-0">
+                Diserahkan oleh kurir: <strong id="handoverCourierText" class="text-dark">Kurir SerComp</strong> • Penerima: <strong id="handoverReceiverText" class="text-dark">Pelanggan</strong>. Sisa waktu toleransi uji: <strong id="handoverTimerText">23:59:59</strong>.
+              </p>
+            </div>
+          </div>
+          <button onclick="confirmCloseTicket()" class="btn btn-success fw-bold px-4 py-2 text-nowrap">
+            <i class="bi bi-check2-circle me-1"></i> Konfirmasi Terima & Aktifkan e-Warranty
+          </button>
+        </div>
+        <div id="handoverSignatureCard" class="p-3 bg-white rounded-3 border d-flex flex-wrap align-items-center justify-content-between gap-3 d-none">
           <div>
-            <h6 class="fw-bold text-success-emphasis mb-1">Unit Laptop / PC Telah Anda Terima!</h6>
-            <p class="small text-secondary mb-0">
-              Silakan tes perangkat Anda. Jika sudah normal, klik <strong>Konfirmasi Terima & Tutup Tiket</strong>. Bila Anda lupa, sistem otomatis menyelesaikannya dalam <strong id="handoverTimerText">23:59:59</strong>.
-            </p>
+            <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10px;"><i class="bi bi-pen-fill text-primary me-1"></i> Tanda Tangan Digital Penerima Unit:</span>
+            <span class="small text-secondary">Tanda tangan dibubuhkan langsung kepada kurir saat penyerahan unit fisik.</span>
+          </div>
+          <div>
+            <img id="handoverSignatureImg" src="" alt="Tanda Tangan Penerima" class="border rounded bg-light p-1" style="max-height: 70px; max-width: 200px;">
           </div>
         </div>
-        <button onclick="confirmCloseTicket()" class="btn btn-success fw-bold px-4 py-2 text-nowrap">
-          <i class="bi bi-check2-circle me-1"></i> Konfirmasi Terima & Tutup Tiket
-        </button>
       </div>
     </div>
 
@@ -305,6 +317,8 @@
           <span class="fw-bold text-dark d-block mb-1"><i class="bi bi-shield-lock me-1"></i> Catatan Khusus Teknisi:</span>
           <span id="displayNote">Motherboard bebas korsleting. Seluruh data SSD aman dan tidak disentuh sesuai SOP.</span>
         </div>
+        <!-- Notifikasi Status Negosiasi Biaya -->
+        <div id="negoStatusNotice" class="mb-3"></div>
 
         <!-- Dynamic Action Area (Approval / QRIS / Wait Notice) -->
         <div id="approvalActionBtns" class="pt-2">
@@ -432,6 +446,45 @@
       </div>
     </div>
   </div>
+  <!-- MODAL AJUKAN NEGO BIAYA -->
+  <div class="modal fade" id="modalNego" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-bottom p-3 px-4">
+          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-chat-quote-fill text-warning me-2"></i>Ajukan Negosiasi Biaya Servis</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 small">
+          <p class="text-secondary mb-3">
+            SerComp berkomitmen pada transparansi (Zero Hidden Cost). Jika estimasi biaya suku cadang atau jasa dirasa di luar anggaran, Anda dapat mengajukan tawaran atau berdiskusi langsung dengan Admin Workshop.
+          </p>
+          <div class="p-3 bg-light rounded-3 border mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted">Total Estimasi Saat Ini:</span>
+              <strong id="modalNegoCurrentTotal" class="text-primary font-monospace fs-6">Rp 0</strong>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Budget / Penawaran yang Anda Harapkan (Rp):</label>
+            <input type="number" id="inputNegoBudget" class="form-control" placeholder="Cth: 350000">
+            <span class="text-muted" style="font-size: 11px;">Kosongkan bila ingin mendiskusikan opsi alternatif suku cadang.</span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Alasan / Catatan Negosiasi:</label>
+            <textarea id="inputNegoNotes" rows="3" class="form-control" placeholder="Cth: Bisakah diskon biaya jasa Rp 50.000? Atau adakah pilihan sparepart second yang bergaransi?"></textarea>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="button" onclick="submitNegotiation()" class="btn btn-primary fw-bold py-2">
+              <i class="bi bi-send-fill me-1"></i> Kirim Permintaan Nego ke Admin
+            </button>
+            <a id="btnNegoWaChat" href="#" target="_blank" class="btn btn-outline-success fw-bold py-2">
+              <i class="bi bi-whatsapp me-1"></i> Diskusi Nego Langsung via WhatsApp CS
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- FOOTER -->
@@ -522,7 +575,16 @@
           warrantyCode: (serverTicket.invoice && serverTicket.invoice.warranty) ? serverTicket.invoice.warranty.warranty_code : null,
           warrantyValidUntil: (serverTicket.invoice && serverTicket.invoice.warranty) ? serverTicket.invoice.warranty.expires_at : null,
           evidenceRunningPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_running_test_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_running_test_photo) : null,
-          evidenceReplacedPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo) : null
+          evidenceReplacedPhoto: (serverTicket.diagnostic && serverTicket.diagnostic.evidence_replaced_part_photo) ? ('/storage/' + serverTicket.diagnostic.evidence_replaced_part_photo) : null,
+          customerType: serverTicket.customer_type || (serverTicket.customer ? serverTicket.customer.customer_type : 'Personal'),
+          companyName: serverTicket.company_name || (serverTicket.customer ? serverTicket.customer.company_name : ''),
+          negotiationStatus: serverTicket.negotiation_status || 'None',
+          negotiationNotes: serverTicket.negotiation_notes || '',
+          negotiationBudget: serverTicket.negotiation_budget || 0,
+          courierName: serverTicket.courier_name || 'Kurir Workshop SerComp',
+          receiverName: serverTicket.receiver_name || serverTicket.customer_name || 'Pelanggan',
+          signatureData: serverTicket.signature_data || '',
+          adminNotes: (serverTicket.diagnostic && serverTicket.diagnostic.admin_notes) ? serverTicket.diagnostic.admin_notes : ''
         };
       } else {
         currentOrder = null;
@@ -565,7 +627,11 @@
     function renderUI() {
       document.getElementById('displayTicketNo').innerText = currentOrder.ticketNo;
       document.getElementById('displayDevice').innerText = `${currentOrder.deviceType} ${currentOrder.deviceBrand} ${currentOrder.deviceModel}`;
-      document.getElementById('displayCustomer').innerText = currentOrder.customerName;
+      let custTitle = currentOrder.customerName;
+      if (currentOrder.customerType === 'Company' && currentOrder.companyName) {
+        custTitle += ` [${currentOrder.companyName}]`;
+      }
+      document.getElementById('displayCustomer').innerText = custTitle;
       document.getElementById('displayChronology').innerText = `"${currentOrder.issueChronology}"`;
       document.getElementById('displayDelivery').innerText = currentOrder.deliveryMethod;
       document.getElementById('displayTechnician').innerText = currentOrder.technician || "Budi Santoso (Hardware Specialist)";
@@ -666,14 +732,17 @@
         actionContainer.innerHTML = `
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 w-100">
             <div class="small text-muted">
-              <i class="bi bi-info-circle me-1"></i> Teknisi telah merilis rincian biaya. Klik setujui untuk melanjutkan ke pembayaran QRIS.
+              <i class="bi bi-info-circle me-1"></i> Estimasi biaya resmi telah dirilis. Anda dapat menyetujui, mengajukan negosiasi biaya, atau membatalkan.
             </div>
-            <div class="d-flex gap-2 text-nowrap">
+            <div class="d-flex flex-wrap gap-2 text-nowrap">
               <button onclick="handleReject()" class="btn btn-outline-danger fw-semibold px-3 py-2 btn-sm">
                 Tolak / Batalkan
               </button>
+              <button onclick="openNegoModal()" class="btn btn-warning text-dark fw-bold px-3 py-2 btn-sm">
+                <i class="bi bi-chat-quote-fill me-1"></i> Ajukan Nego
+              </button>
               <button onclick="handleApprove()" class="btn btn-primary fw-bold px-4 py-2 btn-sm shadow-sm">
-                <i class="bi bi-check-circle me-1"></i> Setujui Rincian Biaya
+                <i class="bi bi-check-circle me-1"></i> Setujui & Bayar
               </button>
             </div>
           </div>
@@ -739,12 +808,66 @@
         document.getElementById('invoiceAccessCard').classList.remove('d-none');
       }
 
-      // Handover Notice & Timer
+      // Render status negosiasi
+      const negoBox = document.getElementById('negoStatusNotice');
+      if (negoBox) {
+        if (currentOrder.negotiationStatus === 'Requested') {
+          const waText = encodeURIComponent(`Halo Admin SerComp, saya pemilik tiket ${currentOrder.ticketNo} ingin follow-up negosiasi estimasi biaya.`);
+          negoBox.innerHTML = `
+            <div class="alert alert-warning border border-warning-subtle d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 p-3 rounded-3">
+              <div>
+                <strong class="d-block text-warning-emphasis"><i class="bi bi-hourglass-split me-1"></i> Pengajuan Negosiasi Biaya Sedang Ditinjau Admin Workshop</strong>
+                <span class="small text-muted">Budget yang diajukan: <strong>Rp ${(parseInt(currentOrder.negotiationBudget) || 0).toLocaleString('id-ID')}</strong> • Catatan: "${currentOrder.negotiationNotes || '-'}"</span>
+              </div>
+              <a href="https://wa.me/6281122334455?text=${waText}" target="_blank" class="btn btn-sm btn-success fw-bold text-nowrap">
+                <i class="bi bi-whatsapp me-1"></i> WA Admin CS
+              </a>
+            </div>
+          `;
+        } else if (currentOrder.negotiationStatus === 'Approved') {
+          negoBox.innerHTML = `
+            <div class="alert alert-success border border-success-subtle d-flex align-items-center gap-3 mb-3 p-3 rounded-3">
+              <i class="bi bi-check-circle-fill text-success fs-4"></i>
+              <div>
+                <strong class="d-block text-success">Negosiasi Biaya Disetujui Admin Workshop!</strong>
+                <span class="small text-dark">Estimasi biaya telah disesuaikan menjadi <strong>${totalStr}</strong>. Catatan Admin: "${currentOrder.adminNotes || 'Kesepakatan harga baru telah aktif.'}". Silakan setujui untuk lanjut pembayaran QRIS.</span>
+              </div>
+            </div>
+          `;
+        } else if (currentOrder.negotiationStatus === 'Rejected') {
+          negoBox.innerHTML = `
+            <div class="alert alert-secondary border border-secondary-subtle d-flex align-items-center gap-3 mb-3 p-3 rounded-3">
+              <i class="bi bi-info-circle-fill text-secondary fs-4"></i>
+              <div>
+                <strong class="d-block text-dark">Pemberitahuan Negosiasi Biaya</strong>
+                <span class="small text-muted">Mohon maaf, penyesuaian harga belum dapat disetujui. Catatan Admin: "${currentOrder.adminNotes || 'Suku cadang original bergaransi resmi 90 hari.'}". Anda dapat menyetujui rincian atau membatalkan tanpa biaya.</span>
+              </div>
+            </div>
+          `;
+        } else {
+          negoBox.innerHTML = '';
+        }
+      }
+
+      // Handover Notice & Kurir Tanda Tangan
       if (currentOrder.unitHandedOver && !currentOrder.isClosed) {
         document.getElementById('handoverNotice').classList.remove('d-none');
         document.getElementById('badgeStatus').className = "badge badge-warning-accessible px-2.5 py-1.5 fw-bold";
+        const courierEl = document.getElementById('handoverCourierText');
+        const receiverEl = document.getElementById('handoverReceiverText');
+        if (courierEl) courierEl.innerText = currentOrder.courierName || 'Kurir Workshop';
+        if (receiverEl) receiverEl.innerText = currentOrder.receiverName || currentOrder.customerName || 'Pelanggan';
+        const sigCard = document.getElementById('handoverSignatureCard');
+        const sigImg = document.getElementById('handoverSignatureImg');
+        if (sigCard && sigImg) {
+          if (currentOrder.signatureData) {
+            sigCard.classList.remove('d-none');
+            sigImg.src = currentOrder.signatureData;
+          } else {
+            sigCard.classList.add('d-none');
+          }
+        }
       }
-
       if (currentOrder.isClosed) {
         document.getElementById('handoverNotice').classList.add('d-none');
         const node7 = document.getElementById('step7Node');
@@ -899,6 +1022,68 @@
           currentOrder.step = 7;
           currentOrder.status = "Closed / Completed";
           localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+          renderUI();
+        })
+        .catch(err => {
+          const errEl = document.getElementById('verifyAlertError');
+          if (errEl && bsVerifyModal) {
+            errEl.innerText = err.message || "Verifikasi gagal.";
+            errEl.classList.remove('d-none');
+          } else {
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    function openNegoModal() {
+      const totalText = document.getElementById('costTotal').innerText;
+      document.getElementById('modalNegoCurrentTotal').innerText = totalText;
+      const waText = encodeURIComponent(`Halo Admin SerComp, saya pemilik tiket ${currentOrder.ticketNo} ingin mendiskusikan negosiasi estimasi biaya ${totalText}.`);
+      document.getElementById('btnNegoWaChat').href = `https://wa.me/6281122334455?text=${waText}`;
+      const modal = new bootstrap.Modal(document.getElementById('modalNego'));
+      modal.show();
+    }
+
+    function submitNegotiation() {
+      const notes = document.getElementById('inputNegoNotes').value.trim();
+      const budget = document.getElementById('inputNegoBudget').value.trim();
+
+      if (!notes) {
+        alert("Harap masukkan alasan atau catatan negosiasi Anda.");
+        return;
+      }
+
+      executeWithSecurityCheck(function(pin) {
+        fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/negotiate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            security_pin: pin,
+            phone_verification: pin,
+            negotiation_notes: notes,
+            negotiation_budget: budget || null
+          })
+        })
+        .then(res => {
+          if (res.status === 403) {
+            throw new Error("Kode PIN Keamanan 4 digit tidak cocok dengan tiket ini.");
+          }
+          return res.json();
+        })
+        .then(data => {
+          isOwnerVerified = true;
+          if (bsVerifyModal) bsVerifyModal.hide();
+          const modalEl = document.getElementById('modalNego');
+          bootstrap.Modal.getInstance(modalEl)?.hide();
+          alert("Pengajuan negosiasi Anda berhasil dikirim ke Admin Workshop. Notifikasi otomatis telah dikirim via WA & Email.");
+          currentOrder.negotiationStatus = 'Requested';
+          currentOrder.negotiationNotes = notes;
+          currentOrder.negotiationBudget = budget;
           renderUI();
         })
         .catch(err => {

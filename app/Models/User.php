@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'tech_code', 'phone', 'specialization', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'role', 'customer_type', 'company_name', 'tech_code', 'phone', 'specialization', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -39,5 +39,10 @@ class User extends Authenticatable
     public function customerServiceOrders(): HasMany
     {
         return $this->hasMany(ServiceOrder::class, 'customer_id');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->customerServiceOrders();
     }
 }

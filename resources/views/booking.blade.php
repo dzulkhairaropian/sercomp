@@ -188,6 +188,31 @@
             </div>
 
             <!-- 7. Identitas Pelanggan -->
+            <!-- Pilihan Kategori Akun: Personal vs Company -->
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+              <label class="form-label fw-bold small text-uppercase text-secondary form-section-title mb-2">
+                Tipe Pelanggan:
+              </label>
+              <div class="d-flex flex-wrap gap-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="customer_type" id="typePersonal" value="Personal" checked onchange="toggleCompanyInput(this)">
+                  <label class="form-check-label fw-semibold text-dark small" for="typePersonal">
+                    <i class="bi bi-person me-1 text-primary"></i> Personal / Perorangan
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="customer_type" id="typeCompany" value="Company" onchange="toggleCompanyInput(this)">
+                  <label class="form-check-label fw-semibold text-dark small" for="typeCompany">
+                    <i class="bi bi-building me-1 text-primary"></i> Company / Perusahaan / Instansi Kantor
+                  </label>
+                </div>
+              </div>
+              <div id="companyNameWrapper" class="mt-2.5 d-none">
+                <label for="company_name" class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Perusahaan / PT / Instansi:</label>
+                <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" placeholder="Contoh: PT Teknologi Bangsa / CV Maju Mundur" oninput="updateSummary()">
+              </div>
+            </div>
+
             <div class="row g-3 mb-4">
               <div class="col-md-4">
                 <label for="customer_name" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
@@ -427,6 +452,21 @@
     }
 
     document.getElementById('sumTotal').innerText = "Rp " + total.toLocaleString('id-ID');
+  }
+
+  function toggleCompanyInput(radio) {
+    const wrapper = document.getElementById('companyNameWrapper');
+    const compInput = document.getElementById('company_name');
+    if (radio.value === 'Company') {
+      wrapper.classList.remove('d-none');
+      if (compInput) compInput.required = true;
+    } else {
+      wrapper.classList.add('d-none');
+      if (compInput) {
+        compInput.required = false;
+        compInput.value = '';
+      }
+    }
   }
 
   function handleFormSubmit(e) {

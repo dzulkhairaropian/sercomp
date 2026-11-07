@@ -267,4 +267,198 @@ class SercompStateMachineTest extends TestCase
         $this->assertNotNull($order->customer);
         $this->assertEquals('Kareem Higgins', $order->customer->name);
     }
+
+    public function test_customer_negotiation_and_admin_resolution_flow(): void
+    {
+        $customer = User::create([
+            'name' => 'Ferry Salim',
+            'phone' => '081234556677',
+            'email' => 'ferry@salim.id',
+            'password' => bcrypt('password123'),
+            'role' => 'customer',
+        ]);
+
+        $order = ServiceOrder::create([
+            'customer_id' => $customer->id,
+            'ticket_no' => 'SC-2026-7788',
+            'security_pin' => '5566',
+            'device_type' => 'Laptop',
+            'device_brand' => 'Dell',
+            'device_model' => 'XPS 13',
+            'issue_chronology' => 'Baterai kembung dan touchpad terangkat',
+            'order_status' => 'Approval Biaya',
+        ]);
+
+        $order->diagnostic()->create([
+            'labor_cost' => 150000,
+            'parts_cost' => 650000,
+            'net_total_cost' => 800000,
+        ]);
+
+        $order->invoice()->create([
+            'invoice_no' => 'INV-SC-2026-7788',
+            'amount_total' => 800000,
+            'payment_status' => 'Unpaid',
+        ]);
+
+        // 1. Customer ajukan negosiasi biaya
+        $negoResponse = $this->postJson("/user-panel/{$order->ticket_no}/negotiate", [
+            'security_pin' => '5566',
+            'negotiation_notes' => 'Bisa diskon biaya jasa Rp 50.000 menjadi Rp 750.000?',
+            'negotiation_budget' => 750000,
+        ]);
+
+        $negoResponse->assertStatus(200);
+        $negoResponse->assertJson(['success' => true]);
+
+        $order->refresh();
+        $this->assertEquals('Requested', $order->negotiation_status);
+        $this->assertEquals(750000, (float)$order->negotiation_budget);
+
+        // 2. Admin meninjau & menyetujui negosiasi
+        $admin = User::create([
+            'name' => 'Workshop Admin',
+            'email' => 'admin_test@sercomp.id',
+            'password' => bcrypt('admin123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $resolveResponse = $this->actingAs($admin)->postJson("/admin/meja-kerja/{$order->ticket_no}/nego", [
+            'decision' => 'approve',
+            'adjusted_labor' => 100000,
+            'adjusted_parts' => 650000,
+            'admin_notes' => 'Disetujui diskon jasa Rp 50.000.',
+        ]);
+
+        $resolveResponse->assertStatus(200);
+        $resolveResponse->assertJson(['success' => true]);
+
+        $order->refresh();
+        $this->assertEquals('Approved', $order->negotiation_status);
+        $this->assertEquals(750000, (float)$order->diagnostic->net_total_cost);
+        $this->assertEquals(750000, (float)$order->invoice->amount_total);
+    }
+
+    public function test_courier_handover_with_digital_signature(): void
+    {
+        $admin = User::create([
+            'name' => 'Staff Workshop',
+            'email' => 'staff_handover@sercomp.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $order = ServiceOrder::create([
+            'ticket_no' => 'SC-2026-4455',
+            'security_pin' => '1122',
+            'device_type' => 'PC Desktop',
+            'device_brand' => 'Custom',
+            'device_model' => 'Ryzen 7',
+            'issue_chronology' => 'Power supply korslet',
+            'order_status' => 'Selesai',
+        ]);
+
+        $signatureDummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+        $response = $this->actingAs($admin)->postJson("/admin/meja-kerja/{$order->ticket_no}/handover", [
+            'courier_name' => 'Rahmat Kurir Kilat',
+            'receiver_name' => 'Ibu Maria (Istri Pelanggan)',
+            'signature_data' => $signatureDummy,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $order->refresh();
+        $this->assertEquals('Diserahkan', $order->order_status);
+        $this->assertTrue($order->unit_handed_over);
+        $this->assertEquals('Rahmat Kurir Kilat', $order->courier_name);
+        $this->assertEquals('Ibu Maria (Istri Pelanggan)', $order->receiver_name);
+        $this->assertEquals($signatureDummy, $order->signature_data);
+    }
+
+    public function test_separate_admin_and_technician_dashboards(): void
+    {
+        $admin = User::create([
+            'name' => 'Head Admin',
+            'email' => 'head_admin@sercomp.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $technician = User::create([
+            'name' => 'Teknisi Joko',
+            'email' => 'joko@sercomp.id',
+            'password' => bcrypt('password123'),
+            'role' => 'technician',
+            'is_active' => true,
+        ]);
+
+        // Admin dashboard
+        $adminRes = $this->actingAs($admin)->get('/admin');
+        $adminRes->assertStatus(200);
+        $adminRes->assertSee('Dashboard KPI');
+
+        // Technician dashboard
+        $techRes = $this->actingAs($technician)->get('/teknisi');
+        $techRes->assertStatus(200);
+        $techRes->assertSee('Dashboard Teknisi Workshop');
+
+        // CRM view
+        $crmRes = $this->actingAs($admin)->get('/admin/crm');
+        $crmRes->assertStatus(200);
+        $crmRes->assertSee('Customer Relationship Management');
+
+        // BI Export CSV
+        $exportRes = $this->actingAs($admin)->get('/admin/export-bi');
+        $exportRes->assertStatus(200);
+        $this->assertTrue($exportRes->headers->contains('content-type', 'text/csv; charset=UTF-8'));
+    }
+
+    public function test_personal_and_company_customer_distinction(): void
+    {
+        // 1. Booking sebagai Company / Korporasi
+        $companyBookingPayload = [
+            'device_type' => 'PC Desktop',
+            'device_brand' => 'Dell Optiplex',
+            'device_model' => '7090 Micro',
+            'issue_chronology' => 'Unit PC kantor tidak menyala pasca mati lampu',
+            'delivery_method' => 'Diantar Sendiri',
+            'customer_name' => 'Bpk. Hendra Gunawan (IT Manager)',
+            'customer_phone' => '081288990011',
+            'customer_email' => 'it.procurement@megacorp.co.id',
+            'customer_type' => 'Company',
+            'company_name' => 'PT Mega Solusi Nusantara',
+        ];
+
+        $response = $this->postJson('/booking', $companyBookingPayload);
+        $response->assertStatus(200);
+
+        $order = ServiceOrder::where('ticket_no', $response->json('ticket_no'))->first();
+        $this->assertNotNull($order);
+        $this->assertEquals('Company', $order->customer_type);
+        $this->assertEquals('PT Mega Solusi Nusantara', $order->company_name);
+
+        $customer = $order->customer;
+        $this->assertNotNull($customer);
+        $this->assertEquals('Company', $customer->customer_type);
+        $this->assertEquals('PT Mega Solusi Nusantara', $customer->company_name);
+
+        // 2. Cek tampil di CRM dengan filter Company
+        $admin = User::create([
+            'name' => 'Admin CRM',
+            'email' => 'crm_admin@sercomp.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $crmResponse = $this->actingAs($admin)->get('/admin/crm?type=Company');
+        $crmResponse->assertStatus(200);
+        $crmResponse->assertSee('PT Mega Solusi Nusantara');
+        $crmResponse->assertSee('Company');
+    }
 }

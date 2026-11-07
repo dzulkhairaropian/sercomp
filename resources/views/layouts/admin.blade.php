@@ -128,40 +128,80 @@
         <div class="brand-box">SC</div>
         <div>
           <span class="fw-bold fs-5 text-dark">Ser<span class="text-primary">Comp</span></span>
-          <span class="d-block text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">Panel Teknisi & Admin</span>
+          <span class="d-block text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">
+            {{ auth()->user()?->role === 'admin' ? 'Workshop Admin & Manager' : 'Meja Kerja Teknisi' }}
+          </span>
         </div>
       </div>
 
       <!-- Navigation Menus -->
       <nav class="flex-grow-1">
         <div class="small text-muted text-uppercase fw-bold px-2 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
-          Menu Utama
+          {{ auth()->user()?->role === 'admin' ? 'Menu Administrasi & Bisnis' : 'Menu Operasional Teknisi' }}
         </div>
 
-        <a href="{{ url('/teknisi') }}" class="sidebar-link {{ request()->is('teknisi') ? 'active' : '' }}">
-          <i class="bi bi-speedometer2"></i>
-          <span>Dashboard KPI</span>
-        </a>
+        @if(auth()->user()?->role === 'admin')
+          <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->is('admin') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard Eksekutif</span>
+          </a>
 
-        <a href="{{ url('/teknisi/servis') }}" class="sidebar-link {{ request()->is('teknisi/servis*') ? 'active' : '' }}">
-          <i class="bi bi-laptop"></i>
-          <span>Daftar Servis Unit</span>
-          <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
-        </a>
+          <a href="{{ route('admin.meja-kerja') }}" class="sidebar-link {{ request()->is('admin/meja-kerja*') || request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
+            <i class="bi bi-calculator"></i>
+            <span>Estimasi & Persetujuan</span>
+          </a>
 
-        <a href="{{ url('/teknisi/meja-kerja') }}" class="sidebar-link {{ request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
-          <i class="bi bi-tools"></i>
-          <span>Meja Kerja Diagnosa</span>
-        </a>
+          <a href="{{ route('admin.servis.list') }}" class="sidebar-link {{ request()->is('admin/servis*') || request()->is('teknisi/servis*') ? 'active' : '' }}">
+            <i class="bi bi-laptop"></i>
+            <span>Daftar Servis Unit</span>
+            <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
+          </a>
 
-        <div class="small text-muted text-uppercase fw-bold px-2 mt-3 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
-          Operasional & Inventori
-        </div>
+          <a href="{{ route('admin.crm') }}" class="sidebar-link {{ request()->is('admin/crm*') ? 'active' : '' }}">
+            <i class="bi bi-people-fill text-info"></i>
+            <span>Pelanggan & CRM</span>
+            <span class="badge bg-info-subtle text-info rounded-pill ms-auto" style="font-size: 9px; font-weight: 800;">BI CRM</span>
+          </a>
 
-        <a href="{{ url('/teknisi/sparepart') }}" class="sidebar-link {{ request()->is('teknisi/sparepart*') ? 'active' : '' }}">
-          <i class="bi bi-box-seam"></i>
-          <span>Stok Suku Cadang</span>
-        </a>
+          <div class="small text-muted text-uppercase fw-bold px-2 mt-3 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
+            Inventori & Analitik
+          </div>
+
+          <a href="{{ route('admin.sparepart.index') }}" class="sidebar-link {{ request()->is('admin/sparepart*') ? 'active' : '' }}">
+            <i class="bi bi-box-seam"></i>
+            <span>Stok Suku Cadang</span>
+          </a>
+
+          <a href="{{ route('admin.bi.export') }}" class="sidebar-link">
+            <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+            <span>Export Dataset BI (.csv)</span>
+          </a>
+        @else
+          <a href="{{ route('teknisi.dashboard') }}" class="sidebar-link {{ request()->is('teknisi') || request()->is('teknisi/dashboard') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard Teknisi</span>
+          </a>
+
+          <a href="{{ route('admin.workbench') }}" class="sidebar-link {{ request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
+            <i class="bi bi-tools"></i>
+            <span>Meja Kerja Diagnosa</span>
+          </a>
+
+          <a href="{{ route('admin.servis') }}" class="sidebar-link {{ request()->is('teknisi/servis*') ? 'active' : '' }}">
+            <i class="bi bi-laptop"></i>
+            <span>Antrean Servis Unit</span>
+            <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
+          </a>
+
+          <div class="small text-muted text-uppercase fw-bold px-2 mt-3 mb-2" style="font-size: 10px; letter-spacing: 0.5px;">
+            Operasional Workshop
+          </div>
+
+          <a href="{{ route('admin.sparepart') }}" class="sidebar-link {{ request()->is('teknisi/sparepart*') ? 'active' : '' }}">
+            <i class="bi bi-box-seam"></i>
+            <span>Cek Stok Suku Cadang</span>
+          </a>
+        @endif
 
         <a href="{{ url('/invoice') }}" target="_blank" class="sidebar-link">
           <i class="bi bi-receipt"></i>

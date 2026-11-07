@@ -14,6 +14,8 @@ class ServiceOrder extends Model
 
     protected $fillable = [
         'customer_id',
+        'customer_type',
+        'company_name',
         'technician_id',
         'ticket_no',
         'security_pin',
@@ -27,6 +29,12 @@ class ServiceOrder extends Model
         'delivery_method',
         'pickup_address',
         'order_status',
+        'negotiation_status',
+        'negotiation_notes',
+        'negotiation_budget',
+        'courier_name',
+        'receiver_name',
+        'signature_data',
         'unit_handed_over',
         'handed_over_at',
         'sla_auto_close_at',

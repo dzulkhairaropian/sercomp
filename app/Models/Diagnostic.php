@@ -23,6 +23,9 @@ class Diagnostic extends Model
         'evidence_replaced_part_photo',
         'is_approved_by_user',
         'approved_at',
+        'estimated_by',
+        'admin_notes',
+        'is_price_locked',
     ];
 
     protected function casts(): array
@@ -41,5 +44,10 @@ class Diagnostic extends Model
     public function serviceOrder(): BelongsTo
     {
         return $this->belongsTo(ServiceOrder::class);
+    }
+
+    public function estimator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'estimated_by');
     }
 }

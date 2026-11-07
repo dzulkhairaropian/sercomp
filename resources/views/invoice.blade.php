@@ -147,7 +147,9 @@
         <div class="col-6 col-md-3">
           <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Pelanggan:</span>
           <span class="fw-bold text-dark" id="invCustomer">Dzul Khair Aropian</span>
-        </div>
+          @if($ticket && ($ticket->company_name || $ticket->customer?->company_name))
+            <span class="d-block text-primary small fw-semibold"><i class="bi bi-building me-1"></i>{{ $ticket->company_name ?? $ticket->customer?->company_name }}</span>
+          @endif
         <div class="col-6 col-md-3">
           <span class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Kontak WhatsApp:</span>
           <span class="fw-bold text-dark" id="invPhone">0812-9876-5432</span>
@@ -269,16 +271,29 @@
     </div>
 
     <!-- Bukti Pengerjaan Dokumentasi Part -->
+    <!-- Bukti Pengerjaan Dokumentasi Part & Serah Terima -->
     <div class="border-top pt-3 small text-muted">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
           <span class="fw-bold text-dark d-block">Catatan Pengembalian Unit:</span>
           <span>1. Suku cadang lama yang rusak disertakan dalam dus pengembalian kepada pelanggan.</span><br>
           <span>2. Tiket otomatis diselesaikan (Closed) melalui SLA 1x24 jam setelah unit diserah-terimakan.</span>
+          @if($ticket && $ticket->courier_name)
+            <div class="mt-2 text-dark">
+              <span>Kurir Pengantar: <strong>{{ $ticket->courier_name }}</strong></span>
+            </div>
+          @endif
         </div>
-        <div class="text-end" style="width: 200px;">
-          <p class="mb-4">Disahkan secara sistem oleh,<br><strong>Finance SerComp</strong></p>
-          <div class="text-muted small">[ Digital Verified ]</div>
+        <div class="col-sm-3 text-center">
+          @if($ticket && $ticket->signature_data)
+            <span class="d-block text-muted" style="font-size: 11px;">Tanda Tangan Penerima:</span>
+            <img src="{{ $ticket->signature_data }}" alt="Tanda Tangan" style="max-height: 55px;" class="mb-1">
+            <strong class="d-block text-dark small">{{ $ticket->receiver_name ?? ($ticket->customer?->name ?? 'Pelanggan') }}</strong>
+          @endif
+        </div>
+        <div class="col-sm-3 text-end">
+          <p class="mb-1">Disahkan secara sistem oleh,<br><strong>Finance SerComp</strong></p>
+          <div class="text-success small fw-bold"><i class="bi bi-shield-check me-1"></i>Digital Verified</div>
         </div>
       </div>
     </div>
