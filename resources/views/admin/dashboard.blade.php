@@ -37,8 +37,8 @@
         <i class="bi bi-pie-chart-fill fs-5"></i>
       </div>
       <div>
-        <h6 class="fw-bold text-dark mb-0">Database Pelanggan CRM (Tugas Business Intelligence)</h6>
-        <span class="text-muted small">Segmentasi loyalitas pelanggan untuk analisis frekuensi repeat-order vs prospek tanya-tanya</span>
+        <h6 class="fw-bold text-dark mb-0">Database & Analisis Pelanggan CRM</h6>
+        <span class="text-muted small">Segmentasi loyalitas pelanggan: pelanggan setia, aktif, dan prospek baru</span>
       </div>
     </div>
     <div class="d-flex flex-wrap align-items-center gap-2">
@@ -49,7 +49,7 @@
         <i class="bi bi-lightning-fill me-1"></i> Aktif: {{ $countAktif ?? 0 }}
       </span>
       <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill font-monospace fw-bold">
-        <i class="bi bi-chat-dots-fill me-1"></i> Tanya2 Aja: {{ $countTanyaTanya ?? 0 }}
+        <i class="bi bi-chat-dots-fill me-1"></i> Prospek: {{ $countTanyaTanya ?? 0 }}
       </span>
       <a href="{{ route('admin.crm') }}" class="btn btn-outline-primary btn-sm fw-bold px-3 py-1.5">
         Buka CRM <i class="bi bi-arrow-right ms-1"></i>

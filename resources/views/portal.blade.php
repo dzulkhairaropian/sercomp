@@ -28,8 +28,7 @@
         <div class="brand-box">SC</div>
         <div>
           <span class="fw-bold fs-6 text-white">Ser<span class="text-primary">Comp</span></span>
-          <span class="badge bg-secondary-subtle text-info border border-secondary text-uppercase ms-1" style="font-size: 10px;">Bootstrap 5.3 Prototypes</span>
-        </div>
+          <span class="badge bg-secondary-subtle text-info border border-secondary text-uppercase ms-1" style="font-size: 10px;">Workspace Hub</span>
       </div>
 
       <!-- Tab Switcher -->

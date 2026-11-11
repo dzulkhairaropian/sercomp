@@ -22,22 +22,6 @@
 </head>
 <body class="d-flex flex-column min-vh-100 justify-content-between">
 
-  <!-- TOP PROTOTYPE DEMO BAR -->
-  <div class="sc-demo-bar">
-    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
-        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
-      </div>
-      <div class="d-flex align-items-center gap-1">
-        <span class="text-white-50 me-1 small d-none d-lg-inline">Pintas Halaman:</span>
-        <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
-        <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
-        <a href="{{ url('/user-panel') }}" class="btn-demo active">3. Portal Pelanggan</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo">4. Faktur Invoice</a>
-      </div>
-    </div>
-  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
@@ -50,10 +34,10 @@
         </div>
       </a>
       <div class="d-flex align-items-center gap-2">
-        <form action="{{ url('/user-panel') }}" method="GET" class="d-none d-md-flex align-items-center me-1">
+        <form action="{{ url('/user-panel') }}" method="GET" class="d-flex align-items-center me-1">
           <div class="input-group input-group-sm">
             <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
-            <input type="text" name="ticket" class="form-control border-start-0 font-monospace" placeholder="Cth: SC-2026-9042" value="{{ request('ticket', $ticket?->ticket_no) }}" style="width: 170px;" required>
+            <input type="text" name="ticket" class="form-control border-start-0 font-monospace" placeholder="Cari resi tiket..." value="{{ request('ticket', $ticket?->ticket_no) }}" style="width: 150px;" required>
             <button type="submit" class="btn btn-outline-primary fw-semibold">Lacak</button>
           </div>
         </form>
@@ -69,31 +53,6 @@
 
   <!-- MAIN CONTAINER -->
   <main class="container-xl py-4 flex-grow-1">
-    <!-- INLINE SEARCH CARD ON PAGE (NO POPUP) -->
-    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
-      <form action="{{ url('/user-panel') }}" method="GET" class="row g-2 align-items-center">
-        <div class="col-md-7 col-lg-8">
-          <div class="d-flex align-items-center gap-2">
-            <div class="badge bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-ticket-perforated fs-5"></i>
-            </div>
-            <div>
-              <span class="fw-bold text-dark d-block" style="font-size: 14px;">Lacak Nomor Tiket Servis Lain</span>
-              <span class="text-muted small">Ketik nomor tiket servis Anda (Contoh: SC-2026-9042 atau #SC-2026-9042) tanpa pop-up browser.</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-5 col-lg-4">
-          <div class="input-group">
-            <input type="text" name="ticket" id="pageTicketInput" class="form-control font-monospace" placeholder="Contoh: SC-2026-9042" value="{{ request('ticket', $ticket?->ticket_no) }}" required>
-            <button type="submit" class="btn btn-primary fw-bold px-3">
-              <i class="bi bi-search me-1"></i> Lacak
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
 
     <!-- 1. HEADER STATUS TIKET -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">

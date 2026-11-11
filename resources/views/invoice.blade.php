@@ -75,23 +75,6 @@
 </head>
 <body>
 
-  <!-- TOP PROTOTYPE DEMO BAR (Screen Only) -->
-  <div class="no-print sc-demo-bar">
-    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
-        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
-      </div>
-      <div class="d-flex align-items-center gap-1">
-        <span class="text-white-50 me-1 small d-none d-lg-inline">Pintas Halaman:</span>
-        <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
-        <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
-        <a href="{{ url('/user-panel') }}" class="btn-demo">3. Portal Pelanggan</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo active">4. Faktur Invoice</a>
-      </div>
-    </div>
-  </div>
-
   <!-- Top Action Bar (Screen Only) -->
   <div class="container no-print mt-3 mb-2" style="max-width: 850px;">
     <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 border shadow-sm">

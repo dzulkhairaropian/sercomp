@@ -1,13 +1,17 @@
 @extends('layouts.admin')
 
 @section('title', 'Stok Suku Cadang - SerComp')
-@section('page-title', 'Katalog & Inventori Suku Cadang')
-@section('page-subtitle', 'Monitoring stok suku cadang original, pasta pendingin, dan add-ons perbaikan workshop.')
+@section('page-title', auth()->user()?->role === 'admin' ? 'Katalog & Inventori Suku Cadang' : 'Katalog Suku Cadang Workshop')
+@section('page-subtitle', auth()->user()?->role === 'admin' 
+  ? 'Monitoring stok suku cadang, penentuan harga jual konsumen, dan valuasi aset workshop.' 
+  : 'Informasi ketersediaan stok fisik suku cadang original dan pasta pendingin untuk meja kerja perbaikan.')
 
 @section('page-actions')
+@if(auth()->user()?->role === 'admin')
 <button type="button" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalAddPart">
   <i class="bi bi-plus-circle"></i> Tambah Item Part
 </button>
+@endif
 @endsection
 
 @section('content')
@@ -28,13 +32,14 @@
       <span class="text-muted small">Tersedia di Rak Workshop</span>
     </div>
   </div>
-  <div class="col-sm-6 col-md-3">
+  <div class="col-sm-6 {{ auth()->user()?->role === 'admin' ? 'col-md-3' : 'col-md-4' }}">
     <div class="card-kpi">
       <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Stok Menipis</span>
       <div class="fs-3 fw-bold text-warning mt-1">{{ $lowStockCount ?? 0 }} Item</div>
       <span class="text-warning small fw-semibold">Perlu Restock</span>
     </div>
   </div>
+  @if(auth()->user()?->role === 'admin')
   <div class="col-sm-6 col-md-3">
     <div class="card-kpi bg-primary-subtle border-primary-subtle">
       <span class="text-primary text-uppercase fw-bold" style="font-size: 11px;">Estimasi Valuasi Stok</span>
@@ -42,6 +47,7 @@
       <span class="text-muted small">Nilai Aset Komponen</span>
     </div>
   </div>
+  @endif
 </div>
 
 <!-- TABEL DAFTAR SUKU CADANG -->
@@ -63,9 +69,13 @@
           <th>Nama Komponen</th>
           <th>Kategori</th>
           <th>Stok Tersedia</th>
-          <th>Harga Jual Konsumen</th>
+          @if(auth()->user()?->role === 'admin')
+            <th>Harga Jual Konsumen</th>
+          @endif
           <th>Status</th>
-          <th class="text-end">Aksi</th>
+          @if(auth()->user()?->role === 'admin')
+            <th class="text-end">Aksi</th>
+          @endif
         </tr>
       </thead>
       <tbody id="sparepartBody">
@@ -75,7 +85,9 @@
             <td><strong>{{ $part->part_name }}</strong></td>
             <td><span class="badge bg-light text-dark border">{{ ucfirst($part->category) }}</span></td>
             <td><strong class="fs-6 {{ $part->stock_qty <= 3 ? 'text-warning' : 'text-dark' }}">{{ $part->stock_qty }}</strong> Pcs</td>
-            <td class="text-primary fw-bold">Rp {{ number_format($part->unit_price, 0, ',', '.') }}</td>
+            @if(auth()->user()?->role === 'admin')
+              <td class="text-primary fw-bold">Rp {{ number_format($part->unit_price, 0, ',', '.') }}</td>
+            @endif
             <td>
               @if($part->stock_qty <= 3)
                 <span class="badge badge-warning-accessible">Menipis</span>
@@ -83,6 +95,7 @@
                 <span class="badge badge-success-accessible">Tersedia</span>
               @endif
             </td>
+            @if(auth()->user()?->role === 'admin')
             <td class="text-end">
               <button type="button" 
                       class="btn btn-sm btn-outline-secondary py-1 px-2.5" 
@@ -90,10 +103,11 @@
                 <i class="bi bi-pencil-square me-1"></i> Edit
               </button>
             </td>
+            @endif
           </tr>
         @empty
           <tr>
-            <td colspan="7" class="text-center text-muted py-4">Belum ada suku cadang terdaftar di database.</td>
+            <td colspan="{{ auth()->user()?->role === 'admin' ? 7 : 5 }}" class="text-center text-muted py-4">Belum ada suku cadang terdaftar di database.</td>
           </tr>
         @endforelse
       </tbody>
@@ -153,6 +167,7 @@
   </div>
 </div>
 
+@if(auth()->user()?->role === 'admin')
 <!-- MODAL EDIT / UPDATE STOK PART -->
 <div class="modal fade" id="modalEditPart" tabindex="-1" aria-labelledby="modalEditPartLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -205,6 +220,7 @@
     </div>
   </div>
 </div>
+@endif
 
 @endsection
 
@@ -219,7 +235,7 @@
   }
 
   function openEditModal(id, code, name, category, stock, price) {
-    document.getElementById('formEditPart').action = "{{ url('/teknisi/sparepart') }}/" + id;
+    document.getElementById('formEditPart').action = "{{ url('/admin/sparepart') }}/" + id;
     document.getElementById('editPartCode').value = code;
     document.getElementById('editPartName').value = name;
     document.getElementById('editCategory').value = category;

@@ -66,7 +66,10 @@
           <th>Pelanggan</th>
           <th>Perangkat & Spesifikasi</th>
           <th>Gejala Kendala / Diagnosa</th>
-          <th>Estimasi Biaya</th>
+          <th>Teknisi PJ</th>
+          @if(auth()->user()?->role === 'admin')
+            <th>Estimasi Biaya</th>
+          @endif
           <th>Status Servis</th>
           <th class="text-end">Aksi</th>
         </tr>
@@ -113,11 +116,28 @@
               @endif
             </td>
             <td>
+              @if($t->technician)
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold" style="font-size: 11px;">
+                  <i class="bi bi-person-check-fill me-1"></i>{{ $t->technician->name }}
+                </span>
+              @else
+                @if(auth()->user()?->role === 'admin')
+                  <button type="button" class="btn btn-xs btn-outline-warning py-0.5 px-2 fw-bold" style="font-size: 10px;" data-bs-toggle="modal" data-bs-target="#modalAssignDirect{{ $t->id }}">
+                    <i class="bi bi-person-plus-fill me-1"></i> + Assign Teknisi
+                  </button>
+                @else
+                  <span class="badge bg-secondary-subtle text-muted" style="font-size: 10px;">Belum Di-assign</span>
+                @endif
+              @endif
+            </td>
+            @if(auth()->user()?->role === 'admin')
+            <td>
               <strong class="text-dark">Rp {{ number_format($t->total_cost, 0, ',', '.') }}</strong>
               <span class="d-block {{ $t->payment_status === 'Paid' ? 'text-success' : 'text-warning' }} fw-bold" style="font-size: 10px;">
                 {{ strtoupper($t->payment_status) }} {{ $t->payment_status === 'Paid' ? 'QRIS' : '' }}
               </span>
             </td>
+            @endif
             <td>
               @php
                 $badgeClass = match($t->status) {
@@ -138,12 +158,14 @@
             </td>
             <td class="text-end">
               <div class="btn-group">
-                <a href="{{ url('/teknisi/meja-kerja/' . urlencode($t->ticket_no)) }}" class="btn btn-sm btn-primary fw-semibold" aria-label="Buka di Meja Kerja Tiket {{ $t->ticket_no }}" title="Buka di Meja Kerja Diagnosa">
+                <a href="{{ auth()->user()?->role === 'admin' ? url('/admin/meja-kerja/' . urlencode($t->ticket_no)) : url('/teknisi/meja-kerja/' . urlencode($t->ticket_no)) }}" class="btn btn-sm btn-primary fw-semibold" aria-label="Buka di Meja Kerja Tiket {{ $t->ticket_no }}" title="Buka di Meja Kerja Diagnosa">
                   <i class="bi bi-tools me-1" aria-hidden="true"></i> Meja Kerja
                 </a>
+                @if(auth()->user()?->role === 'admin')
                 <a href="{{ url('/invoice?ticket=' . urlencode($t->ticket_no)) }}" target="_blank" class="btn btn-sm btn-outline-secondary" aria-label="Pratinjau Faktur Invoice" title="Pratinjau Faktur Invoice">
                   <i class="bi bi-receipt" aria-hidden="true"></i>
                 </a>
+                @endif
               </div>
             </td>
           </tr>
@@ -156,6 +178,46 @@
     </table>
   </div>
 </div>
+
+@if(auth()->user()?->role === 'admin')
+  @foreach($tickets as $t)
+    @if(!$t->technician)
+    <div class="modal fade" id="modalAssignDirect{{ $t->id }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+          <form action="{{ route('admin.assign.technician', ['ticket' => $t->ticket_no]) }}" method="POST">
+            @csrf
+            <div class="modal-header border-bottom p-3 px-4">
+              <h6 class="modal-title fw-bold text-dark"><i class="bi bi-person-plus-fill text-primary me-2"></i>Tugaskan Teknisi</h6>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 small">
+              <p class="text-secondary mb-3">
+                Pilih staf teknisi workshop untuk menangani tiket <strong>#{{ $t->ticket_no }}</strong> ({{ $t->device_brand }} {{ $t->device_model }}).
+              </p>
+              <div class="mb-3">
+                <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Teknisi:</label>
+                <select name="technician_id" class="form-select form-select-sm" required>
+                  <option value="">-- Pilih Staf Teknisi --</option>
+                  @foreach($technicians ?? [] as $tech)
+                    <option value="{{ $tech->id }}">{{ $tech->name }} ({{ $tech->tech_code ?? 'TEK' }}) - {{ $tech->specialization ?? 'Hardware' }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer border-top p-3 px-4">
+              <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
+                <i class="bi bi-check2-circle me-1"></i> Tugaskan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    @endif
+  @endforeach
+@endif
 
 @endsection
 

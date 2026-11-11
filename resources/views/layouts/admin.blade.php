@@ -24,7 +24,7 @@
     }
     .admin-wrapper {
       display: flex;
-      min-height: calc(100vh - 35px);
+      min-height: 100vh;
     }
     .admin-sidebar {
       width: 260px;
@@ -101,23 +101,6 @@
 </head>
 <body>
 
-  <!-- TOP PROTOTYPE DEMO BAR -->
-  <div class="sc-demo-bar">
-    <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">PROTOTIPE AKADEMIK</span>
-        <span class="text-white-50 small d-none d-md-inline">Rintisan Bisnis Digital & Proyek SI 2</span>
-      </div>
-      <div class="d-flex align-items-center gap-1">
-        <a href="{{ url('/') }}" class="btn-demo">1. Landing</a>
-        <a href="{{ url('/booking') }}" class="btn-demo">2. Form Reservasi</a>
-        <a href="{{ url('/user-panel') }}" class="btn-demo">3. Portal Pelanggan</a>
-        <a href="{{ url('/teknisi') }}" class="btn-demo active">4. Panel Teknisi</a>
-        <a href="{{ url('/invoice') }}" class="btn-demo">5. Faktur Invoice</a>
-      </div>
-    </div>
-  </div>
-
   <div class="admin-wrapper">
     
     <!-- SIDEBAR TEKNISI / ADMIN -->
@@ -155,6 +138,17 @@
             <i class="bi bi-laptop"></i>
             <span>Daftar Servis Unit</span>
             <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
+          </a>
+
+          <a href="{{ route('admin.kasir') }}" class="sidebar-link {{ request()->is('admin/kasir*') ? 'active' : '' }}">
+            <i class="bi bi-cash-coin text-success"></i>
+            <span>Kasir & Serah Terima</span>
+            @php
+              $readyCount = \App\Models\ServiceOrder::whereIn('order_status', ['Selesai', 'Diserahkan'])->count();
+            @endphp
+            @if($readyCount > 0)
+              <span class="badge bg-success text-white rounded-pill ms-auto" style="font-size: 10px;">{{ $readyCount }}</span>
+            @endif
           </a>
 
           <a href="{{ route('admin.crm') }}" class="sidebar-link {{ request()->is('admin/crm*') ? 'active' : '' }}">
@@ -203,11 +197,13 @@
           </a>
         @endif
 
+        @if(auth()->user()?->role === 'admin')
         <a href="{{ url('/invoice') }}" target="_blank" class="sidebar-link">
           <i class="bi bi-receipt"></i>
           <span>Faktur Invoice A4</span>
           <i class="bi bi-box-arrow-up-right ms-auto text-muted" style="font-size: 11px;"></i>
         </a>
+        @endif
 
         <a href="{{ url('/') }}" target="_blank" class="sidebar-link">
           <i class="bi bi-globe"></i>

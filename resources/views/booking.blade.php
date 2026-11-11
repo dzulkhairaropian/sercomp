@@ -8,9 +8,19 @@
     position: sticky;
     top: 90px;
   }
-  .form-section-title {
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+  .form-step-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--sc-slate-500);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .form-step-title i {
+    color: var(--sc-primary);
   }
 </style>
 @endsection
@@ -19,23 +29,23 @@
 <div class="py-5 bg-light">
   <div class="container">
     
-    <!-- Breadcrumb & Title -->
+    <!-- Breadcrumb & Header -->
     <div class="mb-4">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-2 small">
-          <li class="breadcrumb-item"><a href="{{ url('/') }}" class="text-decoration-none">Beranda</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Reservasi Servis</li>
+          <li class="breadcrumb-item"><a href="{{ url('/') }}" class="text-decoration-none text-secondary">Beranda</a></li>
+          <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Reservasi Servis</li>
         </ol>
       </nav>
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
-          <h2 class="fw-bold text-dark mb-1">Formulir Reservasi Tiket Servis</h2>
-          <p class="text-muted mb-0 small">
-            Lengkapi kronologi kendala unit dan tentukan metode serah-terima unit Anda secara transparan.
+          <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -0.02em;">Formulir Reservasi Servis</h2>
+          <p class="text-secondary mb-0 small">
+            Daftarkan kendala unit Anda untuk mendapatkan nomor resi pelacakan dan estimasi di meja kerja workshop.
           </p>
         </div>
-        <span class="badge badge-info-accessible px-3 py-2 rounded-pill fw-semibold">
-          <i class="bi bi-clock-history me-1" aria-hidden="true"></i> Respon Pemeriksaan Awal &lt; 15 Menit
+        <span class="badge-status badge-status-info small">
+          <i class="bi bi-clock-history"></i> Respon Awal &lt; 15 Menit
         </span>
       </div>
     </div>
@@ -44,136 +54,132 @@
       
       <!-- LEFT: MAIN FORM -->
       <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="card card-bento overflow-hidden bg-white">
           
           <div class="bg-gradient-hero p-4 text-white d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="fw-bold mb-1"><i class="bi bi-clipboard2-check me-2" aria-hidden="true"></i>Tiket Reservasi Baru</h5>
-              <span class="text-light small">Informasi ini menjadi dasar diagnosa fisik awal teknisi di workshop.</span>
+              <h5 class="fw-bold mb-1"><i class="bi bi-clipboard2-check me-2"></i>Rincian Reservasi Unit</h5>
+              <span class="text-white-50 small">Data ini menjadi acuan pemeriksaan fisik awal teknisi di meja kerja.</span>
             </div>
-            <div class="badge badge-info-accessible px-2.5 py-1.5 fw-bold">
-              Formulir Servis
-            </div>
+            <span class="badge-status badge-status-info small">
+              Langkah 1 dari 2
+            </span>
           </div>
 
-          <form id="bookingForm" onsubmit="handleFormSubmit(event)" action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="card-body p-4 p-md-5">
+          <form id="bookingForm" onsubmit="handleFormSubmit(event)" action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="p-4 p-md-5">
             @csrf
 
             <!-- 1. Pilihan Perangkat -->
             <div class="mb-4">
-              <label class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                1. Jenis Perangkat <span class="text-danger">* (Spesialis Laptop & PC Desktop)</span>
-              </label>
-              <div class="row g-3">
+              <div class="form-step-title">
+                <i class="bi bi-laptop"></i> 1. Jenis Perangkat
+              </div>
+              <div class="row g-3 device-select-grid">
                 <div class="col-sm-6">
-                  <input type="radio" name="device_type" id="dev_laptop" value="Laptop" checked class="d-none device-card-input" onchange="updateSummary()">
-                  <label for="dev_laptop" class="device-card-label card p-3 border-2 text-center rounded-3 cursor-pointer h-100" tabindex="0">
-                    <i class="bi bi-laptop fs-1 mb-1 text-primary d-block" aria-hidden="true"></i>
-                    <strong class="text-dark small">Laptop / Notebook</strong>
+                  <input type="radio" name="device_type" id="dev_laptop" value="Laptop" checked class="device-card-input" onchange="updateSummary()">
+                  <label for="dev_laptop" class="device-card-label text-center" tabindex="0">
+                    <i class="bi bi-laptop fs-1 mb-2 text-primary d-block"></i>
+                    <strong class="text-dark small d-block">Laptop / Notebook</strong>
                     <span class="text-muted d-block" style="font-size: 11px;">Asus, Lenovo, Acer, HP, Dell, MSI, ThinkPad</span>
                   </label>
                 </div>
                 <div class="col-sm-6">
-                  <input type="radio" name="device_type" id="dev_pc" value="PC Desktop" class="d-none device-card-input" onchange="updateSummary()">
-                  <label for="dev_pc" class="device-card-label card p-3 border-2 text-center rounded-3 cursor-pointer h-100" tabindex="0">
-                    <i class="bi bi-pc-display fs-1 mb-1 text-primary d-block" aria-hidden="true"></i>
-                    <strong class="text-dark small">PC Desktop / Tower / AIO</strong>
-                    <span class="text-muted d-block" style="font-size: 11px;">Custom Rakitan, All-In-One, Mini PC Office</span>
+                  <input type="radio" name="device_type" id="dev_pc" value="PC Desktop" class="device-card-input" onchange="updateSummary()">
+                  <label for="dev_pc" class="device-card-label text-center" tabindex="0">
+                    <i class="bi bi-pc-display fs-1 mb-2 text-primary d-block"></i>
+                    <strong class="text-dark small d-block">PC Desktop / AIO / Tower</strong>
+                    <span class="text-muted d-block" style="font-size: 11px;">Custom Gaming/Editing, All-In-One, Mini PC Office</span>
                   </label>
                 </div>
-              </div>
-              <div class="form-text small text-muted mt-2">
-                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>Khusus arsitektur Windows & Linux untuk menjamin ketersediaan suku cadang resmi dan harga transparan.
               </div>
             </div>
 
             <!-- 2. Merek & Seri Perangkat -->
             <div class="row g-3 mb-4">
               <div class="col-md-6">
-                <label for="device_brand" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
+                <label for="device_brand" class="form-label fw-semibold small text-secondary">
                   Merek / Brand <span class="text-danger">*</span>
                 </label>
                 <input type="text" name="device_brand" id="device_brand" required class="form-control" placeholder="Contoh: Asus / Lenovo / Rakitan PC" oninput="updateSummary()">
               </div>
               <div class="col-md-6">
-                <label for="device_model" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
+                <label for="device_model" class="form-label fw-semibold small text-secondary">
                   Model / Seri Perangkat <span class="text-danger">*</span>
                 </label>
-                <input type="text" name="device_model" id="device_model" required class="form-control" placeholder="Contoh: ROG Strix G15 / Core i5 Gen 12" oninput="updateSummary()">
+                <input type="text" name="device_model" id="device_model" required class="form-control" placeholder="Contoh: ROG Strix G15 / Core i5-12400" oninput="updateSummary()">
               </div>
             </div>
 
             <!-- 3. Kronologi & Gejala Kerusakan -->
             <div class="mb-4">
-              <label for="issue_chronology" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                2. Uraian Kerusakan & Kronologi Kejadian <span class="text-danger">*</span>
-              </label>
+              <div class="form-step-title">
+                <i class="bi bi-card-text"></i> 2. Uraian Gejala Kerusakan
+              </div>
               <textarea name="issue_chronology" id="issue_chronology" rows="3" required class="form-control"
-                placeholder="Contoh: Layar tiba-tiba freeze lalu blank hitam saat rendering video. Kipas berputar kencang dan bodi bawah panas..."></textarea>
+                placeholder="Ceritakan kronologi kendala (contoh: Layar tiba-tiba freeze lalu blank saat render, kipas bersuara kasar, atau unit mati total)..."></textarea>
               <div class="form-text small text-muted">
                 Catatan ini dikunci pada berita acara pengerjaan teknisi.
               </div>
             </div>
 
-            <!-- 4. Lampiran Bukti Foto Kerusakan (Aksesibel Keyboard) -->
+            <!-- 4. Lampiran Bukti Foto Kerusakan -->
             <div class="mb-4">
-              <label class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                Foto Fisik Kendala / Layar Error (Opsional)
+              <label class="form-label fw-semibold small text-secondary">
+                Foto Fisik / Tampilan Layar Error (Opsional)
               </label>
-              
               <input type="file" name="photo" id="photoInput" accept="image/*" class="visually-hidden" onchange="previewImage(this)">
               
               <label for="photoInput" class="w-100 border border-2 border-dashed rounded-3 p-3 text-center bg-light cursor-pointer d-block" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('photoInput').click();}">
                 <div id="uploadPlaceholder">
-                  <i class="bi bi-cloud-arrow-up fs-2 text-secondary" aria-hidden="true"></i>
-                  <div class="fw-semibold small text-dark mt-1">Klik atau tekan Enter untuk melampirkan foto fisik / layar error</div>
-                  <span class="text-muted" style="font-size: 11px;">Format JPG, PNG maksimal 5MB</span>
+                  <i class="bi bi-cloud-arrow-up fs-2 text-primary"></i>
+                  <div class="fw-semibold small text-dark mt-1">Klik atau tekan Enter untuk melampirkan foto</div>
+                  <span class="text-muted" style="font-size: 11px;">Format JPG, PNG (Maksimal 5MB)</span>
                 </div>
-                <div id="imagePreview" class="d-none text-success fw-bold small">
-                  <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i> Berkas terpilih: <span id="fileName"></span>
+                <div id="imagePreview" class="d-none text-success fw-semibold small">
+                  <i class="bi bi-check-circle-fill me-1"></i> Berkas terpilih: <span id="fileName"></span>
                 </div>
               </label>
             </div>
 
             <!-- 5. Layanan Tambahan (Add-ons) -->
             <div class="p-3 bg-light rounded-3 border mb-4">
-              <label class="form-label fw-bold small text-uppercase text-secondary mb-2 form-section-title">
-                3. Layanan Tambahan Perawatan (Opsional)
-              </label>
+              <div class="form-step-title mb-2">
+                <i class="bi bi-plus-circle"></i> 3. Layanan Perawatan Tambahan (Opsional)
+              </div>
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="addon_cleaning" id="addon_cleaning" value="1" onchange="updateSummary()">
                 <label class="form-check-label small" for="addon_cleaning">
                   <strong class="text-dark">Deep Cleaning & Dust Removal (+Rp 50.000)</strong>
-                  <span class="d-block text-muted" style="font-size: 11px;">Pembersihan debu komprehensif pada baling-baling fan heatsink, exhaust, dan slot motherboard.</span>
+                  <span class="d-block text-muted" style="font-size: 11px;">Pembersihan debu menyeluruh pada kipas heatsink, exhaust, dan slot motherboard.</span>
                 </label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="addon_repasta" id="addon_repasta" value="1" onchange="updateSummary()">
                 <label class="form-check-label small" for="addon_repasta">
                   <strong class="text-dark">Repasta Thermal Arctic MX-4 (+Rp 75.000)</strong>
-                  <span class="d-block text-muted" style="font-size: 11px;">Pemberian thermal paste baru kualitas tinggi pada prosesor (CPU) & chip grafis (GPU) cegah overheat.</span>
+                  <span class="d-block text-muted" style="font-size: 11px;">Penggantian pasta pendingin performa tinggi pada CPU & GPU untuk mencegah overheat.</span>
                 </label>
               </div>
             </div>
 
             <!-- 6. Metode Penyerahan Unit -->
             <div class="mb-4">
-              <label class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                4. Metode Penyerahan Unit Perangkat <span class="text-danger">*</span>
-              </label>
-              <div class="row g-3">
+              <div class="form-step-title">
+                <i class="bi bi-geo-alt"></i> 4. Metode Serah-Terima Unit Perangkat
+              </div>
+              <div class="row g-3 device-select-grid">
                 <div class="col-sm-6">
-                  <input type="radio" name="delivery_method" id="deliv_self" value="Diantar Sendiri" checked class="d-none device-card-input" onchange="toggleAddressField(false)">
-                  <label for="deliv_self" class="device-card-label card p-3 border-2 rounded-3 cursor-pointer h-100" tabindex="0">
-                    <strong class="text-dark small"><i class="bi bi-building me-1 text-primary" aria-hidden="true"></i> Diantar Sendiri ke Workshop</strong>
-                    <span class="text-muted mt-1 d-block" style="font-size: 11px;">Bawa unit langsung ke Service Hub SerComp / Kampus UNM. Tanpa ongkos tambahan.</span>
+                  <input type="radio" name="delivery_method" id="deliv_self" value="Diantar Sendiri" checked class="device-card-input" onchange="toggleAddressField(false)">
+                  <label for="deliv_self" class="device-card-label" tabindex="0">
+                    <strong class="text-dark small d-block mb-1"><i class="bi bi-building me-1 text-primary"></i> Diantar Sendiri ke Workshop</strong>
+                    <span class="text-muted d-block" style="font-size: 11px;">Bawa unit langsung ke Service Hub SerComp. Bebas ongkos kurir.</span>
                   </label>
                 </div>
                 <div class="col-sm-6">
-                  <input type="radio" name="delivery_method" id="deliv_pickup" value="Ambil oleh Teknisi" class="d-none device-card-input" onchange="toggleAddressField(true)">
-                  <label for="deliv_pickup" class="device-card-label card p-3 border-2 rounded-3 cursor-pointer h-100" tabindex="0">
-                    <strong class="text-dark small"><i class="bi bi-scooter me-1 text-primary" aria-hidden="true"></i> Jemput Teknisi (Pick-up)</strong>
-                    <span class="text-muted mt-1 d-block" style="font-size: 11px;">Mitra teknisi menjemput unit ke alamat Anda dengan berita acara serah terima resmi.</span>
+                  <input type="radio" name="delivery_method" id="deliv_pickup" value="Ambil oleh Teknisi" class="device-card-input" onchange="toggleAddressField(true)">
+                  <label for="deliv_pickup" class="device-card-label" tabindex="0">
+                    <strong class="text-dark small d-block mb-1"><i class="bi bi-scooter me-1 text-primary"></i> Jemput oleh Mitra (Pick-up)</strong>
+                    <span class="text-muted d-block" style="font-size: 11px;">Mitra kurir menjemput unit ke lokasi Anda dengan berita acara serah terima resmi.</span>
                   </label>
                 </div>
               </div>
@@ -181,71 +187,63 @@
 
             <!-- Alamat Penjemputan (Kondisional) -->
             <div id="addressContainer" class="mb-4 d-none">
-              <label for="pickup_address" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
+              <label for="pickup_address" class="form-label fw-semibold small text-secondary">
                 Alamat Lengkap Penjemputan Unit <span class="text-danger">*</span>
               </label>
-              <textarea name="pickup_address" id="pickup_address" rows="2" class="form-control" placeholder="Tuliskan alamat lengkap penjemputan, nomor rumah/kost, jalan, dan patokan..."></textarea>
+              <textarea name="pickup_address" id="pickup_address" rows="2" class="form-control" placeholder="Tuliskan alamat penjemputan, nomor rumah/kantor, jalan, dan patokan terdekat..."></textarea>
             </div>
 
             <!-- 7. Identitas Pelanggan -->
-            <!-- Pilihan Kategori Akun: Personal vs Company -->
-            <div class="mb-3 p-3 bg-light rounded-3 border">
-              <label class="form-label fw-bold small text-uppercase text-secondary form-section-title mb-2">
-                Tipe Pelanggan:
-              </label>
-              <div class="d-flex flex-wrap gap-4">
+            <div class="p-3 bg-light rounded-3 border mb-4">
+              <div class="form-step-title mb-2">
+                <i class="bi bi-person"></i> 5. Profil Pelanggan
+              </div>
+              <div class="d-flex flex-wrap gap-4 mb-2">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="customer_type" id="typePersonal" value="Personal" checked onchange="toggleCompanyInput(this)">
                   <label class="form-check-label fw-semibold text-dark small" for="typePersonal">
-                    <i class="bi bi-person me-1 text-primary"></i> Personal / Perorangan
+                    Personal / Perorangan
                   </label>
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="customer_type" id="typeCompany" value="Company" onchange="toggleCompanyInput(this)">
                   <label class="form-check-label fw-semibold text-dark small" for="typeCompany">
-                    <i class="bi bi-building me-1 text-primary"></i> Company / Perusahaan / Instansi Kantor
+                    Perusahaan / Kantor (Faktur Perusahaan)
                   </label>
                 </div>
               </div>
-              <div id="companyNameWrapper" class="mt-2.5 d-none">
-                <label for="company_name" class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Nama Perusahaan / PT / Instansi:</label>
-                <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" placeholder="Contoh: PT Teknologi Bangsa / CV Maju Mundur" oninput="updateSummary()">
-              </div>
-            </div>
 
-            <div class="row g-3 mb-4">
-              <div class="col-md-4">
-                <label for="customer_name" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                  Nama Lengkap Pelanggan <span class="text-danger">*</span>
-                </label>
-                <input type="text" name="customer_name" id="customer_name" required class="form-control" placeholder="Nama Anda" oninput="updateSummary()">
+              <div id="companyNameWrapper" class="mt-2.5 d-none mb-3">
+                <label for="company_name" class="form-label text-secondary fw-semibold small">Nama Perusahaan / PT / Instansi:</label>
+                <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" placeholder="Contoh: PT Teknologi Bangsa" oninput="updateSummary()">
               </div>
-              <div class="col-md-4">
-                <label for="customer_phone" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                  Nomor WhatsApp Aktif <span class="text-danger">*</span>
-                </label>
-                <input type="tel" name="customer_phone" id="customer_phone" required class="form-control" placeholder="08xxxxxxxxxx">
-              </div>
-              <div class="col-md-4">
-                <label for="customer_email" class="form-label fw-bold small text-uppercase text-secondary form-section-title">
-                  Alamat Email (Opsional)
-                </label>
-                <input type="email" name="customer_email" id="customer_email" class="form-control" placeholder="nama@email.com">
-              </div>
-            </div>
 
-            <!-- Ketentuan SLA 1x24 Jam -->
-            <div class="alert alert-warning border border-warning-subtle bg-warning-subtle text-dark d-flex align-items-start gap-2 small mb-4">
-              <i class="bi bi-shield-exclamation fs-5 text-warning-emphasis" aria-hidden="true"></i>
-              <div>
-                <strong class="d-block text-dark">Ketentuan SLA 1x24 Jam Pasca-Penyerahan Unit:</strong>
-                Setelah unit selesai diperbaiki dan diserahkan kembali, sistem memberikan waktu masa uji 24 jam. Jika pelanggan tidak mengajukan keluhan tambahan, sistem menutup tiket secara otomatis (Auto-Closed) untuk mengaktifkan garansi digital 90 hari.
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="customer_name" class="form-label fw-semibold small text-secondary">
+                    Nama Lengkap <span class="text-danger">*</span>
+                  </label>
+                  <input type="text" name="customer_name" id="customer_name" required class="form-control" placeholder="Nama Anda" oninput="updateSummary()">
+                </div>
+                <div class="col-md-4">
+                  <label for="customer_phone" class="form-label fw-semibold small text-secondary">
+                    Nomor WhatsApp <span class="text-danger">*</span>
+                  </label>
+                  <input type="tel" name="customer_phone" id="customer_phone" required class="form-control" placeholder="08xxxxxxxxxx">
+                </div>
+                <div class="col-md-4">
+                  <label for="customer_email" class="form-label fw-semibold small text-secondary">
+                    Email (Opsional)
+                  </label>
+                  <input type="email" name="customer_email" id="customer_email" class="form-control" placeholder="nama@email.com">
+                </div>
               </div>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6 shadow">
-              <i class="bi bi-send-check me-2" aria-hidden="true"></i> Terbitkan Tiket Reservasi & Dapatkan Nomor Resi
+            <button type="submit" class="btn btn-primary w-100 py-3 fs-6 shadow-sm d-flex align-items-center justify-content-center gap-2">
+              <i class="bi bi-send-check fs-5"></i>
+              <span>Terbitkan Tiket & Dapatkan Nomor Resi</span>
             </button>
           </form>
 
@@ -257,26 +255,26 @@
         <div class="sticky-summary">
           
           <!-- Summary Card -->
-          <div class="card border-0 shadow-sm rounded-4 p-4 mb-3 bg-white">
+          <div class="card card-bento p-4 mb-3 bg-white">
             <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
               <span>Ringkasan Estimasi</span>
-              <span class="badge bg-light text-secondary border">Pra-Diagnosa</span>
+              <span class="badge-status badge-status-info small">Pra-Diagnosa</span>
             </h6>
 
             <div class="small mb-3">
-              <div class="d-flex justify-content-between text-muted mb-1">
+              <div class="d-flex justify-content-between text-secondary mb-1">
                 <span>Perangkat:</span>
                 <strong id="sumDevice" class="text-dark">Laptop</strong>
               </div>
-              <div class="d-flex justify-content-between text-muted mb-1">
+              <div class="d-flex justify-content-between text-secondary mb-1">
                 <span>Merek / Seri:</span>
                 <span id="sumBrand" class="text-dark fw-semibold">-</span>
               </div>
-              <div class="d-flex justify-content-between text-muted mb-1">
+              <div class="d-flex justify-content-between text-secondary mb-1">
                 <span>Pelanggan:</span>
                 <span id="sumCustomer" class="text-dark fw-semibold">-</span>
               </div>
-              <div class="d-flex justify-content-between text-muted">
+              <div class="d-flex justify-content-between text-secondary">
                 <span>Metode:</span>
                 <span id="sumDelivery" class="text-dark fw-semibold">Diantar Sendiri</span>
               </div>
@@ -292,42 +290,44 @@
                 <span class="fw-bold text-dark">Rp 50.000</span>
               </div>
               <div id="rowAddonRepasta" class="d-none justify-content-between mb-1">
-                <span class="text-muted">Repasta MX-4:</span>
+                <span class="text-muted">Repasta Arctic MX-4:</span>
                 <span class="fw-bold text-dark">Rp 75.000</span>
               </div>
               <hr class="my-2">
               <div class="d-flex justify-content-between align-items-center">
                 <strong class="text-dark">Estimasi Awal:</strong>
-                <span id="sumTotal" class="fs-6 fw-bold text-primary">Rp 0</span>
+                <span id="sumTotal" class="fs-5 fw-bold text-primary font-monospace">Rp 0</span>
               </div>
-              <span class="text-muted d-block mt-1" style="font-size: 10px;">
-                *Biaya penggantian suku cadang dan jasa utama dikunci melalui Lembar Persetujuan Biaya pasca cek fisik.
+              <span class="text-muted d-block mt-1.5" style="font-size: 10px; line-height: 1.4;">
+                *Biaya jasa utama & sparepart ditetapkan pasca-cek fisik di meja kerja workshop. Konsumen berhak menolak bila estimasi tidak disetujui.
               </span>
             </div>
 
             <div class="d-flex flex-column gap-2 small">
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-shield-check text-success fs-5" aria-hidden="true"></i>
+                <i class="bi bi-shield-check text-success fs-5"></i>
                 <span>Garansi 90 hari suku cadang & jasa</span>
               </div>
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-lock-fill text-primary fs-5" aria-hidden="true"></i>
+                <i class="bi bi-lock-fill text-primary fs-5"></i>
                 <span>Data storage tidak dibuka tanpa izin</span>
               </div>
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-qr-code text-dark fs-5" aria-hidden="true"></i>
+                <i class="bi bi-qr-code text-dark fs-5"></i>
                 <span>Pembayaran QRIS setelah biaya disetujui</span>
               </div>
             </div>
           </div>
 
-          <!-- Bantuan Hubungi Kami -->
-          <div class="card border-0 shadow-sm rounded-4 p-3 badge-info-accessible">
-            <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-headset fs-3" aria-hidden="true"></i>
+          <!-- Bantuan Kontak -->
+          <div class="card card-bento p-3 bg-white">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="icon-box-primary flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.1rem;">
+                <i class="bi bi-headset"></i>
+              </div>
               <div class="small">
-                <strong>Pusat Bantuan WhatsApp:</strong>
-                <div class="text-muted" style="font-size: 11px;">Tim teknisi siaga melayani konfirmasi serah-terima unit.</div>
+                <strong class="d-block text-dark">Butuh Bantuan?</strong>
+                <span class="text-muted" style="font-size: 11px;">Hubungi hotline teknisi di WhatsApp 0812-9876-5432.</span>
               </div>
             </div>
           </div>
@@ -345,8 +345,8 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg text-center p-4 rounded-4">
       <div class="modal-body">
-        <div class="badge badge-success-accessible fs-1 p-3 rounded-circle mb-3">
-          <i class="bi bi-check-lg" aria-hidden="true"></i>
+        <div class="icon-box-success mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.75rem;">
+          <i class="bi bi-check-lg"></i>
         </div>
         <h4 class="fw-bold mb-1" id="successModalLabel">Tiket Reservasi Terbit</h4>
         <p class="text-muted small mb-3">Nomor resi pelacakan unit servis Anda:</p>
@@ -363,7 +363,7 @@
 
         <div class="p-3 bg-warning-subtle border border-warning-subtle rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
           <div class="text-start">
-            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Ingat 4 Kode Ini):</span>
+            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Simpan 4 Kode Ini):</span>
             <span id="createdSecurityPin" class="fs-4 fw-bold font-monospace text-dark">1234</span>
           </div>
           <button type="button" id="btnCopyPin" onclick="copySecurityPin()" class="btn btn-outline-dark btn-sm fw-semibold py-1.5 px-3">
@@ -377,7 +377,7 @@
 
         <div class="d-grid gap-2">
           <a id="btnOpenUserPanel" href="{{ url('/user-panel') }}" class="btn btn-primary fw-bold py-2.5">
-            <i class="bi bi-box-arrow-up-right me-1" aria-hidden="true"></i> Buka Portal Pelanggan Sekarang
+            <i class="bi bi-box-arrow-up-right me-1"></i> Buka Portal Pelanggan Sekarang
           </a>
           <a href="{{ url('/') }}" class="btn btn-outline-secondary fw-semibold">
             Kembali ke Beranda
@@ -514,7 +514,6 @@
         btnOpen.href = data.redirect_url || ("{{ url('/user-panel') }}?ticket=" + encodeURIComponent(ticketNo));
       }
 
-      // Bersihkan data lokal lama agar tidak tercampur
       try { localStorage.removeItem('sercomp_active_order'); } catch(e) {}
 
       if (!bsSuccessModal) {
@@ -529,7 +528,6 @@
       alert(err.message || 'Terjadi kendala saat memproses tiket di database.');
     });
   }
-
 
   function copySecurityPin() {
     const pin = document.getElementById('createdSecurityPin').innerText.trim();
@@ -555,6 +553,7 @@
       icon.className = "bi bi-clipboard me-1";
     }, 2000);
   }
+
   function copyTicketCode() {
     const ticketText = document.getElementById('createdTicketNo').innerText.trim();
     if (navigator.clipboard && navigator.clipboard.writeText) {

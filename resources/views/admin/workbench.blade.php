@@ -1,8 +1,10 @@
 @extends('layouts.admin')
 
 @section('title', 'Meja Kerja & Estimasi Biaya - SerComp')
-@section('page-title', auth()->user()?->role === 'admin' ? 'Estimasi Biaya & Persetujuan Admin' : 'Meja Kerja Diagnosa Teknisi')
-@section('page-subtitle', 'Pemeriksaan fisik meja kerja, penetapan estimasi jasa & suku cadang (Admin), resolusi nego, dan serah terima kurir ber-tandatangan.')
+@section('page-title', auth()->user()?->role === 'admin' ? 'Estimasi Biaya & Persetujuan Admin' : 'Meja Kerja Diagnosa Fisik Teknisi')
+@section('page-subtitle', auth()->user()?->role === 'admin' 
+  ? 'Otoritas penetapan estimasi harga jasa & suku cadang, penugasan teknisi, resolusi tawar-menawar (nego), dan serah terima unit.' 
+  : 'Pemeriksaan fisik meja kerja, identifikasi kerusakan hardware, dan dokumentasi foto dual-evidence running test.')
 
 @section('page-actions')
 <a href="{{ route('admin.servis') }}" class="btn btn-outline-secondary btn-sm fw-semibold d-flex align-items-center gap-1">
@@ -19,22 +21,24 @@
 </div>
 @endif
 
-<!-- BANNER OTOMASI SLA 1X24 JAM PASCA-TERIMA -->
-<div class="alert alert-warning border border-warning-subtle bg-warning-subtle text-dark rounded-4 p-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 shadow-sm">
-  <div class="d-flex align-items-center gap-3">
-    <div class="badge bg-warning text-dark p-2 rounded-circle fs-4">
-      <i class="bi bi-clock-history"></i>
+<!-- OTOMASI SLA 1X24 JAM OPERASIONAL -->
+<div class="card card-bento p-3 mb-4 bg-white border">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="icon-box-primary flex-shrink-0" style="width: 40px; height: 40px; font-size: 1.1rem;">
+        <i class="bi bi-clock-history"></i>
+      </div>
+      <div>
+        <strong class="d-block text-dark small">Otomasi SLA 24 Jam Pasca-Penyerahan Unit</strong>
+        <span class="small text-secondary">
+          Setelah serah-terima unit ber-tandatangan kurir, masa uji 24 jam berjalan. Bila tanpa keluhan, sistem otomatis menutup tiket dan mengaktifkan e-Warranty 90 hari.
+        </span>
+      </div>
     </div>
-    <div>
-      <strong class="d-block small text-uppercase text-dark">Logika SLA 1x24 Jam Pasca-Penyerahan Unit:</strong>
-      <span class="small text-secondary">
-        Setelah unit diserahkan kurir ke pelanggan (dengan tanda tangan digital), timer 1x24 jam berjalan. Jika pelanggan tidak komplain, tiket otomatis <b>Closed</b> & e-Warranty 90 hari aktif.
-      </span>
-    </div>
+    <button onclick="triggerSlaTimeout()" class="btn btn-outline-secondary btn-sm fw-semibold text-nowrap px-3 py-1.5" title="Alat Uji Operasional">
+      <i class="bi bi-clock-fill me-1 text-warning"></i> Uji Timeout SLA (Auto-Close)
+    </button>
   </div>
-  <button onclick="triggerSlaTimeout()" class="btn btn-warning btn-sm fw-bold text-nowrap px-3 py-2 shadow-sm">
-    <i class="bi bi-fast-forward me-1"></i> Simulasi 1x24 Jam Lewat (Auto-Close)
-  </button>
 </div>
 
 <!-- 2 KOLOM WORKSPACE DIAGNOSA -->
@@ -66,6 +70,32 @@
             <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10px;">Pemilik Unit:</span>
             <strong id="tekCustomer" class="small text-dark">{{ $ticket?->customer?->name ?? 'Guest' }} ({{ $ticket?->customer?->phone ?? '-' }})</strong>
           </div>
+        </div>
+      </div>
+
+      <!-- PENUGASAN TEKNISI (PJ) -->
+      <div class="p-3 rounded-3 bg-light border mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-muted text-uppercase fw-bold" style="font-size: 10px;">
+            <i class="bi bi-person-badge text-primary me-1"></i> Teknisi Penanggung Jawab (PJ):
+          </span>
+          @if(auth()->user()?->role === 'admin' && $ticket)
+            <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" data-bs-toggle="modal" data-bs-target="#modalAssignTech" style="font-size: 10px;">
+              <i class="bi bi-pencil-fill me-1"></i> Ganti Teknisi
+            </button>
+          @endif
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          @if($ticket?->technician)
+            <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill fw-bold">
+              <i class="bi bi-check-circle-fill me-1"></i> {{ $ticket->technician->name }} ({{ $ticket->technician->tech_code ?? 'TEK' }})
+            </div>
+            <span class="text-muted small">Spesialisasi: {{ $ticket->technician->specialization ?? '-' }}</span>
+          @else
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2.5 py-1.5 rounded-pill fw-bold">
+              <i class="bi bi-exclamation-circle-fill me-1"></i> Belum Di-assign Teknisi
+            </span>
+          @endif
         </div>
       </div>
 
@@ -117,7 +147,8 @@
         </a>
       </div>
 
-      <!-- PENYERAHAN UNIT OLEH KURIR DENGAN TANDA TANGAN DIGITAL -->
+      <!-- PENYERAHAN UNIT OLEH KURIR DENGAN TANDA TANGAN DIGITAL (ADMIN ONLY) -->
+      @if(auth()->user()?->role === 'admin')
       <div class="p-3 rounded-3 bg-light border">
         <span class="text-muted text-uppercase fw-bold d-block mb-2" style="font-size: 10px;">
           <i class="bi bi-truck me-1 text-primary"></i> Penyerahan Unit Oleh Kurir (Penerimaan):
@@ -145,78 +176,85 @@
           </div>
         @endif
       </div>
+      @endif
     </div>
   </div>
 
   <!-- KOLOM KANAN: FORM LEMBAR PERSETUJUAN & DOKUMENTASI (7 Kolom) -->
   <div class="col-lg-7">
 
-    <!-- ALERT BANNER: CUSTOMER MENGAJUKAN NEGO HARGA -->
-    @if($ticket && $ticket->negotiation_status === 'Requested')
-    <div class="card border-warning border-2 shadow-sm rounded-4 mb-4 bg-warning-subtle">
-      <div class="card-body p-3 px-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i> PERMINTAAN NEGO KONSUMEN</span>
-          <span class="text-muted small">Konsumen meminta penyesuaian biaya estimasi</span>
-        </div>
-        <div class="p-3 bg-white rounded-3 border mb-3 small">
-          <div class="d-flex justify-content-between mb-1">
-            <span class="text-muted">Tawaran / Budget Pelanggan:</span>
-            <strong class="text-warning-emphasis font-monospace fs-6">
-              Rp {{ number_format($ticket->negotiation_budget ?? 0, 0, ',', '.') }}
-            </strong>
+    <!-- ALERT BANNER: CUSTOMER MENGAJUKAN NEGO HARGA (ADMIN ONLY) -->
+    @if(auth()->user()?->role === 'admin')
+      @if($ticket && $ticket->negotiation_status === 'Requested')
+      <div class="card border-warning border-2 shadow-sm rounded-4 mb-4 bg-warning-subtle">
+        <div class="card-body p-3 px-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i> PERMINTAAN NEGO KONSUMEN</span>
+            <span class="text-muted small">Konsumen meminta penyesuaian biaya estimasi</span>
           </div>
-          <div class="mb-1">
-            <span class="text-muted">Alasan / Catatan Nego:</span>
-            <div class="fw-semibold text-dark fst-italic">"{{ $ticket->negotiation_notes }}"</div>
+          <div class="p-3 bg-white rounded-3 border mb-3 small">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted">Tawaran / Budget Pelanggan:</span>
+              <strong class="text-warning-emphasis font-monospace fs-6">
+                Rp {{ number_format($ticket->negotiation_budget ?? 0, 0, ',', '.') }}
+              </strong>
+            </div>
+            <div class="mb-1">
+              <span class="text-muted">Alasan / Catatan Nego:</span>
+              <div class="fw-semibold text-dark fst-italic">"{{ $ticket->negotiation_notes }}"</div>
+            </div>
           </div>
-        </div>
 
-        <!-- Form Tindakan Admin terhadap Negosiasi -->
-        <form action="{{ route('admin.nego.resolve', ['ticket' => $ticket->ticket_no]) }}" method="POST" class="row g-2 small">
-          @csrf
-          <div class="col-md-6">
-            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Biaya Jasa (Rp):</label>
-            <input type="number" name="adjusted_labor" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->labor_cost ?? 150000 }}" required>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Suku Cadang (Rp):</label>
-            <input type="number" name="adjusted_parts" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->parts_cost ?? 0 }}" required>
-          </div>
-          <div class="col-12">
-            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Admin untuk Konsumen:</label>
-            <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="Cth: Diberikan diskon khusus pelanggan setia Rp 50.000 / part diganti opsi garansi 90 hari." required>
-          </div>
-          <div class="col-12 d-flex gap-2 mt-2">
-            <button type="submit" name="decision" value="approve" class="btn btn-success btn-sm fw-bold px-3">
-              <i class="bi bi-check-circle me-1"></i> Setujui Nego & Update Harga
-            </button>
-            <button type="submit" name="decision" value="reject" class="btn btn-outline-danger btn-sm fw-bold px-3">
-              <i class="bi bi-x-circle me-1"></i> Tolak Nego (Tetap Harga Normal)
-            </button>
-          </div>
-        </form>
+          <!-- Form Tindakan Admin terhadap Negosiasi -->
+          <form action="{{ route('admin.nego.resolve', ['ticket' => $ticket->ticket_no]) }}" method="POST" class="row g-2 small">
+            @csrf
+            <div class="col-md-6">
+              <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Biaya Jasa (Rp):</label>
+              <input type="number" name="adjusted_labor" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->labor_cost ?? 150000 }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Penyesuaian Suku Cadang (Rp):</label>
+              <input type="number" name="adjusted_parts" class="form-control form-control-sm" value="{{ $ticket->diagnostic?->parts_cost ?? 0 }}" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Admin untuk Konsumen:</label>
+              <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="Cth: Diberikan diskon khusus pelanggan setia Rp 50.000 / part diganti opsi garansi 90 hari." required>
+            </div>
+            <div class="col-12 d-flex gap-2 mt-2">
+              <button type="submit" name="decision" value="approve" class="btn btn-success btn-sm fw-bold px-3">
+                <i class="bi bi-check-circle me-1"></i> Setujui Nego & Update Harga
+              </button>
+              <button type="submit" name="decision" value="reject" class="btn btn-outline-danger btn-sm fw-bold px-3">
+                <i class="bi bi-x-circle me-1"></i> Tolak Nego (Tetap Harga Normal)
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-    @elseif($ticket && $ticket->negotiation_status === 'Approved')
-    <div class="alert alert-success border border-success-subtle rounded-3 small p-3 mb-4 d-flex align-items-center gap-2">
-      <i class="bi bi-check-circle-fill text-success fs-5"></i>
-      <div>
-        <strong>Kesepakatan Nego Telah Disetujui Admin:</strong>
-        <span>Harga telah disesuaikan dan notifikasi terkirim ke WhatsApp & Email pelanggan.</span>
+      @elseif($ticket && $ticket->negotiation_status === 'Approved')
+      <div class="alert alert-success border border-success-subtle rounded-3 small p-3 mb-4 d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <div>
+          <strong>Kesepakatan Nego Telah Disetujui Admin:</strong>
+          <span>Harga telah disesuaikan dan notifikasi terkirim ke WhatsApp & Email pelanggan.</span>
+        </div>
       </div>
-    </div>
+      @endif
     @endif
 
-    <!-- Form Input Lembar Persetujuan (Arahkan ke Admin) -->
+    <!-- Form Input Lembar Diagnosa & Persetujuan -->
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
       <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <div>
           <h6 class="fw-bold text-dark mb-0">
-            <i class="bi bi-calculator me-2 text-primary"></i>
-            Estimasi Jasa & Suku Cadang (Otoritas Admin Workshop)
+            <i class="bi bi-tools me-2 text-primary"></i>
+            {{ auth()->user()?->role === 'admin' ? 'Estimasi Jasa & Suku Cadang (Otoritas Admin Workshop)' : 'Form Diagnosa Teknis Kerusakan (Meja Kerja Teknisi)' }}
           </h6>
-          <span class="text-muted small">Estimasi resmi disusun oleh Admin pasca-cek fisik meja kerja. Notifikasi WA & Email otomatis terkirim.</span>
+          <span class="text-muted small">
+            {{ auth()->user()?->role === 'admin' 
+              ? 'Estimasi resmi disusun oleh Admin pasca-cek fisik meja kerja. Notifikasi WA & Email otomatis terkirim.' 
+              : 'Laporkan temuan fisik dan rencana tindakan perbaikan. Penentuan harga komersial akan diproses oleh Admin.' }}
+          </span>
         </div>
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Tahap 2 - 3</span>
       </div>
@@ -224,36 +262,56 @@
       <div class="row g-3 small">
         <div class="col-12">
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Hasil Diagnosa Kerusakan Fisik:</label>
-          <textarea id="inputDiagnosis" rows="2" class="form-control bg-light small">{{ $ticket?->diagnostic?->physical_damage_analysis }}</textarea>
+          <textarea id="inputDiagnosis" rows="2" class="form-control bg-light small" placeholder="Cth: Fan pendingin mati, thermal paste kering mengeras, socket USB korosi...">{{ $ticket?->diagnostic?->physical_damage_analysis }}</textarea>
         </div>
         <div class="col-12">
           <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Rencana Tindakan Perbaikan:</label>
-          <textarea id="inputActionPlan" rows="2" class="form-control bg-light small">{{ $ticket?->diagnostic?->action_plan }}</textarea>
+          <textarea id="inputActionPlan" rows="2" class="form-control bg-light small" placeholder="Cth: Penggantian modul pendingin dan pembersihan sirkuit motherboard...">{{ $ticket?->diagnostic?->action_plan }}</textarea>
         </div>
-        <div class="col-md-6">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Jasa Teknisi (Rp):</label>
-          <input type="number" id="inputLabor" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->labor_cost ?? 150000) }}">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Suku Cadang Baru (Rp):</label>
-          <input type="number" id="inputParts" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->parts_cost ?? 0) }}">
-        </div>
+
+        @if(auth()->user()?->role === 'admin')
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Jasa Teknisi (Rp):</label>
+            <input type="number" id="inputLabor" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->labor_cost ?? 150000) }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Estimasi Biaya Suku Cadang Baru (Rp):</label>
+            <input type="number" id="inputParts" class="form-control bg-light small" value="{{ (int)($ticket?->diagnostic?->parts_cost ?? 0) }}">
+          </div>
+        @else
+          <!-- Informasi untuk teknisi tanpa kolom harga -->
+          <input type="hidden" id="inputLabor" value="{{ (int)($ticket?->diagnostic?->labor_cost ?? 0) }}">
+          <input type="hidden" id="inputParts" value="{{ (int)($ticket?->diagnostic?->parts_cost ?? 0) }}">
+        @endif
+
         <div class="col-12">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Suku Cadang Dari Stok Workshop (Opsional):</label>
+          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Rekomendasi Suku Cadang Dari Stok Workshop:</label>
           <select id="selectSparepart" class="form-select bg-light small" onchange="handleSelectPart(this)">
             <option value="">-- Tanpa Part Baru / Input Manual --</option>
             @foreach($spareparts ?? [] as $sp)
-              <option value="{{ $sp->id }}" data-price="{{ $sp->unit_price }}">{{ $sp->part_code }} - {{ $sp->part_name }} (Rp {{ number_format($sp->unit_price, 0, ',', '.') }})</option>
+              <option value="{{ $sp->id }}" data-price="{{ $sp->unit_price }}">
+                {{ $sp->part_code }} - {{ $sp->part_name }} (Stok: {{ $sp->stock_qty }})
+                @if(auth()->user()?->role === 'admin')
+                  - Rp {{ number_format($sp->unit_price, 0, ',', '.') }}
+                @endif
+              </option>
             @endforeach
           </select>
         </div>
-        <div class="col-12">
-          <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Khusus Admin & Otorisasi Biaya:</label>
-          <input type="text" id="inputNote" class="form-control bg-light small" value="{{ $ticket?->diagnostic?->admin_notes ?? 'Pemeriksaan fisik selesai. Estimasi biaya terkunci garansi 90 hari.' }}">
-        </div>
+
+        @if(auth()->user()?->role === 'admin')
+          <div class="col-12">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Catatan Khusus Admin & Otorisasi Biaya:</label>
+            <input type="text" id="inputNote" class="form-control bg-light small" value="{{ $ticket?->diagnostic?->admin_notes ?? 'Pemeriksaan fisik selesai. Estimasi biaya terkunci garansi 90 hari.' }}">
+          </div>
+        @endif
+
         <div class="col-12">
           <button onclick="saveApprovalSheet()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-            <i class="bi bi-save me-1"></i> Tetapkan & Kirim Lembar Estimasi ke Pelanggan (Otomatis Notif WA & Email)
+            <i class="bi bi-save me-1"></i> 
+            {{ auth()->user()?->role === 'admin' 
+              ? 'Tetapkan & Kirim Lembar Estimasi ke Pelanggan (Otomatis Notif WA & Email)' 
+              : 'Simpan Hasil Pemeriksaan Fisik & Laporkan ke Admin' }}
           </button>
         </div>
       </div>
@@ -298,6 +356,45 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL ASSIGN TEKNISI (ADMIN ONLY) -->
+@if(auth()->user()?->role === 'admin' && $ticket)
+<div class="modal fade" id="modalAssignTech" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <form action="{{ route('admin.assign.technician', ['ticket' => $ticket->ticket_no]) }}" method="POST">
+        @csrf
+        <div class="modal-header border-bottom p-3 px-4">
+          <h6 class="modal-title fw-bold text-dark"><i class="bi bi-person-badge text-primary me-2"></i>Tugaskan Teknisi Penanggung Jawab</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 small">
+          <p class="text-secondary mb-3">
+            Pilih staf teknisi workshop yang bertanggung jawab membongkar, mendiagnosa, dan memperbaiki perangkat <strong>#{{ $ticket->ticket_no }}</strong> ({{ $ticket->device_brand }} {{ $ticket->device_model }}).
+          </p>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Pilih Teknisi:</label>
+            <select name="technician_id" class="form-select form-select-sm" required>
+              <option value="">-- Pilih Staf Teknisi --</option>
+              @foreach($technicians ?? [] as $t)
+                <option value="{{ $t->id }}" {{ $ticket->technician_id === $t->id ? 'selected' : '' }}>
+                  {{ $t->name }} ({{ $t->tech_code ?? 'TEK' }}) - {{ $t->specialization ?? 'Hardware' }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-top p-3 px-4">
+          <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
+            <i class="bi bi-check2-circle me-1"></i> Simpan Penugasan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endif
 
 <!-- MODAL SERAH TERIMA KURIR & TANDA TANGAN DIGITAL USER -->
 <div class="modal fade" id="modalCourierHandover" tabindex="-1" aria-hidden="true">
@@ -430,7 +527,8 @@
       return;
     }
 
-    fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/handover', {
+    const courierEndpoint = '{{ auth()->user()?->role === "admin" ? url("/admin/meja-kerja") : url("/teknisi/meja-kerja") }}';
+    fetch(courierEndpoint + '/' + encodeURIComponent(order.ticketNo) + '/handover', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -519,33 +617,43 @@
   function saveApprovalSheet() {
     const diagnosis = document.getElementById('inputDiagnosis').value;
     const actionPlan = document.getElementById('inputActionPlan').value;
-    const labor = parseInt(document.getElementById('inputLabor').value) || 0;
-    const parts = parseInt(document.getElementById('inputParts').value) || 0;
-    const note = document.getElementById('inputNote').value;
+    const labor = document.getElementById('inputLabor') ? (parseInt(document.getElementById('inputLabor').value) || 0) : 0;
+    const parts = document.getElementById('inputParts') ? (parseInt(document.getElementById('inputParts').value) || 0) : 0;
+    const note = document.getElementById('inputNote') ? document.getElementById('inputNote').value : '';
 
-    fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/diagnosis', {
+    const isAdmin = {{ auth()->user()?->role === 'admin' ? 'true' : 'false' }};
+    const endpoint = isAdmin 
+      ? '{{ url("/admin/meja-kerja") }}/' + encodeURIComponent(order.ticketNo) + '/diagnosis'
+      : '{{ url("/teknisi/meja-kerja") }}/' + encodeURIComponent(order.ticketNo) + '/diagnosis';
+
+    const payload = {
+      diagnosis: diagnosis,
+      action_plan: actionPlan,
+      sparepart_id: document.getElementById('selectSparepart') ? document.getElementById('selectSparepart').value : null
+    };
+
+    if (isAdmin) {
+      payload.cost_labor = labor;
+      payload.cost_parts = parts;
+      payload.admin_notes = note;
+    }
+
+    fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': '{{ csrf_token() }}',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        diagnosis: diagnosis,
-        action_plan: actionPlan,
-        cost_labor: labor,
-        cost_parts: parts,
-        admin_notes: note,
-        sparepart_id: document.getElementById('selectSparepart') ? document.getElementById('selectSparepart').value : null
-      })
+      body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
-      alert("Lembar Estimasi Biaya berhasil ditetapkan! Notifikasi otomatis telah dikirim ke WhatsApp dan Email pelanggan.");
+      alert(data.message || (isAdmin ? "Lembar Estimasi Biaya berhasil ditetapkan!" : "Hasil diagnosa teknisi berhasil disimpan dan dilaporkan ke Admin."));
       location.reload();
     })
     .catch(err => {
-      alert("Lembar Estimasi Biaya berhasil disimpan.");
+      alert("Diagnosa berhasil disimpan.");
       location.reload();
     });
   }
@@ -557,10 +665,19 @@
     if (f1 && f1.files[0]) formData.append('evidence_running_test', f1.files[0]);
     if (f2 && f2.files[0]) formData.append('evidence_replaced_part', f2.files[0]);
 
-    fetch('/teknisi/meja-kerja/' + encodeURIComponent(order.ticketNo) + '/complete', {
+    const isAdmin = {{ auth()->user()?->role === 'admin' ? 'true' : 'false' }};
+    const completeUrl = isAdmin
+      ? '{{ url("/admin/meja-kerja") }}/' + encodeURIComponent(order.ticketNo) + '/complete'
+      : '{{ url("/teknisi/meja-kerja") }}/' + encodeURIComponent(order.ticketNo) + '/complete';
+
+    fetch(completeUrl, {
       method: 'POST',
       headers: {
         'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'Accept': 'application/json'
+      },
+      body: formData
+    })
         'Accept': 'application/json'
       },
       body: formData

@@ -73,24 +73,27 @@ class DashboardController extends Controller
     {
         $techId = auth()->id();
 
-        // Antrean khusus operasional teknisi
+        // Antrean khusus operasional teknisi: HANYA yang di-assign ke teknisi ini
         $myActiveOrders = ServiceOrder::with(['customer', 'diagnostic', 'items.sparepart', 'invoice'])
-            ->where(function ($q) use ($techId) {
-                $q->where('technician_id', $techId)->orWhereNull('technician_id');
-            })
+            ->where('technician_id', $techId)
             ->whereIn('order_status', ['Di Workshop', 'Reparasi', 'Selesai'])
             ->latest()
             ->get();
 
-        $queueCheck = ServiceOrder::whereIn('order_status', ['Booking', 'Di Workshop'])->count();
-        $queueRepair = ServiceOrder::where('order_status', 'Reparasi')->count();
-        $queueDualEvidence = ServiceOrder::where('order_status', 'Selesai')
+        $queueCheck = ServiceOrder::where('technician_id', $techId)->whereIn('order_status', ['Booking', 'Di Workshop'])->count();
+        $queueRepair = ServiceOrder::where('technician_id', $techId)->where('order_status', 'Reparasi')->count();
+        $queueDualEvidence = ServiceOrder::where('technician_id', $techId)
+            ->where('order_status', 'Selesai')
             ->whereHas('diagnostic', function ($q) {
                 $q->whereNull('evidence_running_test_photo')->orWhereNull('evidence_replaced_part_photo');
             })->count();
         $myCompletedCount = ServiceOrder::where('technician_id', $techId)->whereIn('order_status', ['Selesai', 'Diserahkan', 'Closed'])->count();
 
-        $recentQueue = ServiceOrder::with(['customer', 'diagnostic'])->latest()->take(6)->get();
+        $recentQueue = ServiceOrder::with(['customer', 'diagnostic'])
+            ->where('technician_id', $techId)
+            ->latest()
+            ->take(6)
+            ->get();
 
         return view('admin.technician-dashboard', compact(
             'myActiveOrders',

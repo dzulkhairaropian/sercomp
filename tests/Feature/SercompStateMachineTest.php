@@ -461,4 +461,76 @@ class SercompStateMachineTest extends TestCase
         $crmResponse->assertSee('PT Mega Solusi Nusantara');
         $crmResponse->assertSee('Company');
     }
+
+    public function test_technician_cannot_access_admin_routes_and_only_sees_assigned_orders(): void
+    {
+        $admin = User::create([
+            'name' => 'Super Admin',
+            'email' => 'super@sercomp.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $tech1 = User::create([
+            'name' => 'Teknisi 1',
+            'email' => 'tech1@sercomp.id',
+            'tech_code' => 'TEK-01',
+            'password' => bcrypt('password123'),
+            'role' => 'technician',
+            'is_active' => true,
+        ]);
+
+        $tech2 = User::create([
+            'name' => 'Teknisi 2',
+            'email' => 'tech2@sercomp.id',
+            'tech_code' => 'TEK-02',
+            'password' => bcrypt('password123'),
+            'role' => 'technician',
+            'is_active' => true,
+        ]);
+
+        // Teknisi dilarang mengakses halaman khusus admin (/admin, /admin/crm)
+        $techForbiddenRes = $this->actingAs($tech1)->get('/admin');
+        $techForbiddenRes->assertRedirect(route('teknisi.dashboard'));
+
+        $techCrmRes = $this->actingAs($tech1)->get('/admin/crm');
+        $techCrmRes->assertRedirect(route('teknisi.dashboard'));
+
+        // Buat 2 order: 1 di-assign ke tech1, 1 lagi ke tech2
+        $order1 = ServiceOrder::create([
+            'technician_id' => $tech1->id,
+            'ticket_no' => 'SC-2026-T101',
+            'device_type' => 'Laptop',
+            'device_brand' => 'Asus',
+            'device_model' => 'ROG Strix',
+            'issue_chronology' => 'Thermal throttling parah',
+            'order_status' => 'Di Workshop',
+        ]);
+
+        $order2 = ServiceOrder::create([
+            'technician_id' => $tech2->id,
+            'ticket_no' => 'SC-2026-T202',
+            'device_type' => 'PC Desktop',
+            'device_brand' => 'Custom',
+            'device_model' => 'Ryzen 7',
+            'issue_chronology' => 'No Display',
+            'order_status' => 'Di Workshop',
+        ]);
+
+        // tech1 hanya melihat SC-2026-T101 di daftar servisnya, dan TIDAK melihat SC-2026-T202
+        $listRes = $this->actingAs($tech1)->get('/teknisi/servis');
+        $listRes->assertStatus(200);
+        $listRes->assertSee('SC-2026-T101');
+        $listRes->assertDontSee('SC-2026-T202');
+
+        // Admin bisa meng-assign teknisi
+        $assignRes = $this->actingAs($admin)->post("/admin/meja-kerja/{$order2->ticket_no}/assign", [
+            'technician_id' => $tech1->id,
+        ]);
+        $assignRes->assertRedirect();
+
+        $order2->refresh();
+        $this->assertEquals($tech1->id, $order2->technician_id);
+    }
 }

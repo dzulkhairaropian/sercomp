@@ -69,14 +69,19 @@
       <!-- Quick Demo Credentials Box -->
       <div class="p-3 bg-light rounded-3 border mb-3 small">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <span class="text-muted fw-bold">Akun Demo Pengujian:</span>
-          <button type="button" onclick="fillDemoTech()" class="btn btn-xs py-0.5 px-2 btn-outline-primary" style="font-size: 11px;">
-            <i class="bi bi-magic me-1"></i> Isi Otomatis
-          </button>
+          <span class="text-muted fw-bold">Pilih Akun Demo Cepat:</span>
+          <div class="btn-group btn-group-sm">
+            <button type="button" onclick="fillDemoAdmin()" class="btn btn-xs py-0.5 px-2 btn-primary" style="font-size: 11px;">
+              <i class="bi bi-shield-lock me-1"></i> Admin
+            </button>
+            <button type="button" onclick="fillDemoTech()" class="btn btn-xs py-0.5 px-2 btn-outline-primary" style="font-size: 11px;">
+              <i class="bi bi-tools me-1"></i> Teknisi
+            </button>
+          </div>
         </div>
         <div class="text-secondary" style="font-size: 11px;">
-          <div>ID Teknisi: <code>TEK-2026-01</code> (Budi Santoso)</div>
-          <div>Sandi: <code>teknisi123</code></div>
+          <div><strong class="text-dark">Admin:</strong> <code>admin@sercomp.id</code> / <code>admin123</code> (Manajemen & Harga)</div>
+          <div><strong class="text-dark">Teknisi:</strong> <code>TEK-2026-01</code> / <code>teknisi123</code> (Budi - Pengerjaan Unit)</div>
         </div>
       </div>
 
@@ -120,6 +125,11 @@
   </div>
 
   <script>
+    function fillDemoAdmin() {
+      document.getElementById('techId').value = "admin@sercomp.id";
+      document.getElementById('techPass').value = "admin123";
+    }
+
     function fillDemoTech() {
       document.getElementById('techId').value = "TEK-2026-01";
       document.getElementById('techPass').value = "teknisi123";

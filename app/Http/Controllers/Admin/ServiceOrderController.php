@@ -7,6 +7,7 @@ use App\Models\Diagnostic;
 use App\Models\OrderItem;
 use App\Models\ServiceOrder;
 use App\Models\Sparepart;
+use App\Models\User;
 use App\Models\Warranty;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -14,9 +15,66 @@ use Illuminate\Http\Request;
 
 class ServiceOrderController extends Controller
 {
+    public function cashierIndex(Request $request)
+    {
+        $orders = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'invoice.warranty'])
+            ->whereIn('order_status', ['Selesai', 'Diserahkan', 'Closed'])
+            ->latest()
+            ->get();
+
+        $countUnpaidReady = ServiceOrder::where('order_status', 'Selesai')
+            ->whereHas('invoice', fn($q) => $q->where('payment_status', '!=', 'Paid'))
+            ->count();
+
+        $countReadyHandover = ServiceOrder::where('order_status', 'Selesai')
+            ->where('unit_handed_over', false)
+            ->count();
+
+        return view('admin.cashier', compact('orders', 'countUnpaidReady', 'countReadyHandover'));
+    }
+
+    public function payCashOrPos(Request $request, $ticketNo)
+    {
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->with(['invoice', 'customer'])
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:Tunai / Kasir,Transfer Bank / EDC,QRIS Dinamis',
+        ]);
+
+        if ($order->invoice) {
+            $order->invoice->update([
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => 'Paid',
+                'paid_at' => Carbon::now(),
+            ]);
+        }
+
+        NotificationService::notifyPaymentReceived($order);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil dicatat oleh Kasir Workshop!',
+                'ticket' => $order->fresh('invoice'),
+            ]);
+        }
+
+        return back()->with('success', 'Pembayaran sebesar Rp ' . number_format($order->invoice?->amount_total ?? 0, 0, ',', '.') . ' berhasil diverifikasi!');
+    }
+
     public function index(Request $request)
     {
+        $user = auth()->user();
         $query = ServiceOrder::with(['customer', 'technician', 'diagnostic', 'invoice'])->latest();
+
+        // Jika teknisi, HANYA tampilkan tiket yang ditugaskan ke dirinya
+        if ($user && $user->role === 'technician') {
+            $query->where('technician_id', $user->id);
+        }
 
         if ($request->filled('device')) {
             $query->where('device_type', $request->device);
@@ -41,13 +99,21 @@ class ServiceOrderController extends Controller
 
         $tickets = $query->get();
 
-        $countAll = ServiceOrder::count();
-        $countLaptop = ServiceOrder::where('device_type', 'Laptop')->count();
-        $countPc = ServiceOrder::where('device_type', 'PC Desktop')->count();
-        $countApproval = ServiceOrder::where('order_status', 'Approval Biaya')->count();
-        $countProgress = ServiceOrder::where('order_status', 'Reparasi')->count();
-        $countCompleted = ServiceOrder::whereIn('order_status', ['Selesai', 'Diserahkan', 'Closed'])->count();
-        $countCancelled = ServiceOrder::where('order_status', 'Dibatalkan')->count();
+        $baseCountQuery = ServiceOrder::query();
+        if ($user && $user->role === 'technician') {
+            $baseCountQuery->where('technician_id', $user->id);
+        }
+
+        $countAll = (clone $baseCountQuery)->count();
+        $countLaptop = (clone $baseCountQuery)->where('device_type', 'Laptop')->count();
+        $countPc = (clone $baseCountQuery)->where('device_type', 'PC Desktop')->count();
+        $countApproval = (clone $baseCountQuery)->where('order_status', 'Approval Biaya')->count();
+        $countProgress = (clone $baseCountQuery)->where('order_status', 'Reparasi')->count();
+        $countCompleted = (clone $baseCountQuery)->whereIn('order_status', ['Selesai', 'Diserahkan', 'Closed'])->count();
+        $countCancelled = (clone $baseCountQuery)->where('order_status', 'Dibatalkan')->count();
+
+        // Ambil daftar teknisi untuk modal assign oleh admin
+        $technicians = $user?->role === 'admin' ? User::where('role', 'technician')->where('is_active', true)->get() : collect();
 
         return view('admin.service-list', compact(
             'tickets',
@@ -57,7 +123,8 @@ class ServiceOrderController extends Controller
             'countApproval',
             'countProgress',
             'countCompleted',
-            'countCancelled'
+            'countCancelled',
+            'technicians'
         ));
     }
 
@@ -77,9 +144,40 @@ class ServiceOrderController extends Controller
                 ->first() ?? ServiceOrder::with(['customer', 'technician', 'diagnostic', 'items.sparepart', 'invoice.warranty'])->latest()->first();
         }
 
+        // Pilihan sparepart: jika teknisi, hanya nama & kode (tanpa harga bila perlu), admin lengkap
         $spareparts = Sparepart::orderBy('part_name')->get();
+        $technicians = auth()->user()?->role === 'admin' ? User::where('role', 'technician')->where('is_active', true)->get() : collect();
 
-        return view('admin.workbench', compact('ticket', 'spareparts'));
+        return view('admin.workbench', compact('ticket', 'spareparts', 'technicians'));
+    }
+
+    public function assignTechnician(Request $request, $ticketNo)
+    {
+        $ticketNoClean = ltrim($ticketNo, '#');
+        $order = ServiceOrder::where('ticket_no', $ticketNoClean)
+            ->orWhere('ticket_no', '#' . $ticketNoClean)
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'technician_id' => 'required|exists:users,id',
+        ]);
+
+        $order->update([
+            'technician_id' => $validated['technician_id'],
+            'order_status' => in_array($order->order_status, ['Booking']) ? 'Di Workshop' : $order->order_status,
+        ]);
+
+        $tech = User::find($validated['technician_id']);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Teknisi ' . ($tech?->name ?? '') . ' berhasil ditugaskan untuk tiket ' . $order->ticket_no,
+                'ticket' => $order->fresh('technician'),
+            ]);
+        }
+
+        return back()->with('success', 'Teknisi ' . ($tech?->name ?? '') . ' berhasil ditugaskan untuk tiket ' . $order->ticket_no);
     }
 
     public function updateDiagnosis(Request $request, $ticketNo)
@@ -90,16 +188,31 @@ class ServiceOrderController extends Controller
             ->with(['diagnostic', 'invoice'])
             ->firstOrFail();
 
-        $validated = $request->validate([
-            'diagnosis' => 'required|string',
-            'action_plan' => 'required|string',
-            'cost_labor' => 'required|numeric|min:0',
-            'cost_parts' => 'required|numeric|min:0',
-            'sparepart_id' => 'nullable|exists:spareparts,id',
-        ]);
+        $isTechnician = auth()->user()?->role === 'technician';
 
-        $labor = (float) $validated['cost_labor'];
-        $parts = (float) $validated['cost_parts'];
+        if ($isTechnician && (!$request->filled('cost_labor') && !$request->filled('cost_parts'))) {
+            $validated = $request->validate([
+                'diagnosis' => 'required|string',
+                'action_plan' => 'required|string',
+                'sparepart_id' => 'nullable|exists:spareparts,id',
+            ]);
+            // Teknisi input temuan fisik tanpa menentukan harga
+            $diagnostic = $order->diagnostic ?? new Diagnostic(['service_order_id' => $order->id]);
+            $labor = (float)($diagnostic->labor_cost ?? 0);
+            $parts = (float)($diagnostic->parts_cost ?? 0);
+            $priceSetByAdmin = false;
+        } else {
+            $validated = $request->validate([
+                'diagnosis' => 'required|string',
+                'action_plan' => 'required|string',
+                'cost_labor' => 'required|numeric|min:0',
+                'cost_parts' => 'required|numeric|min:0',
+                'sparepart_id' => 'nullable|exists:spareparts,id',
+            ]);
+            $labor = (float) $validated['cost_labor'];
+            $parts = (float) $validated['cost_parts'];
+            $priceSetByAdmin = true;
+        }
 
         $diagnostic = $order->diagnostic ?? new Diagnostic(['service_order_id' => $order->id]);
         $addonCleaning = $diagnostic->addon_cleaning_cost ?? ($order->addon_cleaning ? 50000 : 0);
@@ -141,13 +254,16 @@ class ServiceOrderController extends Controller
             ]);
         }
 
-        // Status beralih ke Approval Biaya (Tahap 3)
+        // Status beralih ke Approval Biaya (Tahap 3) jika harga ditetapkan, atau tetap Di Workshop jika diagnosa awal
+        $newStatus = $priceSetByAdmin ? 'Approval Biaya' : ($order->order_status === 'Booking' ? 'Di Workshop' : $order->order_status);
         $order->update([
-            'order_status' => 'Approval Biaya',
+            'order_status' => $newStatus,
         ]);
 
-        // Otomatis kirim notifikasi WA & Email ke pelanggan mengenai rilis estimasi resmi
-        NotificationService::notifyEstimateReady($order);
+        // Otomatis kirim notifikasi WA & Email ke pelanggan hanya jika harga resmi sudah ditetapkan
+        if ($priceSetByAdmin) {
+            NotificationService::notifyEstimateReady($order);
+        }
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

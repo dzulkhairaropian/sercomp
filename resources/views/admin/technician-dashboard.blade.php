@@ -10,15 +10,15 @@
   <div class="col-sm-6 col-xl-3">
     <div class="card-kpi p-3 bg-white rounded-3 border">
       <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">1. Cek & Diagnosa Fisik</span>
-        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Meja Kerja</span>
+        <span class="text-muted text-uppercase fw-bold" style="font-size: 11px;">1. Tugas Baru Di-Assign</span>
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">Perlu Dicek</span>
       </div>
       <div class="d-flex align-items-baseline gap-2">
-        <h2 class="fw-bold mb-0 text-dark">{{ $queueCheck ?? 0 }}</h2>
-        <span class="text-muted small">Unit Baru</span>
+        <h2 class="fw-bold mb-0 text-danger">{{ $queueCheck ?? 0 }}</h2>
+        <span class="text-muted small">Unit Ditugaskan</span>
       </div>
       <div class="text-secondary small mt-2">
-        <i class="bi bi-tools me-1 text-warning"></i> Cek tegangan & kondisi fisik
+        <i class="bi bi-person-check-fill me-1 text-danger"></i> Ditugaskan oleh Admin
       </div>
     </div>
   </div>
@@ -94,19 +94,26 @@
         <div class="list-group-item px-0 py-2 border-0 d-flex gap-2">
           <i class="bi bi-1-circle-fill text-primary mt-0.5"></i>
           <div>
-            <strong>Pemeriksaan Fisik Tanpa Bongkar Komersial</strong>
-            <p class="text-muted mb-0" style="font-size: 11px;">Input kerusakan fisik & rekomendasi sparepart. Penetapan harga jasa diatur oleh Admin.</p>
+            <strong>Pengerjaan Berdasarkan Penugasan Admin</strong>
+            <p class="text-muted mb-0" style="font-size: 11px;">Teknisi hanya menangani tiket yang telah di-assign oleh Admin Workshop sesuai spesialisasi.</p>
           </div>
         </div>
         <div class="list-group-item px-0 py-2 border-0 d-flex gap-2">
           <i class="bi bi-2-circle-fill text-primary mt-0.5"></i>
+          <div>
+            <strong>Fokus Diagnosa Teknis Tanpa Beban Harga</strong>
+            <p class="text-muted mb-0" style="font-size: 11px;">Input kerusakan fisik & part rekomendasi. Kalkulasi harga & otorisasi biaya ditangani Admin.</p>
+          </div>
+        </div>
+        <div class="list-group-item px-0 py-2 border-0 d-flex gap-2">
+          <i class="bi bi-3-circle-fill text-primary mt-0.5"></i>
           <div>
             <strong>Dilarang Bongkar Sebelum QRIS Paid</strong>
             <p class="text-muted mb-0" style="font-size: 11px;">Pastikan status unit minimal "Reparasi" (konsumen telah menyetujui estimasi & bayar QRIS).</p>
           </div>
         </div>
         <div class="list-group-item px-0 py-2 border-0 d-flex gap-2">
-          <i class="bi bi-3-circle-fill text-primary mt-0.5"></i>
+          <i class="bi bi-4-circle-fill text-primary mt-0.5"></i>
           <div>
             <strong>Wajib 2 Bukti Foto (Dual Evidence)</strong>
             <p class="text-muted mb-0" style="font-size: 11px;">Wajib upload foto running test suhu normal dan foto fisik modul suku cadang lama sebelum menyelesaikan unit.</p>
@@ -148,9 +155,12 @@
           </thead>
           <tbody>
             @forelse($recentQueue ?? [] as $t)
-            <tr>
+            <tr class="{{ $t->order_status === 'Di Workshop' ? 'table-warning-subtle' : '' }}">
               <td>
                 <span class="fw-bold font-monospace text-primary">{{ $t->ticket_no }}</span>
+                @if($t->order_status === 'Di Workshop')
+                  <span class="badge bg-danger text-white ms-1" style="font-size: 9px;"><i class="bi bi-bell-fill me-0.5"></i>TUGAS BARU</span>
+                @endif
                 <span class="d-block text-muted" style="font-size: 10px;">{{ $t->created_at?->diffForHumans() }}</span>
               </td>
               <td>
