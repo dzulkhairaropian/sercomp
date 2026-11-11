@@ -29,6 +29,11 @@ class Invoice extends Model
         ];
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function serviceOrder(): BelongsTo
     {
         return $this->belongsTo(ServiceOrder::class);

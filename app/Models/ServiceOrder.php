@@ -22,19 +22,27 @@ class ServiceOrder extends Model
         'device_type',
         'device_brand',
         'device_model',
+        'serial_number',
         'issue_chronology',
         'issue_photo_url',
         'addon_cleaning',
         'addon_repasta',
         'delivery_method',
+        'branch_code',
+        'lead_source',
         'pickup_address',
         'order_status',
+        'crm_segment_snapshot',
         'negotiation_status',
         'negotiation_notes',
         'negotiation_budget',
         'courier_name',
+        'handover_method',
         'receiver_name',
         'signature_data',
+        'rating_score',
+        'feedback_comments',
+        'parent_service_order_id',
         'unit_handed_over',
         'handed_over_at',
         'sla_auto_close_at',
@@ -71,6 +79,35 @@ class ServiceOrder extends Model
             'handed_over_at' => 'datetime',
             'sla_auto_close_at' => 'datetime',
         ];
+    }
+
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(TicketStatusHistory::class);
+    }
+
+    public function recordStatusChange(string $newStatus, ?int $userId = null, ?string $notes = null): TicketStatusHistory
+    {
+        $oldStatus = $this->order_status;
+        $this->update(['order_status' => $newStatus]);
+
+        return $this->statusHistories()->create([
+            'status_from' => $oldStatus,
+            'status_to' => $newStatus,
+            'changed_by' => $userId ?? auth()->id(),
+            'notes' => $notes,
+            'changed_at' => now(),
+        ]);
+    }
+
+    public function parentOrder(): BelongsTo
+    {
+        return $this->belongsTo(ServiceOrder::class, 'parent_service_order_id');
+    }
+
+    public function reworkOrders(): HasMany
+    {
+        return $this->hasMany(ServiceOrder::class, 'parent_service_order_id');
     }
 
     public function customer(): BelongsTo

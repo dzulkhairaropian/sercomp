@@ -19,15 +19,17 @@ class SparepartSeeder extends Seeder
         $catScreen = Category::where('slug', 'screen-display')->first()?->id;
         $catPsu = Category::where('slug', 'psu-power')->first()?->id;
         $catCable = Category::where('slug', 'cable-connectors')->first()?->id;
+        $catBattery = Category::where('slug', 'battery-pack')->first()?->id;
 
         $spareparts = [
-            // Fan & Cooling
+            // Fan & Cooling (Harga Jual & Harga Modal untuk BI Margin)
             [
                 'part_code' => 'FAN-ASUS-G15',
                 'part_name' => 'Modul Dual Fan Cooler Original Asus ROG Strix G15',
                 'category' => 'Fan',
                 'category_id' => $catFan,
                 'stock_qty' => 6,
+                'cost_price' => 145000,
                 'unit_price' => 220000,
             ],
             [
@@ -36,6 +38,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'Fan',
                 'category_id' => $catFan,
                 'stock_qty' => 4,
+                'cost_price' => 130000,
                 'unit_price' => 195000,
             ],
             [
@@ -44,6 +47,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'Fan',
                 'category_id' => $catFan,
                 'stock_qty' => 5,
+                'cost_price' => 160000,
                 'unit_price' => 240000,
             ],
 
@@ -54,6 +58,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'RAM',
                 'category_id' => $catRam,
                 'stock_qty' => 14,
+                'cost_price' => 210000,
                 'unit_price' => 320000,
             ],
             [
@@ -62,6 +67,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'RAM',
                 'category_id' => $catRam,
                 'stock_qty' => 8,
+                'cost_price' => 390000,
                 'unit_price' => 580000,
             ],
             [
@@ -70,6 +76,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'RAM',
                 'category_id' => $catRam,
                 'stock_qty' => 5,
+                'cost_price' => 520000,
                 'unit_price' => 750000,
             ],
 
@@ -80,6 +87,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'SSD',
                 'category_id' => $catSsd,
                 'stock_qty' => 10,
+                'cost_price' => 360000,
                 'unit_price' => 520000,
             ],
             [
@@ -88,6 +96,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'SSD',
                 'category_id' => $catSsd,
                 'stock_qty' => 6,
+                'cost_price' => 980000,
                 'unit_price' => 1350000,
             ],
             [
@@ -96,6 +105,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'SSD',
                 'category_id' => $catSsd,
                 'stock_qty' => 7,
+                'cost_price' => 330000,
                 'unit_price' => 475000,
             ],
 
@@ -106,6 +116,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'Screen',
                 'category_id' => $catScreen,
                 'stock_qty' => 4,
+                'cost_price' => 590000,
                 'unit_price' => 850000,
             ],
             [
@@ -114,6 +125,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'Screen',
                 'category_id' => $catScreen,
                 'stock_qty' => 3,
+                'cost_price' => 490000,
                 'unit_price' => 720000,
             ],
 
@@ -124,6 +136,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'PSU',
                 'category_id' => $catPsu,
                 'stock_qty' => 5,
+                'cost_price' => 510000,
                 'unit_price' => 750000,
             ],
             [
@@ -132,6 +145,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'PSU',
                 'category_id' => $catPsu,
                 'stock_qty' => 2,
+                'cost_price' => 1100000,
                 'unit_price' => 1550000,
             ],
 
@@ -142,6 +156,7 @@ class SparepartSeeder extends Seeder
                 'category' => 'Cable',
                 'category_id' => $catCable,
                 'stock_qty' => 8,
+                'cost_price' => 55000,
                 'unit_price' => 110000,
             ],
             [
@@ -150,7 +165,19 @@ class SparepartSeeder extends Seeder
                 'category' => 'Cable',
                 'category_id' => $catCable,
                 'stock_qty' => 9,
+                'cost_price' => 40000,
                 'unit_price' => 85000,
+            ],
+
+            // Battery Replacement
+            [
+                'part_code' => 'BAT-ACER-SF3',
+                'part_name' => 'Baterai Internal Acer Swift 3 AP18C8K 4-Cell 4200mAh',
+                'category' => 'Cable',
+                'category_id' => $catBattery,
+                'stock_qty' => 5,
+                'cost_price' => 310000,
+                'unit_price' => 450000,
             ],
         ];
 

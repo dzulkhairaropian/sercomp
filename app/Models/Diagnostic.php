@@ -13,6 +13,8 @@ class Diagnostic extends Model
     protected $fillable = [
         'service_order_id',
         'physical_damage_analysis',
+        'symptom_category',
+        'fault_category',
         'action_plan',
         'labor_cost',
         'parts_cost',

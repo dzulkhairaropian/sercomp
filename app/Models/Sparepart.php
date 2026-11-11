@@ -16,6 +16,7 @@ class Sparepart extends Model
         'category',
         'category_id',
         'stock_qty',
+        'cost_price',
         'unit_price',
     ];
 
@@ -28,6 +29,7 @@ class Sparepart extends Model
     {
         return [
             'stock_qty' => 'integer',
+            'cost_price' => 'decimal:2',
             'unit_price' => 'decimal:2',
         ];
     }

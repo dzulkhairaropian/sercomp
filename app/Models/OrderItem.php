@@ -15,16 +15,20 @@ class OrderItem extends Model
         'sparepart_id',
         'item_name',
         'quantity',
+        'cost_price',
         'unit_price',
         'subtotal',
+        'margin_total',
     ];
 
     protected function casts(): array
     {
         return [
             'quantity' => 'integer',
+            'cost_price' => 'decimal:2',
             'unit_price' => 'decimal:2',
             'subtotal' => 'decimal:2',
+            'margin_total' => 'decimal:2',
         ];
     }
 
