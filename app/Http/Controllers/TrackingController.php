@@ -195,7 +195,7 @@ class TrackingController extends Controller
         $ticketNoClean = ltrim($ticketNo, '#');
         $order = ServiceOrder::where('ticket_no', $ticketNoClean)
             ->orWhere('ticket_no', '#' . $ticketNoClean)
-            ->with(['diagnostic', 'invoice'])
+            ->with(['diagnostic', 'invoice.payments'])
             ->firstOrFail();
 
         if ($order->diagnostic) {
@@ -205,29 +205,69 @@ class TrackingController extends Controller
             ]);
         }
 
+        $paymentMode = $request->input('payment_mode', 'full'); // 'dp' (50%) atau 'full' (100%)
+        $totalCost = (float) ($order->invoice?->amount_total ?? $order->diagnostic?->net_total_cost ?? 0);
+        $currentOutstanding = (float) ($order->invoice?->outstanding ?? $totalCost);
+
+        if ($paymentMode === 'dp') {
+            // Down Payment 50% atau sisa jika kurang
+            $payAmount = round($totalCost * 0.5, 2);
+            if ($payAmount > $currentOutstanding) {
+                $payAmount = $currentOutstanding;
+            }
+            $pType = \App\Models\Payment::TYPE_DP;
+            $note = 'Pembayaran Uang Muka / Down Payment (DP) 50% via QRIS Dinamis.';
+        } else {
+            // Pelunasan / Full
+            $payAmount = $currentOutstanding > 0 ? $currentOutstanding : $totalCost;
+            $pType = $order->invoice?->total_paid > 0 ? \App\Models\Payment::TYPE_PELUNASAN : \App\Models\Payment::TYPE_FULL;
+            $note = 'Pembayaran Lunas via QRIS Dinamis.';
+        }
+
+        $trxRef = 'QRIS-' . strtoupper(Str::random(10));
+
         if ($order->invoice) {
-            $order->invoice->update([
-                'payment_status' => 'Paid',
+            // Catat transaksi keuangan resmi di tabel payments
+            $order->invoice->payments()->create([
+                'payment_reference' => $trxRef,
+                'payment_type' => $pType,
+                'amount' => $payAmount,
                 'payment_method' => 'QRIS Dinamis',
-                'qris_transaction_id' => 'QRIS-TRX-' . strtoupper(Str::random(10)),
+                'status' => 'Success',
                 'paid_at' => Carbon::now(),
+                'notes' => $note,
+            ]);
+
+            // Refresh model invoice untuk mendapatkan kalkulasi derived status
+            $order->invoice->refresh();
+            $derivedStatus = $order->invoice->derived_payment_status;
+
+            $order->invoice->update([
+                'payment_status' => $derivedStatus,
+                'payment_method' => 'QRIS Dinamis',
+                'qris_transaction_id' => $trxRef,
+                'paid_at' => $derivedStatus === 'Paid' ? Carbon::now() : ($order->invoice->paid_at ?? null),
             ]);
         }
 
-        // Status beralih ke Paid lalu Reparasi
-        $order->update([
-            'order_status' => 'Reparasi',
-        ]);
+        // Status beralih ke Reparasi jika unit belum diperbaiki
+        if (in_array($order->order_status, ['Approval Biaya', 'Booking', 'Di Workshop'])) {
+            $order->recordStatusChange('Reparasi', null, "Pembayaran {$pType} Rp " . number_format($payAmount, 0, ',', '.') . " terkonfirmasi.");
+        }
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Pembayaran QRIS Berhasil Diverifikasi! Webhook Midtrans terkonfirmasi, teknisi memulai reparasi.',
-                'ticket' => $order,
+                'payment_type' => $pType,
+                'amount_paid' => $payAmount,
+                'outstanding' => $order->invoice?->outstanding ?? 0,
+                'payment_status' => $order->invoice?->derived_payment_status,
+                'message' => "Pembayaran {$pType} sebesar Rp " . number_format($payAmount, 0, ',', '.') . " Berhasil Diverifikasi! Teknisi melanjutkan perbaikan hardware.",
+                'ticket' => $order->fresh(['diagnostic', 'invoice.payments']),
             ]);
         }
 
-        return back()->with('success', 'Pembayaran QRIS berhasil diverifikasi.');
+        return back()->with('success', "Pembayaran {$pType} berhasil diverifikasi.");
     }
 
     public function closeTicket(Request $request, $ticketNo)

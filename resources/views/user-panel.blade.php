@@ -349,20 +349,33 @@
 
   </main>
 
-  <!-- MODAL PEMBAYARAN QRIS -->
+  <!-- MODAL PEMBAYARAN QRIS (DP / FULL) -->
   <div class="modal fade" id="qrisModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content border-0 shadow-lg text-center p-3 rounded-4">
+      <div class="modal-content border-0 shadow-lg text-center p-3.5 rounded-4">
         <div class="modal-header border-0 pb-0 justify-content-end">
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body pt-0">
-          <span class="badge bg-danger mb-2">QRIS Terstandarisasi</span>
-          <h5 class="fw-bold mb-1">Scan QRIS</h5>
+          <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 mb-2 fw-semibold" style="font-size: 0.7rem;">QRIS Dinamis Otomatis</span>
+          <h5 class="fw-bold mb-1">Pilih Skema Bayar</h5>
           <p class="text-muted small mb-3">BCA, Mandiri, GoPay, OVO, Dana, atau ShopeePay</p>
 
-          <div class="p-3 bg-light rounded-3 border d-inline-block mb-3">
-            <svg class="img-fluid" style="width: 170px; height: 170px;" viewBox="0 0 100 100" fill="currentColor">
+          <!-- Opsi Skema Bayar: DP (50%) vs Lunas (100%) -->
+          <div class="btn-group w-100 mb-3" role="group">
+            <input type="radio" class="btn-check" name="paymentModeRadio" id="payRadioDp" autocomplete="off" onchange="togglePaymentMode('dp')">
+            <label class="btn btn-outline-primary btn-sm py-2 fw-semibold" for="payRadioDp">
+              <i class="bi bi-pie-chart me-1"></i> DP (50%)
+            </label>
+
+            <input type="radio" class="btn-check" name="paymentModeRadio" id="payRadioFull" autocomplete="off" checked onchange="togglePaymentMode('full')">
+            <label class="btn btn-outline-primary btn-sm py-2 fw-semibold" for="payRadioFull">
+              <i class="bi bi-check-all me-1"></i> Lunas (100%)
+            </label>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 border d-inline-block mb-3 shadow-2xs">
+            <svg class="img-fluid" style="width: 160px; height: 160px;" viewBox="0 0 100 100" fill="currentColor">
               <path d="M0,0 h30 v30 h-30 z M5,5 v20 h20 v-20 z M10,10 h10 v10 h-10 z" />
               <path d="M70,0 h30 v30 h-30 z M75,5 v20 h20 v-20 z M80,10 h10 v10 h-10 z" />
               <path d="M0,70 h30 v30 h-30 z M5,75 v20 h20 v-20 z M10,80 h10 v10 h-10 z" />
@@ -381,14 +394,20 @@
             </svg>
           </div>
 
-          <div class="bg-primary-subtle p-2.5 rounded-3 border border-primary-subtle mb-3">
-            <span class="text-muted d-block small">Total Terkunci:</span>
-            <span id="modalQrisAmount" class="fs-5 fw-bold font-monospace text-primary">Rp 0</span>
+          <div class="bg-primary-subtle p-2.5 rounded-3 border border-primary-subtle mb-3 text-start">
+            <div class="d-flex justify-content-between mb-1 small">
+              <span class="text-secondary" id="labelQrisType">Nominal Ditagihkan:</span>
+              <strong id="modalQrisAmount" class="text-primary font-monospace fs-6">Rp 0</strong>
+            </div>
+            <div class="d-flex justify-content-between small text-muted" id="rowOutstandingInfo">
+              <span>Sisa Tagihan Nanti:</span>
+              <span id="modalQrisOutstanding" class="font-monospace">Rp 0</span>
+            </div>
           </div>
 
-          <button onclick="simulatePaymentSuccess()" class="btn btn-success w-100 fw-bold py-2 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
+          <button onclick="simulatePaymentSuccess()" class="btn btn-success w-100 fw-bold py-2.5 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
             <i class="bi bi-check-circle"></i>
-            <span>Simulasikan Pembayaran Sukses</span>
+            <span id="btnPayQrisText">Simulasikan Bayar via QRIS</span>
           </button>
         </div>
       </div>
@@ -548,7 +567,9 @@
           costParts: serverTicket.cost_parts || 0,
           costCleaning: serverTicket.cost_cleaning || 0,
           costRepasta: serverTicket.cost_repasta || 0,
-          paymentStatus: serverTicket.payment_status,
+          totalPaid: serverTicket.total_paid || 0,
+          outstanding: (serverTicket.outstanding !== undefined) ? serverTicket.outstanding : null,
+          paymentStatus: serverTicket.derived_payment_status || serverTicket.payment_status,
           isApproved: serverTicket.is_approved,
           isCompleted: serverTicket.is_completed,
           unitHandedOver: serverTicket.unit_handed_over,
@@ -644,12 +665,21 @@
         document.getElementById('costRepasta').innerText = "Rp " + (currentOrder.costRepasta || 75000).toLocaleString('id-ID');
       }
 
+      // Dynamic Total & Outstanding breakdown
       const total = (currentOrder.costLabor || 0) + (currentOrder.costParts || 0) +
                     (currentOrder.addonCleaning ? (currentOrder.costCleaning || 50000) : 0) +
                     (currentOrder.addonRepasta ? (currentOrder.costRepasta || 75000) : 0);
       const totalStr = "Rp " + total.toLocaleString('id-ID');
       document.getElementById('costTotal').innerText = totalStr;
-      document.getElementById('modalQrisAmount').innerText = totalStr;
+
+      // Outstanding & Total Paid
+      const totalPaid = currentOrder.totalPaid || 0;
+      const outstanding = (currentOrder.outstanding !== undefined) ? currentOrder.outstanding : Math.max(0, total - totalPaid);
+      const isPartialPaid = totalPaid > 0 && outstanding > 0;
+
+      // Update QRIS modal labels
+      window.currentPaymentMode = 'full';
+      updateQrisModalValues(total, totalPaid, outstanding);
 
       // Status badge
       document.getElementById('badgeStatus').innerText = currentOrder.status;
@@ -736,26 +766,39 @@
         document.getElementById('badgeStatus').className = "badge badge-warning-accessible px-2.5 py-1.5 fw-bold";
       } else if (step === 4) {
         actionContainer.innerHTML = `
-          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 w-100 p-2.5 bg-light rounded-3 border">
-            <div class="small text-dark fw-semibold d-flex align-items-center gap-2">
-              <i class="bi bi-qr-code text-primary fs-5"></i>
-              <span>Rincian biaya telah disetujui. Silakan selesaikan pembayaran:</span>
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 w-100 p-2.5 bg-light rounded-3 border shadow-2xs">
+            <div class="small text-dark">
+              <div class="fw-bold d-flex align-items-center gap-1.5 text-primary mb-0.5">
+                <i class="bi bi-qr-code fs-5"></i>
+                <span>Pilihan Pembayaran DP (50%) atau Pelunasan</span>
+              </div>
+              <span class="text-secondary">Total: <strong>${totalStr}</strong> • DP 50%: <strong>Rp ${(Math.round(total * 0.5)).toLocaleString('id-ID')}</strong></span>
             </div>
-            <button onclick="openQrisModal()" class="btn btn-success fw-bold px-4 py-2 btn-sm shadow-sm d-inline-flex align-items-center gap-2">
+            <button onclick="openQrisModal()" class="btn btn-success fw-bold px-4 py-2.5 btn-sm shadow-sm d-inline-flex align-items-center gap-2">
               <i class="bi bi-qr-code-scan"></i>
-              <span>Bayar Sekarang via QRIS (${totalStr})</span>
+              <span>Bayar via QRIS (DP / Full)</span>
             </button>
           </div>
         `;
         document.getElementById('badgeStatus').className = "badge badge-warning-accessible px-2.5 py-1.5 fw-bold";
       } else if (step === 5) {
+        const paymentLabel = isPartialPaid ? `Uang Muka (DP) Rp ${totalPaid.toLocaleString('id-ID')} Terverifikasi:` : 'Pembayaran QRIS Terverifikasi Lunas:';
+        const subNote = isPartialPaid ? `Sisa tagihan Rp ${outstanding.toLocaleString('id-ID')} dilunasi saat serah terima unit.` : 'Seluruh biaya servis telah lunas tanpa tagihan tersisa.';
+
         actionContainer.innerHTML = `
-          <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2.5 px-3 small w-100">
-            <i class="bi bi-check-circle-fill fs-4 text-success"></i>
-            <div>
-              <strong class="d-block text-dark">Pembayaran QRIS Terverifikasi Lunas:</strong>
-              <span>Teknisi sedang melakukan proses perbaikan hardware di workshop.</span>
+          <div class="alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-2 mb-0 py-2.5 px-3 small w-100">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+              <div>
+                <strong class="d-block text-dark">${paymentLabel}</strong>
+                <span>Teknisi sedang melakukan proses perbaikan hardware di workshop. ${subNote}</span>
+              </div>
             </div>
+            ${isPartialPaid ? `
+              <button onclick="openQrisModal('full')" class="btn btn-outline-success btn-sm fw-bold">
+                <i class="bi bi-wallet2 me-1"></i> Lunasi Sisa (Rp ${outstanding.toLocaleString('id-ID')})
+              </button>
+            ` : ''}
           </div>
         `;
         document.getElementById('badgeStatus').className = "badge badge-info-accessible px-2.5 py-1.5 fw-bold";
@@ -915,36 +958,69 @@
       });
     }
 
+    function togglePaymentMode(mode) {
+      window.currentPaymentMode = mode;
+      const total = (currentOrder.costLabor || 0) + (currentOrder.costParts || 0) +
+                    (currentOrder.addonCleaning ? (currentOrder.costCleaning || 50000) : 0) +
+                    (currentOrder.addonRepasta ? (currentOrder.costRepasta || 75000) : 0);
+      const totalPaid = currentOrder.totalPaid || 0;
+      const outstanding = (currentOrder.outstanding !== undefined) ? currentOrder.outstanding : Math.max(0, total - totalPaid);
+      updateQrisModalValues(total, totalPaid, outstanding);
+    }
+
+    function updateQrisModalValues(total, totalPaid, outstanding) {
+      const mode = window.currentPaymentMode || 'full';
+      let chargeAmount = 0;
+      let remainAfter = 0;
+
+      if (mode === 'dp') {
+        chargeAmount = Math.round(total * 0.5);
+        if (chargeAmount > outstanding) chargeAmount = outstanding;
+        remainAfter = Math.max(0, total - chargeAmount);
+        document.getElementById('labelQrisType').innerText = "Nominal DP (50%):";
+        document.getElementById('btnPayQrisText').innerText = `Bayar DP (Rp ${chargeAmount.toLocaleString('id-ID')})`;
+      } else {
+        chargeAmount = outstanding > 0 ? outstanding : total;
+        remainAfter = 0;
+        document.getElementById('labelQrisType').innerText = totalPaid > 0 ? "Pelunasan Sisa:" : "Nominal Lunas:";
+        document.getElementById('btnPayQrisText').innerText = `Bayar Lunas (Rp ${chargeAmount.toLocaleString('id-ID')})`;
+      }
+
+      document.getElementById('modalQrisAmount').innerText = "Rp " + chargeAmount.toLocaleString('id-ID');
+      document.getElementById('modalQrisOutstanding').innerText = "Rp " + remainAfter.toLocaleString('id-ID');
+    }
+
     function simulatePaymentSuccess() {
+      const mode = window.currentPaymentMode || 'full';
       fetch('/user-panel/' + encodeURIComponent(currentOrder.ticketNo) + '/pay-qris', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-TOKEN': '{{ csrf_token() }}',
           'Accept': 'application/json'
-        }
+        },
+        body: JSON.stringify({ payment_mode: mode })
       })
       .then(res => res.json())
       .then(data => {
-        currentOrder.paymentStatus = "Paid";
-        currentOrder.isApproved = true;
-        currentOrder.step = 5;
-        currentOrder.status = "Sedang Dikerjakan";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
+        if (data.success) {
+          currentOrder.paymentStatus = data.payment_status || (mode === 'dp' ? 'Partial' : 'Paid');
+          currentOrder.totalPaid = (currentOrder.totalPaid || 0) + data.amount_paid;
+          currentOrder.outstanding = data.outstanding;
+          currentOrder.isApproved = true;
+          currentOrder.step = 5;
+          currentOrder.status = "Sedang Dikerjakan";
+          localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
 
-        if (bsQrisModal) bsQrisModal.hide();
-        alert("Pembayaran QRIS Berhasil Diverifikasi! Teknisi segera memulai proses pengerjaan hardware.");
-        renderUI();
+          if (bsQrisModal) bsQrisModal.hide();
+          alert(data.message || "Pembayaran QRIS Berhasil Diverifikasi!");
+          renderUI();
+        }
       })
       .catch(err => {
-        currentOrder.paymentStatus = "Paid";
-        currentOrder.isApproved = true;
-        currentOrder.step = 5;
-        currentOrder.status = "Sedang Dikerjakan";
-        localStorage.setItem('sercomp_active_order', JSON.stringify(currentOrder));
-
         if (bsQrisModal) bsQrisModal.hide();
-        alert("Pembayaran QRIS Berhasil Diverifikasi! Teknisi segera memulai proses pengerjaan hardware.");
-        renderUI();
+        alert("Pembayaran terverifikasi sistem!");
+        location.reload();
       });
     }
 

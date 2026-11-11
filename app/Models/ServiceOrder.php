@@ -64,6 +64,9 @@ class ServiceOrder extends Model
         'is_approved',
         'payment_status',
         'invoice_no',
+        'total_paid',
+        'outstanding',
+        'derived_payment_status',
         'is_completed',
         'is_closed',
         'unit_handed_over_at',
@@ -235,6 +238,21 @@ class ServiceOrder extends Model
     public function getInvoiceNoAttribute(): ?string
     {
         return $this->invoice?->invoice_no;
+    }
+
+    public function getTotalPaidAttribute(): float
+    {
+        return (float) ($this->invoice?->total_paid ?? 0);
+    }
+
+    public function getOutstandingAttribute(): float
+    {
+        return (float) ($this->invoice?->outstanding ?? $this->total_cost);
+    }
+
+    public function getDerivedPaymentStatusAttribute(): string
+    {
+        return $this->invoice?->derived_payment_status ?? 'Unpaid';
     }
 
     public function getIsCompletedAttribute(): bool
