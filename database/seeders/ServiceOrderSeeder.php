@@ -231,7 +231,7 @@ class ServiceOrderSeeder extends Seeder
             ],
 
             // Tiket 4: SC-2026-9035 | Tahap: Reparasi (DP Dibayar Konsumen di Awal)
-            // Fix Gap: Pembayaran DP (Down Payment) dicatat resmi di payments
+            // Fix Gap: Pembayaran DP (Down Payment) dicatat resmi di payments & due_date
             [
                 'ticket_no' => 'SC-2026-9035',
                 'customer' => $custSiti,
@@ -266,9 +266,9 @@ class ServiceOrderSeeder extends Seeder
                 ],
                 'payments' => [
                     [
-                        'type' => 'Down Payment (DP)',
+                        'type' => 'DP',
                         'method' => 'QRIS Dinamis',
-                        'amount' => 100000, // DP dibayar di awal
+                        'amount' => 100000, // DP dibayar di muka Rp 100.000 (Sisa Outstanding Rp 125.000 saat pelunasan unit)
                         'time' => Carbon::now()->subHours(10),
                     ],
                 ],
@@ -431,12 +431,13 @@ class ServiceOrderSeeder extends Seeder
                 ],
                 'payments' => [
                     [
-                        'type' => 'Down Payment (DP)',
+                        'type' => 'DP',
                         'method' => 'Transfer Bank / EDC',
                         'amount' => 3000000, // DP 50% B2B Corporate
                         'time' => Carbon::now()->subHours(16),
                     ],
                 ],
+                'due_date' => Carbon::now()->addDays(30), // B2B Termin NET 30
                 'unit_handed_over' => false,
                 'created_at' => Carbon::now()->subDays(3),
                 'history' => [
@@ -578,16 +579,34 @@ class ServiceOrderSeeder extends Seeder
                 }
             }
 
+            // Hitung status invoice dari payments & outstanding
+            $totalPaymentsPaid = 0;
+            if (!empty($od['payments'])) {
+                foreach ($od['payments'] as $p) {
+                    if (($p['type'] ?? '') !== 'REFUND') {
+                        $totalPaymentsPaid += $p['amount'];
+                    }
+                }
+            }
+            $calculatedPayStatus = 'Unpaid';
+            if ($totalPaymentsPaid > 0 && $totalPaymentsPaid < $finalNetTotal) {
+                $calculatedPayStatus = 'Partial'; // DP telah masuk
+            } elseif ($totalPaymentsPaid >= $finalNetTotal && $finalNetTotal > 0) {
+                $calculatedPayStatus = 'Paid';
+            }
+
             // Invoice
             $invoice = Invoice::updateOrCreate(
                 ['service_order_id' => $order->id],
                 [
                     'invoice_no' => 'INV-' . $order->ticket_no,
                     'amount_total' => $finalNetTotal,
+                    'initial_estimate' => $finalNetTotal,
+                    'due_date' => $od['due_date'] ?? null,
                     'payment_method' => !empty($od['payments']) ? $od['payments'][0]['method'] : 'QRIS Dinamis',
-                    'payment_status' => !empty($od['payments']) ? 'Paid' : 'Unpaid',
+                    'payment_status' => $calculatedPayStatus,
                     'qris_transaction_id' => !empty($od['payments']) ? 'PAY-' . strtoupper(substr(md5($order->ticket_no), 0, 10)) : null,
-                    'paid_at' => !empty($od['payments']) ? $od['payments'][0]['time'] : null,
+                    'paid_at' => $calculatedPayStatus === 'Paid' ? (!empty($od['payments']) ? $od['payments'][0]['time'] : null) : null,
                     'created_at' => $od['created_at'],
                     'updated_at' => $od['created_at'],
                 ]
