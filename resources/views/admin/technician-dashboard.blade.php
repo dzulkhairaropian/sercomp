@@ -122,8 +122,9 @@
       </div>
 
       <div class="mt-3 pt-3 border-top">
-        <a href="{{ route('admin.workbench') }}" class="btn btn-primary w-100 fw-bold btn-sm py-2">
-          <i class="bi bi-tools me-1"></i> Buka Meja Kerja Diagnosa
+        <a href="{{ route('admin.workbench') }}" class="btn btn-primary w-100 fw-bold btn-sm py-2 d-inline-flex justify-content-center align-items-center gap-2">
+          <i class="bi bi-tools"></i>
+          <span>Buka Meja Kerja Diagnosa</span>
         </a>
       </div>
     </div>
@@ -182,8 +183,9 @@
                 @endif
               </td>
               <td class="text-end">
-                <a href="{{ route('admin.workbench', ['ticket' => $t->ticket_no]) }}" class="btn btn-sm btn-primary fw-semibold px-2.5 py-1">
-                  <i class="bi bi-tools me-1"></i> Tangani
+                <a href="{{ route('admin.workbench', ['ticket' => $t->ticket_no]) }}" class="btn btn-sm btn-primary fw-semibold px-2.5 py-1 d-inline-flex align-items-center gap-1.5">
+                  <i class="bi bi-tools"></i>
+                  <span>Tangani</span>
                 </a>
               </td>
             </tr>

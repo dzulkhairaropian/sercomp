@@ -174,8 +174,9 @@
             </div>
           @endif
         @else
-          <button type="button" class="btn btn-outline-primary w-100 btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalCourierHandover">
-            <i class="bi bi-pen-fill me-1"></i> Serah Terima Kurir & Tanda Tangan Konsumen
+          <button type="button" class="btn btn-outline-primary w-100 btn-sm fw-bold d-inline-flex justify-content-center align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCourierHandover">
+            <i class="bi bi-pen-fill"></i>
+            <span>Serah Terima Kurir & Tanda Tangan Konsumen</span>
           </button>
           <div id="handoverStatusText" class="small text-muted mt-2 text-center" style="font-size: 11px;">
             Unit belum diserahkan kurir. Selesaikan serah terima dengan tanda tangan digital konsumen.
@@ -313,11 +314,11 @@
         @endif
 
         <div class="col-12">
-          <button onclick="saveApprovalSheet()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-            <i class="bi bi-save me-1"></i> 
-            {{ auth()->user()?->role === 'admin' 
+          <button onclick="saveApprovalSheet()" class="btn btn-primary w-100 fw-bold py-2.5 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
+            <i class="bi bi-save"></i> 
+            <span>{{ auth()->user()?->role === 'admin' 
               ? 'Tetapkan & Kirim Lembar Estimasi ke Pelanggan (Otomatis Notif WA & Email)' 
-              : 'Simpan Hasil Pemeriksaan Fisik & Laporkan ke Admin' }}
+              : 'Simpan Hasil Pemeriksaan Fisik & Laporkan ke Admin' }}</span>
           </button>
         </div>
       </div>
@@ -327,8 +328,8 @@
     <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
       <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <div>
-          <h6 class="fw-bold text-dark mb-0"><i class="bi bi-camera me-2 text-success"></i>Lampiran Bukti Selesai Servis & Cetak Invoice</h6>
-          <span class="text-muted small">Wajib melampirkan foto laptop menyala normal dan suku cadang lama.</span>
+          <h6 class="fw-bold text-dark mb-0 d-inline-flex align-items-center gap-2"><i class="bi bi-camera text-success"></i><span>Lampiran Bukti Selesai Servis & Cetak Invoice</span></h6>
+          <span class="text-muted small d-block mt-0.5">Wajib melampirkan foto laptop menyala normal dan suku cadang lama.</span>
         </div>
         <span class="badge bg-success-subtle text-success border border-success-subtle">Tahap 5 - 6</span>
       </div>
@@ -356,8 +357,9 @@
         </div>
       </div>
 
-      <button id="btnComplete" onclick="completeServiceOrder()" class="btn btn-success w-100 fw-bold py-2.5 shadow-sm">
-        <i class="bi bi-check2-circle me-1"></i> Selesaikan Servis, Lampirkan Bukti & Terbitkan Invoice
+      <button id="btnComplete" onclick="completeServiceOrder()" class="btn btn-success w-100 fw-bold py-2.5 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-check2-circle"></i>
+        <span>Selesaikan Servis, Lampirkan Bukti & Terbitkan Invoice</span>
       </button>
     </div>
   </div>
@@ -392,8 +394,9 @@
         </div>
         <div class="modal-footer border-top p-3 px-4">
           <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
-            <i class="bi bi-check2-circle me-1"></i> Simpan Penugasan
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-check2-circle"></i>
+            <span>Simpan Penugasan</span>
           </button>
         </div>
       </form>
@@ -407,7 +410,10 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0 shadow">
       <div class="modal-header border-bottom p-3 px-4">
-        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-truck text-primary me-2"></i>Serah Terima Kurir & Tanda Tangan Konsumen</h5>
+        <h5 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2">
+          <i class="bi bi-truck text-primary"></i>
+          <span>Serah Terima Kurir & Tanda Tangan Konsumen</span>
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4 small">
@@ -430,22 +436,25 @@
             <label class="form-label text-muted fw-bold text-uppercase mb-0" style="font-size: 10px;">
               Bubuhi Tanda Tangan Konsumen di Kotak Bawah:
             </label>
-            <button type="button" onclick="clearSignatureCanvas()" class="btn btn-link btn-sm text-danger p-0" style="font-size: 11px;">
-              <i class="bi bi-eraser me-1"></i> Hapus / Reset
+            <button type="button" onclick="clearSignatureCanvas()" class="btn btn-link btn-sm text-danger p-0 d-inline-flex align-items-center gap-1" style="font-size: 11px;">
+              <i class="bi bi-eraser"></i>
+              <span>Hapus / Reset</span>
             </button>
           </div>
           <div class="border rounded-3 p-1 bg-light position-relative">
             <canvas id="signatureCanvas" width="450" height="150" class="w-100 bg-white rounded-2" style="touch-action: none; cursor: crosshair;"></canvas>
-            <div id="sigPlaceholder" class="position-absolute top-50 start-50 translate-middle text-muted pointer-events-none user-select-none small opacity-50">
-              <i class="bi bi-pencil me-1"></i> Tanda tangan di sini dengan jari / mouse
+            <div id="sigPlaceholder" class="position-absolute top-50 start-50 translate-middle text-muted pointer-events-none user-select-none small opacity-50 d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-pencil"></i>
+              <span>Tanda tangan di sini dengan jari / mouse</span>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer border-top p-3 px-4">
         <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-        <button type="button" onclick="submitCourierHandover()" class="btn btn-primary btn-sm fw-bold px-3">
-          <i class="bi bi-check2-circle me-1"></i> Simpan & Mulai Timer SLA 1x24 Jam
+        <button type="button" onclick="submitCourierHandover()" class="btn btn-primary btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+          <i class="bi bi-check2-circle"></i>
+          <span>Simpan & Mulai Timer SLA 1x24 Jam</span>
         </button>
       </div>
     </div>

@@ -207,8 +207,9 @@
             </div>
             <div class="modal-footer border-top p-3 px-4">
               <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
-                <i class="bi bi-check2-circle me-1"></i> Tugaskan
+              <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+                <i class="bi bi-check2-circle"></i>
+                <span>Tugaskan</span>
               </button>
             </div>
           </form>

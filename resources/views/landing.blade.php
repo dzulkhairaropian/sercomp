@@ -90,11 +90,20 @@
           <!-- Card Body -->
           <div class="card-body p-4">
             
-            <div class="mb-3">
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Diagnosa Meja Kerja Workshop:</span>
-              <p class="small text-dark mb-0 bg-light p-2.5 rounded-3 border">
-                Bearing kipas pendingin aus & pasta termal mengering. Solusi: modul pendingin original baru + thermal paste Arctic MX-4.
-              </p>
+            <!-- Diagnostic Card Note -->
+            <div class="mb-3.5 p-3 rounded-3 bg-light border-start border-primary border-3 border shadow-2xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                  <i class="bi bi-tools text-primary me-1.5"></i>Diagnosa Meja Kerja Workshop
+                </span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
+                  Terverifikasi Teknisi
+                </span>
+              </div>
+              <div class="small text-dark lh-base">
+                <div class="mb-1.5"><strong class="text-secondary">Temuan Fisik:</strong> Bearing kipas pendingin aus & pasta termal mengering.</div>
+                <div><strong class="text-secondary">Tindakan:</strong> Modul pendingin original baru + penggantian Arctic MX-4.</div>
+              </div>
             </div>
 
             <!-- Items Breakdown -->
@@ -134,7 +143,7 @@
               </div>
             </div>
 
-            <a href="{{ url('/user-panel?ticket=SC-2026-9042') }}" class="btn btn-outline-primary w-100 fw-semibold d-flex justify-content-center align-items-center gap-1.5 py-2">
+            <a href="{{ url('/user-panel?ticket=SC-2026-9042') }}" class="btn btn-outline-primary w-100 fw-semibold d-inline-flex justify-content-center align-items-center gap-2 py-2.5">
               <span>Buka Tampilan Portal Pelanggan</span>
               <i class="bi bi-arrow-right"></i>
             </a>

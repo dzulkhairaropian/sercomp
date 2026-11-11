@@ -8,8 +8,9 @@
 
 @section('page-actions')
 @if(auth()->user()?->role === 'admin')
-<button type="button" class="btn btn-primary btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalAddPart">
-  <i class="bi bi-plus-circle"></i> Tambah Item Part
+<button type="button" class="btn btn-primary btn-sm fw-semibold shadow-sm d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAddPart">
+  <i class="bi bi-plus-circle"></i>
+  <span>Tambah Item Part</span>
 </button>
 @endif
 @endsection
@@ -158,8 +159,9 @@
         </div>
         <div class="modal-footer border-top p-3">
           <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
-            <i class="bi bi-save me-1"></i> Simpan Suku Cadang
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-save"></i>
+            <span>Simpan Suku Cadang</span>
           </button>
         </div>
       </form>
@@ -176,8 +178,9 @@
         @csrf
         @method('PUT')
         <div class="modal-header border-bottom">
-          <h6 class="modal-title fw-bold text-dark" id="modalEditPartLabel">
-            <i class="bi bi-pencil-square text-primary me-2"></i> Update Stok Suku Cadang
+          <h6 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2" id="modalEditPartLabel">
+            <i class="bi bi-pencil-square text-primary"></i>
+            <span>Update Stok Suku Cadang</span>
           </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -212,8 +215,9 @@
         </div>
         <div class="modal-footer border-top p-3">
           <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3">
-            <i class="bi bi-check2-circle me-1"></i> Perbarui Stok Part
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-check2-circle"></i>
+            <span>Perbarui Stok Part</span>
           </button>
         </div>
       </form>

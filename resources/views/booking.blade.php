@@ -356,18 +356,20 @@
             <span class="text-muted d-block small" style="font-size: 11px;">Nomor Resi Tiket:</span>
             <span id="createdTicketNo" class="fs-4 fw-bold font-monospace text-primary">#SC-2026-9042</span>
           </div>
-          <button type="button" id="btnCopyTicket" onclick="copyTicketCode()" class="btn btn-outline-primary btn-sm fw-semibold py-1.5 px-3">
-            <i class="bi bi-clipboard me-1" id="iconCopyTicket"></i> <span id="btnCopyText">Salin Tiket</span>
+          <button type="button" id="btnCopyTicket" onclick="copyTicketCode()" class="btn btn-outline-primary btn-sm fw-semibold py-1.5 px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-clipboard" id="iconCopyTicket"></i>
+            <span id="btnCopyText">Salin Tiket</span>
           </button>
         </div>
 
         <div class="p-3 bg-warning-subtle border border-warning-subtle rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
           <div class="text-start">
-            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Huruf, Simbol & Angka):</span>
+            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1.5"></i>PIN Keamanan (Huruf, Simbol & Angka):</span>
             <span id="createdSecurityPin" class="fs-4 fw-bold font-monospace text-dark tracking-wider">K#7X</span>
           </div>
-          <button type="button" id="btnCopyPin" onclick="copySecurityPin()" class="btn btn-outline-dark btn-sm fw-semibold py-1.5 px-3">
-            <i class="bi bi-clipboard me-1" id="iconCopyPin"></i> <span id="btnCopyPinText">Salin PIN</span>
+          <button type="button" id="btnCopyPin" onclick="copySecurityPin()" class="btn btn-outline-dark btn-sm fw-semibold py-1.5 px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-clipboard" id="iconCopyPin"></i>
+            <span id="btnCopyPinText">Salin PIN</span>
           </button>
         </div>
 
@@ -376,8 +378,9 @@
         </p>
 
         <div class="d-grid gap-2">
-          <a id="btnOpenUserPanel" href="{{ url('/user-panel') }}" class="btn btn-primary fw-bold py-2.5">
-            <i class="bi bi-box-arrow-up-right me-1"></i> Buka Portal Pelanggan Sekarang
+          <a id="btnOpenUserPanel" href="{{ url('/user-panel') }}" class="btn btn-primary fw-bold py-2.5 d-inline-flex justify-content-center align-items-center gap-2">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <span>Buka Portal Pelanggan Sekarang</span>
           </a>
           <a href="{{ url('/') }}" class="btn btn-outline-secondary fw-semibold">
             Kembali ke Beranda

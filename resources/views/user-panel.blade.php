@@ -159,8 +159,9 @@
               </p>
             </div>
           </div>
-          <button onclick="confirmCloseTicket()" class="btn btn-success fw-bold px-4 py-2 text-nowrap">
-            <i class="bi bi-check2-circle me-1"></i> Konfirmasi Terima & Aktifkan e-Warranty
+          <button onclick="confirmCloseTicket()" class="btn btn-success fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center gap-2">
+            <i class="bi bi-check2-circle"></i>
+            <span>Konfirmasi Terima & Aktifkan e-Warranty</span>
           </button>
         </div>
         <div id="handoverSignatureCard" class="p-3 bg-white rounded-3 border d-flex flex-wrap align-items-center justify-content-between gap-3 d-none">
@@ -192,27 +193,35 @@
         <!-- Kronologi vs Analisis -->
         <div class="row g-3 mb-4">
           <div class="col-md-6">
-            <div class="p-3 rounded-3 bg-light border h-100">
-              <span class="text-muted fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
-                <i class="bi bi-chat-left-text me-1"></i> Kronologi Gejala Dari Anda:
-              </span>
-              <p id="displayChronology" class="small text-dark fst-italic mb-2">
+            <div class="p-3.5 rounded-3 bg-light border h-100 shadow-2xs">
+              <div class="d-flex align-items-center gap-1.5 mb-2">
+                <i class="bi bi-chat-left-text text-secondary"></i>
+                <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
+                  Kronologi Gejala Konsumen
+                </span>
+              </div>
+              <p id="displayChronology" class="small text-dark fst-italic mb-2.5 lh-base">
                 -
               </p>
-              <div class="small text-muted">
+              <div class="small text-secondary pt-2 border-top">
                 Metode Serah Terima: <strong id="displayDelivery" class="text-dark">Diantar Sendiri</strong>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="p-3 rounded-3 bg-primary-subtle border border-primary-subtle h-100">
-              <span class="text-primary fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
-                <i class="bi bi-search me-1"></i> Hasil Analisis & Diagnosa Teknisi:
-              </span>
-              <p id="displayDiagnosis" class="small text-dark fw-semibold mb-2">
+            <div class="p-3.5 rounded-3 bg-primary-subtle border border-primary-subtle border-start border-3 border-primary h-100 shadow-2xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-primary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
+                  <i class="bi bi-tools text-primary me-1.5"></i>Hasil Diagnosa Meja Kerja
+                </span>
+                <span class="badge bg-white text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
+                  Teknisi Hardware
+                </span>
+              </div>
+              <p id="displayDiagnosis" class="small text-dark fw-semibold mb-2.5 lh-base">
                 Menunggu unit tiba dan diperiksa fisik di meja workshop teknisi.
               </p>
-              <div class="small text-secondary">
+              <div class="small text-secondary pt-2 border-top border-primary-subtle">
                 Teknisi Pemeriksa: <strong id="displayTechnician" class="text-dark">Budi Santoso (Certified Hardware)</strong>
               </div>
             </div>
@@ -220,11 +229,14 @@
         </div>
 
         <!-- Rencana Tindakan -->
-        <div class="p-3 rounded-3 bg-light border mb-4">
-          <span class="text-muted fw-bold text-uppercase d-block mb-1" style="font-size: 11px;">
-            <i class="bi bi-tools me-1"></i> Rencana Tindakan Perbaikan:
-          </span>
-          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0">
+        <div class="p-3.5 rounded-3 bg-light border border-start border-3 border-info mb-4 shadow-2xs">
+          <div class="d-flex align-items-center gap-1.5 mb-2">
+            <i class="bi bi-wrench-adjustable-circle text-info"></i>
+            <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
+              Rencana Tindakan Perbaikan
+            </span>
+          </div>
+          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0 lh-base">
             Akan ditentukan setelah teknisi memeriksa komponen dan jalur tegangan.
           </p>
         </div>
@@ -369,8 +381,9 @@
             <span id="modalQrisAmount" class="fs-5 fw-bold font-monospace text-primary">Rp 0</span>
           </div>
 
-          <button onclick="simulatePaymentSuccess()" class="btn btn-success w-100 fw-bold py-2 shadow-sm">
-            <i class="bi bi-check-circle me-1"></i> Simulasikan Pembayaran Sukses
+          <button onclick="simulatePaymentSuccess()" class="btn btn-success w-100 fw-bold py-2 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
+            <i class="bi bi-check-circle"></i>
+            <span>Simulasikan Pembayaran Sukses</span>
           </button>
         </div>
       </div>
@@ -398,8 +411,9 @@
           <span class="text-muted d-block small mb-3" style="font-size: 11px;">
             *Lupa kode PIN? Anda juga dapat menggunakan 4 digit terakhir nomor WhatsApp pemilik (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>).
           </span>
-          <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-            <i class="bi bi-check2-circle me-1"></i> Verifikasi & Lanjutkan
+          <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
+            <i class="bi bi-check2-circle"></i>
+            <span>Verifikasi & Lanjutkan</span>
           </button>
         </div>
       </div>
@@ -410,7 +424,10 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0 shadow">
         <div class="modal-header border-bottom p-3 px-4">
-          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-chat-quote-fill text-warning me-2"></i>Ajukan Negosiasi Biaya Servis</h5>
+          <h5 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2">
+            <i class="bi bi-chat-quote-fill text-warning"></i>
+            <span>Ajukan Negosiasi Biaya Servis</span>
+          </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4 small">
@@ -433,11 +450,13 @@
             <textarea id="inputNegoNotes" rows="3" class="form-control" placeholder="Cth: Bisakah diskon biaya jasa Rp 50.000? Atau adakah pilihan sparepart second yang bergaransi?"></textarea>
           </div>
           <div class="d-grid gap-2">
-            <button type="button" onclick="submitNegotiation()" class="btn btn-primary fw-bold py-2">
-              <i class="bi bi-send-fill me-1"></i> Kirim Permintaan Nego ke Admin
+            <button type="button" onclick="submitNegotiation()" class="btn btn-primary fw-bold py-2 d-inline-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-send-fill"></i>
+              <span>Kirim Permintaan Nego ke Admin</span>
             </button>
-            <a id="btnNegoWaChat" href="#" target="_blank" class="btn btn-outline-success fw-bold py-2">
-              <i class="bi bi-whatsapp me-1"></i> Diskusi Nego Langsung via WhatsApp CS
+            <a id="btnNegoWaChat" href="#" target="_blank" class="btn btn-outline-success fw-bold py-2 d-inline-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-whatsapp"></i>
+              <span>Diskusi Nego Langsung via WhatsApp CS</span>
             </a>
           </div>
         </div>
@@ -690,18 +709,21 @@
       } else if (step === 3) {
         actionContainer.innerHTML = `
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 w-100">
-            <div class="small text-muted">
-              <i class="bi bi-info-circle me-1"></i> Estimasi biaya resmi telah dirilis. Anda dapat menyetujui, mengajukan negosiasi biaya, atau membatalkan.
+            <div class="small text-muted d-flex align-items-center gap-2">
+              <i class="bi bi-info-circle text-primary"></i>
+              <span>Estimasi biaya resmi telah dirilis. Anda dapat menyetujui, mengajukan negosiasi biaya, atau membatalkan.</span>
             </div>
             <div class="d-flex flex-wrap gap-2 text-nowrap">
               <button onclick="handleReject()" class="btn btn-outline-danger fw-semibold px-3 py-2 btn-sm">
                 Tolak / Batalkan
               </button>
-              <button onclick="openNegoModal()" class="btn btn-warning text-dark fw-bold px-3 py-2 btn-sm">
-                <i class="bi bi-chat-quote-fill me-1"></i> Ajukan Nego
+              <button onclick="openNegoModal()" class="btn btn-warning text-dark fw-bold px-3 py-2 btn-sm d-inline-flex align-items-center gap-1.5">
+                <i class="bi bi-chat-quote-fill"></i>
+                <span>Ajukan Nego</span>
               </button>
-              <button onclick="handleApprove()" class="btn btn-primary fw-bold px-4 py-2 btn-sm shadow-sm">
-                <i class="bi bi-check-circle me-1"></i> Setujui & Bayar
+              <button onclick="handleApprove()" class="btn btn-primary fw-bold px-4 py-2 btn-sm shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="bi bi-check-circle"></i>
+                <span>Setujui & Bayar</span>
               </button>
             </div>
           </div>
@@ -710,11 +732,13 @@
       } else if (step === 4) {
         actionContainer.innerHTML = `
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 w-100 p-2.5 bg-light rounded-3 border">
-            <div class="small text-dark fw-semibold">
-              <i class="bi bi-qr-code text-primary fs-5 me-1"></i> Rincian biaya telah disetujui. Silakan selesaikan pembayaran:
+            <div class="small text-dark fw-semibold d-flex align-items-center gap-2">
+              <i class="bi bi-qr-code text-primary fs-5"></i>
+              <span>Rincian biaya telah disetujui. Silakan selesaikan pembayaran:</span>
             </div>
-            <button onclick="openQrisModal()" class="btn btn-success fw-bold px-4 py-2 btn-sm shadow-sm">
-              <i class="bi bi-qr-code-scan me-1"></i> Bayar Sekarang via QRIS (${totalStr})
+            <button onclick="openQrisModal()" class="btn btn-success fw-bold px-4 py-2 btn-sm shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="bi bi-qr-code-scan"></i>
+              <span>Bayar Sekarang via QRIS (${totalStr})</span>
             </button>
           </div>
         `;

@@ -132,13 +132,15 @@
           <td class="text-end">
             <div class="btn-group btn-group-sm">
               @if($o->invoice?->payment_status !== 'Paid')
-                <button type="button" class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalPay{{ $o->id }}">
-                  <i class="bi bi-cash me-1"></i> Bayar
+                <button type="button" class="btn btn-success fw-bold d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalPay{{ $o->id }}">
+                  <i class="bi bi-cash"></i>
+                  <span>Bayar</span>
                 </button>
               @endif
 
-              <a href="{{ url('/invoice?ticket=' . urlencode($o->ticket_no)) }}" target="_blank" class="btn btn-outline-secondary" title="Cetak Invoice Faktur A4">
-                <i class="bi bi-receipt"></i> Cetak
+              <a href="{{ url('/invoice?ticket=' . urlencode($o->ticket_no)) }}" target="_blank" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1.5" title="Cetak Invoice Faktur A4">
+                <i class="bi bi-receipt"></i>
+                <span>Cetak</span>
               </a>
 
               <a href="{{ route('admin.meja-kerja', ['ticket' => $o->ticket_no]) }}" class="btn btn-outline-primary" title="Buka Detail">
@@ -154,7 +156,10 @@
                   <form action="{{ route('admin.kasir.pay', ['ticket' => $o->ticket_no]) }}" method="POST">
                     @csrf
                     <div class="modal-header border-bottom p-3 px-4">
-                      <h6 class="modal-title fw-bold text-dark"><i class="bi bi-cash-stack text-success me-2"></i>Penerimaan Pembayaran Kasir</h6>
+                      <h6 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-cash-stack text-success"></i>
+                        <span>Penerimaan Pembayaran Kasir</span>
+                      </h6>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4 small">
@@ -184,8 +189,9 @@
                     </div>
                     <div class="modal-footer border-top p-3 px-4">
                       <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-dismiss="modal">Batal</button>
-                      <button type="submit" class="btn btn-success btn-sm fw-bold px-3">
-                        <i class="bi bi-check2-circle me-1"></i> Konfirmasi & Cetak Kuitansi
+                      <button type="submit" class="btn btn-success btn-sm fw-bold px-3 d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-check2-circle"></i>
+                        <span>Konfirmasi & Cetak Kuitansi</span>
                       </button>
                     </div>
                   </form>

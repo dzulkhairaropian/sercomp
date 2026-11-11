@@ -51,13 +51,15 @@
             <a class="nav-link fw-semibold text-secondary" href="{{ url('/#garansi') }}">Garansi 90 Hari</a>
           </li>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-outline-primary btn-sm px-3 py-2 d-flex align-items-center gap-1.5" href="{{ url('/user-panel') }}">
-              <i class="bi bi-search"></i> Lacak Tiket
+            <a class="btn btn-outline-primary btn-sm px-3.5 py-2 d-inline-flex align-items-center gap-2" href="{{ url('/user-panel') }}">
+              <i class="bi bi-search"></i>
+              <span>Lacak Tiket</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-primary btn-sm px-3.5 py-2 d-flex align-items-center gap-1.5 shadow-sm" href="{{ url('/booking') }}">
-              <i class="bi bi-calendar2-plus"></i> Reservasi Servis
+            <a class="btn btn-primary btn-sm px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm" href="{{ url('/booking') }}">
+              <i class="bi bi-calendar2-plus"></i>
+              <span>Reservasi Servis</span>
             </a>
           </li>
         </ul>

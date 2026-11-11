@@ -111,8 +111,9 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm mb-3">
-          <i class="bi bi-box-arrow-in-right me-1"></i> Masuk ke Panel Workshop
+        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm mb-3 d-inline-flex justify-content-center align-items-center gap-2">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Masuk ke Panel Workshop</span>
         </button>
       </form>
 
