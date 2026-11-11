@@ -85,14 +85,17 @@
             Pusat perbaikan laptop dan PC desktop dengan estimasi biaya di muka, persetujuan wajib pelanggan, bukti foto suku cadang, dan garansi digital 90 hari.
           </p>
           <div class="d-flex flex-wrap gap-2">
-            <span class="badge-status badge-status-info small">
-              <i class="bi bi-shield-check"></i> Estimasi Terkunci
+            <span class="badge-status badge-status-info small d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-shield-check"></i>
+              <span>Estimasi Terkunci</span>
             </span>
-            <span class="badge-status badge-status-success small">
-              <i class="bi bi-patch-check"></i> Garansi 90 Hari
+            <span class="badge-status badge-status-success small d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-patch-check"></i>
+              <span>Garansi 90 Hari</span>
             </span>
-            <span class="badge-status badge-status-neutral small">
-              <i class="bi bi-lock"></i> Perlindungan Data
+            <span class="badge-status badge-status-neutral small d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-lock"></i>
+              <span>Perlindungan Data</span>
             </span>
           </div>
         </div>
@@ -151,8 +154,9 @@
 
   <!-- DISCREET FLOATING DEV / TEST SHORTCUT (TIDAK MENGOTORI TAMPILAN KONSUMEN) -->
   <div class="sc-dev-float dropdown">
-    <button class="dev-toggle-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-compass"></i> Pintas Halaman
+    <button class="dev-toggle-btn dropdown-toggle d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-compass"></i>
+      <span>Pintas Halaman</span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-secondary p-2" style="font-size: 13px; min-width: 220px; background: #0f172a;">
       <li class="px-2 py-1 text-white-50 fw-bold text-uppercase" style="font-size: 10px;">Navigasi Sistem:</li>
