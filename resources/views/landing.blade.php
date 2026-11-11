@@ -130,16 +130,39 @@
               <span class="fs-4 fw-bold text-primary font-monospace">Rp 495.000</span>
             </div>
 
-            <!-- Dual Evidence Chips -->
-            <div class="p-2.5 rounded-3 bg-light border mb-3">
-              <span class="text-muted small fw-bold text-uppercase d-block mb-1.5" style="font-size: 9px; letter-spacing: 0.5px;">Bukti Foto Purnajual (Dual Evidence):</span>
-              <div class="d-flex gap-2">
-                <span class="badge bg-white text-secondary border small py-1 px-2">
-                  <i class="bi bi-camera me-1 text-primary"></i> 1. Running Test Stabil
+            <!-- Dual Evidence Section (Professional Proof Card) -->
+            <div class="mb-3.5 p-3 rounded-3 bg-light border shadow-2xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                  <i class="bi bi-shield-check text-success me-1.5"></i>Dokumentasi Purnajual (Dual Evidence)
                 </span>
-                <span class="badge bg-white text-secondary border small py-1 px-2">
-                  <i class="bi bi-box-seam me-1 text-success"></i> 2. Sparepart Lama Kembali
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5" style="font-size: 0.65rem;">
+                  Lengkap 2 Foto
                 </span>
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <div class="p-2 rounded-2 bg-white border d-flex align-items-center gap-2">
+                    <div class="icon-box-primary flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.85rem;">
+                      <i class="bi bi-camera"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                      <strong class="d-block text-dark text-truncate" style="font-size: 0.75rem;">1. Running Test</strong>
+                      <span class="text-success text-truncate d-block" style="font-size: 0.6875rem;">Suhu Stabil 68°C</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 rounded-2 bg-white border d-flex align-items-center gap-2">
+                    <div class="icon-box-primary flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.85rem;">
+                      <i class="bi bi-box-seam text-success"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                      <strong class="d-block text-dark text-truncate" style="font-size: 0.75rem;">2. Part Rusak</strong>
+                      <span class="text-secondary text-truncate d-block" style="font-size: 0.6875rem;">Kembali ke Pemilik</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
