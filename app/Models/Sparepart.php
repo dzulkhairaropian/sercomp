@@ -14,9 +14,15 @@ class Sparepart extends Model
         'part_code',
         'part_name',
         'category',
+        'category_id',
         'stock_qty',
         'unit_price',
     ];
+
+    public function categoryRelation()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 
     protected function casts(): array
     {
