@@ -96,6 +96,12 @@
               <i class="bi bi-exclamation-circle-fill me-1"></i> Belum Di-assign Teknisi
             </span>
           @endif
+
+          @if(auth()->user()?->role === 'technician' && $ticket?->order_status === 'Di Workshop' && empty($ticket?->diagnostic?->physical_damage_analysis))
+            <span class="badge bg-danger text-white ms-auto px-2 py-1" style="font-size: 10px;">
+              <i class="bi bi-bell-fill me-1"></i> TUGAS BARU ANDA
+            </span>
+          @endif
         </div>
       </div>
 

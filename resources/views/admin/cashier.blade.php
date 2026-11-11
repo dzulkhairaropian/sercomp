@@ -123,10 +123,10 @@
           </td>
           <td>
             @if($o->unit_handed_over)
-              <span class="badge bg-success text-white">Diserahkan</span>
+              <span class="badge badge-success-accessible">Diserahkan</span>
               <span class="d-block text-muted" style="font-size: 9px;">Penerima: {{ $o->receiver_name }}</span>
             @else
-              <span class="badge bg-warning text-dark">Belum Diserahkan</span>
+              <span class="badge badge-warning-accessible">Belum Diserahkan</span>
             @endif
           </td>
           <td class="text-end">

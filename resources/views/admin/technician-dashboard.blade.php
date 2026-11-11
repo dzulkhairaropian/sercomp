@@ -172,13 +172,13 @@
               </td>
               <td>
                 @if($t->order_status === 'Reparasi')
-                  <span class="badge bg-primary text-white">Siap Servis</span>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">Siap Servis</span>
                 @elseif($t->order_status === 'Selesai')
-                  <span class="badge bg-success text-white">Selesai</span>
+                  <span class="badge badge-success-accessible">Selesai</span>
                 @elseif($t->order_status === 'Approval Biaya')
-                  <span class="badge bg-warning text-dark">Tunggu Approval</span>
+                  <span class="badge badge-warning-accessible">Tunggu Approval</span>
                 @else
-                  <span class="badge bg-secondary text-white">{{ $t->order_status }}</span>
+                  <span class="badge badge-status-neutral">{{ $t->order_status }}</span>
                 @endif
               </td>
               <td class="text-end">
