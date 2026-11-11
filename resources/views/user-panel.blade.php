@@ -191,57 +191,68 @@
 
       <div class="card-body p-4">
         <!-- Kronologi vs Analisis -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-3">
           <div class="col-md-6">
-            <div class="p-3.5 rounded-3 bg-light border h-100 shadow-2xs">
-              <div class="d-flex align-items-center gap-1.5 mb-2">
-                <i class="bi bi-chat-left-text text-secondary"></i>
-                <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
-                  Kronologi Gejala Konsumen
-                </span>
+            <div class="p-3.5 rounded-3 bg-light border h-100 shadow-2xs d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-inline-flex align-items-center gap-2 mb-2.5">
+                  <span class="badge bg-white text-secondary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border" style="width: 24px; height: 24px;">
+                    <i class="bi bi-chat-left-text" style="font-size: 0.75rem;"></i>
+                  </span>
+                  <span class="text-secondary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                    Kronologi Gejala Konsumen
+                  </span>
+                </div>
+                <p id="displayChronology" class="small text-dark fst-italic mb-3 lh-base">
+                  -
+                </p>
               </div>
-              <p id="displayChronology" class="small text-dark fst-italic mb-2.5 lh-base">
-                -
-              </p>
-              <div class="small text-secondary pt-2 border-top">
-                Metode Serah Terima: <strong id="displayDelivery" class="text-dark">Diantar Sendiri</strong>
+              <div class="small text-secondary pt-2.5 border-top d-flex align-items-center justify-content-between">
+                <span>Metode Penyerahan Unit:</span>
+                <strong id="displayDelivery" class="text-dark">Diantar Sendiri</strong>
               </div>
             </div>
           </div>
+
           <div class="col-md-6">
-            <div class="p-3.5 rounded-3 bg-primary-subtle border border-primary-subtle border-start border-3 border-primary h-100 shadow-2xs">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="d-inline-flex align-items-center gap-2">
-                  <span class="badge bg-white text-primary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-primary-subtle" style="width: 22px; height: 22px;">
-                    <i class="bi bi-tools" style="font-size: 0.75rem;"></i>
-                  </span>
-                  <span class="text-primary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
-                    Hasil Diagnosa Meja Kerja
+            <div class="p-3.5 rounded-3 bg-primary-subtle border border-primary-subtle border-start border-3 border-primary h-100 shadow-2xs d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2.5">
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <span class="badge bg-white text-primary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-primary-subtle" style="width: 24px; height: 24px;">
+                      <i class="bi bi-tools" style="font-size: 0.75rem;"></i>
+                    </span>
+                    <span class="text-primary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                      Hasil Diagnosa Meja Kerja
+                    </span>
+                  </div>
+                  <span class="badge bg-white text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
+                    Teknisi Hardware
                   </span>
                 </div>
-                <span class="badge bg-white text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
-                  Teknisi Hardware
-                </span>
+                <p id="displayDiagnosis" class="small text-dark fw-semibold mb-3 lh-base">
+                  Menunggu unit tiba dan diperiksa fisik di meja workshop teknisi.
+                </p>
               </div>
-              <p id="displayDiagnosis" class="small text-dark fw-semibold mb-2.5 lh-base">
-                Menunggu unit tiba dan diperiksa fisik di meja workshop teknisi.
-              </p>
-              <div class="small text-secondary pt-2 border-top border-primary-subtle">
-                Teknisi Pemeriksa: <strong id="displayTechnician" class="text-dark">Budi Santoso (Certified Hardware)</strong>
+              <div class="small text-secondary pt-2.5 border-top border-primary-subtle d-flex align-items-center justify-content-between">
+                <span>Teknisi Pemeriksa:</span>
+                <strong id="displayTechnician" class="text-dark">Budi Santoso (Certified Hardware)</strong>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Rencana Tindakan -->
+        <!-- Rencana Tindakan Perbaikan -->
         <div class="p-3.5 rounded-3 bg-light border border-start border-3 border-info mb-4 shadow-2xs">
-          <div class="d-flex align-items-center gap-1.5 mb-2">
-            <i class="bi bi-wrench-adjustable-circle text-info"></i>
-            <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
+          <div class="d-inline-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-white text-info p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-info-subtle" style="width: 24px; height: 24px;">
+              <i class="bi bi-wrench-adjustable-circle" style="font-size: 0.8rem;"></i>
+            </span>
+            <span class="text-secondary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
               Rencana Tindakan Perbaikan
             </span>
           </div>
-          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0 lh-base">
+          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0 lh-base ps-1">
             Akan ditentukan setelah teknisi memeriksa komponen dan jalur tegangan.
           </p>
         </div>
