@@ -93,14 +93,19 @@
             <!-- Diagnostic Card Note -->
             <div class="mb-3.5 p-3 rounded-3 bg-light border-start border-primary border-3 border shadow-2xs">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
-                  <i class="bi bi-tools text-primary me-1.5"></i>Diagnosa Meja Kerja Workshop
-                </span>
+                <div class="d-inline-flex align-items-center gap-2">
+                  <span class="badge bg-primary-subtle text-primary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px;">
+                    <i class="bi bi-tools" style="font-size: 0.75rem;"></i>
+                  </span>
+                  <span class="text-secondary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                    Diagnosa Meja Kerja Workshop
+                  </span>
+                </div>
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
                   Terverifikasi Teknisi
                 </span>
               </div>
-              <div class="small text-dark lh-base">
+              <div class="small text-dark lh-base ps-1">
                 <div class="mb-1.5"><strong class="text-secondary">Temuan Fisik:</strong> Bearing kipas pendingin aus & pasta termal mengering.</div>
                 <div><strong class="text-secondary">Tindakan:</strong> Modul pendingin original baru + penggantian Arctic MX-4.</div>
               </div>

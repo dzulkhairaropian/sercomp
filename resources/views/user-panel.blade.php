@@ -211,9 +211,14 @@
           <div class="col-md-6">
             <div class="p-3.5 rounded-3 bg-primary-subtle border border-primary-subtle border-start border-3 border-primary h-100 shadow-2xs">
               <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-primary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
-                  <i class="bi bi-tools text-primary me-1.5"></i>Hasil Diagnosa Meja Kerja
-                </span>
+                <div class="d-inline-flex align-items-center gap-2">
+                  <span class="badge bg-white text-primary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-primary-subtle" style="width: 22px; height: 22px;">
+                    <i class="bi bi-tools" style="font-size: 0.75rem;"></i>
+                  </span>
+                  <span class="text-primary fw-semibold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.05em;">
+                    Hasil Diagnosa Meja Kerja
+                  </span>
+                </div>
                 <span class="badge bg-white text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
                   Teknisi Hardware
                 </span>
