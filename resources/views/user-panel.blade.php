@@ -389,11 +389,11 @@
           </div>
           <h6 class="fw-bold mb-1" id="modalVerifyOwnerLabel">Verifikasi Kode PIN Tiket</h6>
           <p class="text-muted small mb-2">
-            Masukkan <strong>4 Digit Kode PIN Keamanan</strong> yang Anda peroleh saat membuat tiket reservasi ini:
+            Masukkan <strong>4 Karakter Kode PIN Keamanan</strong> (kombinasi huruf, simbol, dan angka):
           </p>
           <div id="verifyAlertError" class="alert alert-danger py-1.5 px-2 small mb-2 d-none"></div>
           <div class="mb-2">
-            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-3 fw-bold" placeholder="••••" maxlength="6" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
+            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-3 fw-bold" placeholder="K#7X" maxlength="8" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
           </div>
           <span class="text-muted d-block small mb-3" style="font-size: 11px;">
             *Lupa kode PIN? Anda juga dapat menggunakan 4 digit terakhir nomor WhatsApp pemilik (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>).

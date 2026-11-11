@@ -81,8 +81,18 @@ class BookingController extends Controller
             $ticketNo = 'SC-' . date('Y') . '-' . mt_rand(1000, 9999);
         } while (ServiceOrder::where('ticket_no', $ticketNo)->exists());
 
-        // Generate 4-digit kode PIN rahasia acak untuk diingat dan diverifikasi konsumen
-        $securityPin = (string) mt_rand(1000, 9999);
+        // Generate 4-karakter kode PIN keamanan acak campuran huruf, simbol, dan angka (cth: K#7X)
+        $letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        $digits = '23456789';
+        $symbols = '#*@!';
+        $pinRaw = [
+            $letters[random_int(0, strlen($letters) - 1)],
+            $digits[random_int(0, strlen($digits) - 1)],
+            $symbols[random_int(0, strlen($symbols) - 1)],
+            $letters[random_int(0, strlen($letters) - 1)],
+        ];
+        shuffle($pinRaw);
+        $securityPin = implode('', $pinRaw);
 
         // Simpan foto kerusakan awal jika diunggah
         $photoUrl = null;
@@ -102,6 +112,7 @@ class BookingController extends Controller
             'customer_type' => $customerType,
             'company_name' => $companyName,
             'ticket_no' => $ticketNo,
+            'security_pin' => $securityPin,
             'device_type' => $validated['device_type'],
             'device_brand' => $validated['device_brand'],
             'device_model' => $validated['device_model'],

@@ -363,8 +363,8 @@
 
         <div class="p-3 bg-warning-subtle border border-warning-subtle rounded-3 mb-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
           <div class="text-start">
-            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Simpan 4 Kode Ini):</span>
-            <span id="createdSecurityPin" class="fs-4 fw-bold font-monospace text-dark">1234</span>
+            <span class="text-dark fw-bold d-block small" style="font-size: 11px;"><i class="bi bi-key-fill text-warning-emphasis me-1"></i>PIN Keamanan (Huruf, Simbol & Angka):</span>
+            <span id="createdSecurityPin" class="fs-4 fw-bold font-monospace text-dark tracking-wider">K#7X</span>
           </div>
           <button type="button" id="btnCopyPin" onclick="copySecurityPin()" class="btn btn-outline-dark btn-sm fw-semibold py-1.5 px-3">
             <i class="bi bi-clipboard me-1" id="iconCopyPin"></i> <span id="btnCopyPinText">Salin PIN</span>
