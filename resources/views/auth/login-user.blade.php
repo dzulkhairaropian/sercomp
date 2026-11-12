@@ -7,6 +7,8 @@
   <!-- Bootstrap 5.3 CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Font Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- SerComp Theme -->
@@ -71,7 +73,7 @@
           <span class="text-dark small">Lanjutkan dengan Google</span>
         </button>
         <button type="button" onclick="quickCustomerLogin('WhatsApp OTP')" class="btn btn-outline-success btn-sm py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold">
-          <i class="bi bi-whatsapp text-success"></i>
+          <i data-lucide="message-circle" class="text-success" style="width: 18px; height: 18px;"></i>
           <span class="text-dark small">Masuk Cepat via WhatsApp OTP</span>
         </button>
       </div>
@@ -110,15 +112,23 @@
 
       <!-- Switch to Technician -->
       <div class="text-center mt-3 pt-2">
-        <a href="{{ url('/teknisi/login') }}" class="small text-secondary text-decoration-none">
-          <i class="bi bi-tools me-1 text-primary"></i> Login Khusus Staf & Teknisi Workshop &rarr;
+        <a href="{{ url('/teknisi/login') }}" class="small text-secondary text-decoration-none d-inline-flex align-items-center gap-1">
+          <i data-lucide="wrench" class="text-primary" style="width: 14px; height: 14px;"></i> Login Khusus Staf & Teknisi Workshop &rarr;
         </a>
       </div>
 
     </div>
   </div>
 
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+
     function handleCustomerLogin(e) {
       e.preventDefault();
       sessionStorage.setItem('sercomp_logged_user', 'Dzul Khair Aropian');

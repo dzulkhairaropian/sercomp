@@ -32,22 +32,24 @@
       </div>
 
       <!-- Tab Switcher -->
-      <div class="btn-group p-1 bg-black rounded-3 border border-secondary" role="group">
-        <button id="tabLanding" onclick="loadFrame('/', this)" class="btn btn-sm btn-primary fw-bold px-3">
-          1. Landing Page
-        </button>
-        <button id="tabBooking" onclick="loadFrame('/booking', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3">
-          2. Form Reservasi
-        </button>
-        <button id="tabUser" onclick="loadFrame('/user-panel', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3">
-          3. Portal User (Approval & QRIS)
-        </button>
-        <button id="tabTeknisi" onclick="loadFrame('/teknisi', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3">
-          4. Panel Teknisi & SLA 24h
-        </button>
-        <button id="tabInvoice" onclick="loadFrame('/invoice', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3">
-          5. Faktur Invoice A4
-        </button>
+      <div class="overflow-x-auto py-1 my-1" style="max-width: 100%;">
+        <div class="btn-group p-1 bg-black rounded-3 border border-secondary flex-nowrap" role="group" aria-label="Navigasi Prototipe">
+          <button id="tabLanding" onclick="loadFrame('/', this)" class="btn btn-sm btn-primary fw-bold px-3 text-nowrap">
+            1. Landing Page
+          </button>
+          <button id="tabBooking" onclick="loadFrame('/booking', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3 text-nowrap">
+            2. Form Reservasi
+          </button>
+          <button id="tabUser" onclick="loadFrame('/user-panel', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3 text-nowrap">
+            3. Portal User (Approval & QRIS)
+          </button>
+          <button id="tabTeknisi" onclick="loadFrame('/teknisi', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3 text-nowrap">
+            4. Panel Teknisi & SLA 24h
+          </button>
+          <button id="tabInvoice" onclick="loadFrame('/invoice', this)" class="btn btn-sm btn-outline-secondary text-white-50 fw-bold px-3 text-nowrap">
+            5. Faktur Invoice A4
+          </button>
+        </div>
       </div>
 
       <!-- Direct Link -->

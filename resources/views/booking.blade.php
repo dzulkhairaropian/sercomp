@@ -56,12 +56,17 @@
       <div class="col-lg-8">
         <div class="card card-bento overflow-hidden bg-white">
           
-          <div class="bg-gradient-hero p-4 text-white d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="fw-bold mb-1"><i class="bi bi-clipboard2-check me-2"></i>Rincian Reservasi Unit</h5>
-              <span class="text-white-50 small">Data ini menjadi acuan pemeriksaan fisik awal teknisi di meja kerja.</span>
+          <div class="p-4 px-4 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-3">
+              <div class="icon-box-primary" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                <i data-lucide="clipboard-check"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold text-dark mb-0.5">Rincian Reservasi Unit</h5>
+                <span class="text-secondary small">Data ini menjadi acuan pemeriksaan fisik awal teknisi di meja kerja.</span>
+              </div>
             </div>
-            <span class="badge-status badge-status-info small">
+            <span class="badge-status badge-status-info small font-monospace">
               Langkah 1 dari 2
             </span>
           </div>
@@ -72,13 +77,13 @@
             <!-- 1. Pilihan Perangkat -->
             <div class="mb-4">
               <div class="form-step-title">
-                <i class="bi bi-laptop"></i> 1. Jenis Perangkat
+                <i data-lucide="laptop" style="width: 16px; height: 16px;"></i> 1. Jenis Perangkat
               </div>
               <div class="row g-3 device-select-grid">
                 <div class="col-sm-6">
                   <input type="radio" name="device_type" id="dev_laptop" value="Laptop" checked class="device-card-input" onchange="updateSummary()">
                   <label for="dev_laptop" class="device-card-label text-center" tabindex="0">
-                    <i class="bi bi-laptop fs-1 mb-2 text-primary d-block"></i>
+                    <i data-lucide="laptop" class="text-primary mx-auto mb-2 d-block" style="width: 36px; height: 36px;"></i>
                     <strong class="text-dark small d-block">Laptop / Notebook</strong>
                     <span class="text-muted d-block" style="font-size: 11px;">Asus, Lenovo, Acer, HP, Dell, MSI, ThinkPad</span>
                   </label>
@@ -86,7 +91,7 @@
                 <div class="col-sm-6">
                   <input type="radio" name="device_type" id="dev_pc" value="PC Desktop" class="device-card-input" onchange="updateSummary()">
                   <label for="dev_pc" class="device-card-label text-center" tabindex="0">
-                    <i class="bi bi-pc-display fs-1 mb-2 text-primary d-block"></i>
+                    <i data-lucide="monitor" class="text-primary mx-auto mb-2 d-block" style="width: 36px; height: 36px;"></i>
                     <strong class="text-dark small d-block">PC Desktop / AIO / Tower</strong>
                     <span class="text-muted d-block" style="font-size: 11px;">Custom Gaming/Editing, All-In-One, Mini PC Office</span>
                   </label>
@@ -113,7 +118,7 @@
             <!-- 3. Kronologi & Gejala Kerusakan -->
             <div class="mb-4">
               <div class="form-step-title">
-                <i class="bi bi-card-text"></i> 2. Uraian Gejala Kerusakan
+                <i data-lucide="file-text" style="width: 16px; height: 16px;"></i> 2. Uraian Gejala Kerusakan
               </div>
               <textarea name="issue_chronology" id="issue_chronology" rows="3" required class="form-control"
                 placeholder="Ceritakan kronologi kendala (contoh: Layar tiba-tiba freeze lalu blank saat render, kipas bersuara kasar, atau unit mati total)..."></textarea>
@@ -129,22 +134,22 @@
               </label>
               <input type="file" name="photo" id="photoInput" accept="image/*" class="visually-hidden" onchange="previewImage(this)">
               
-              <label for="photoInput" class="w-100 border border-2 border-dashed rounded-3 p-3 text-center bg-light cursor-pointer d-block" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('photoInput').click();}">
+              <label for="photoInput" class="w-100 border border-2 border-dashed rounded-3 p-3.5 text-center bg-light cursor-pointer d-block" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('photoInput').click();}">
                 <div id="uploadPlaceholder">
-                  <i class="bi bi-cloud-arrow-up fs-2 text-primary"></i>
+                  <i data-lucide="upload-cloud" class="text-primary mx-auto mb-1 d-block" style="width: 32px; height: 32px;"></i>
                   <div class="fw-semibold small text-dark mt-1">Klik atau tekan Enter untuk melampirkan foto</div>
                   <span class="text-muted" style="font-size: 11px;">Format JPG, PNG (Maksimal 5MB)</span>
                 </div>
                 <div id="imagePreview" class="d-none text-success fw-semibold small">
-                  <i class="bi bi-check-circle-fill me-1"></i> Berkas terpilih: <span id="fileName"></span>
+                  <i data-lucide="check-circle-2" class="me-1 d-inline" style="width: 16px; height: 16px;"></i> Berkas terpilih: <span id="fileName"></span>
                 </div>
               </label>
             </div>
 
             <!-- 5. Layanan Tambahan (Add-ons) -->
-            <div class="p-3 bg-light rounded-3 border mb-4">
-              <div class="form-step-title mb-2">
-                <i class="bi bi-plus-circle"></i> 3. Layanan Perawatan Tambahan (Opsional)
+            <div class="p-3.5 bg-light rounded-3 border mb-4">
+              <div class="form-step-title mb-2.5">
+                <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i> 3. Layanan Perawatan Tambahan (Opsional)
               </div>
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" name="addon_cleaning" id="addon_cleaning" value="1" onchange="updateSummary()">
@@ -165,20 +170,20 @@
             <!-- 6. Metode Penyerahan Unit -->
             <div class="mb-4">
               <div class="form-step-title">
-                <i class="bi bi-geo-alt"></i> 4. Metode Serah-Terima Unit Perangkat
+                <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> 4. Metode Serah-Terima Unit Perangkat
               </div>
               <div class="row g-3 device-select-grid">
                 <div class="col-sm-6">
                   <input type="radio" name="delivery_method" id="deliv_self" value="Diantar Sendiri" checked class="device-card-input" onchange="toggleAddressField(false)">
                   <label for="deliv_self" class="device-card-label" tabindex="0">
-                    <strong class="text-dark small d-block mb-1"><i class="bi bi-building me-1 text-primary"></i> Diantar Sendiri ke Workshop</strong>
+                    <strong class="text-dark small d-flex align-items-center gap-1.5 mb-1"><i data-lucide="building-2" class="text-primary" style="width: 16px; height: 16px;"></i> Diantar Sendiri ke Workshop</strong>
                     <span class="text-muted d-block" style="font-size: 11px;">Bawa unit langsung ke Service Hub SerComp. Bebas ongkos kurir.</span>
                   </label>
                 </div>
                 <div class="col-sm-6">
                   <input type="radio" name="delivery_method" id="deliv_pickup" value="Ambil oleh Teknisi" class="device-card-input" onchange="toggleAddressField(true)">
                   <label for="deliv_pickup" class="device-card-label" tabindex="0">
-                    <strong class="text-dark small d-block mb-1"><i class="bi bi-scooter me-1 text-primary"></i> Jemput oleh Mitra (Pick-up)</strong>
+                    <strong class="text-dark small d-flex align-items-center gap-1.5 mb-1"><i data-lucide="truck" class="text-primary" style="width: 16px; height: 16px;"></i> Jemput oleh Mitra (Pick-up)</strong>
                     <span class="text-muted d-block" style="font-size: 11px;">Mitra kurir menjemput unit ke lokasi Anda dengan berita acara serah terima resmi.</span>
                   </label>
                 </div>
@@ -194,9 +199,9 @@
             </div>
 
             <!-- 7. Identitas Pelanggan -->
-            <div class="p-3 bg-light rounded-3 border mb-4">
-              <div class="form-step-title mb-2">
-                <i class="bi bi-person"></i> 5. Profil Pelanggan
+            <div class="p-3.5 bg-light rounded-3 border mb-4">
+              <div class="form-step-title mb-2.5">
+                <i data-lucide="user" style="width: 16px; height: 16px;"></i> 5. Profil Pelanggan
               </div>
               <div class="d-flex flex-wrap gap-4 mb-2">
                 <div class="form-check">
@@ -241,8 +246,8 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-3 fs-6 shadow-sm d-flex align-items-center justify-content-center gap-2">
-              <i class="bi bi-send-check fs-5"></i>
+            <button type="submit" class="btn btn-primary w-100 py-3 fs-6 shadow-sm d-flex align-items-center justify-content-center gap-2 rounded-3">
+              <i data-lucide="send" style="width: 20px; height: 20px;"></i>
               <span>Terbitkan Tiket & Dapatkan Nomor Resi</span>
             </button>
           </form>
@@ -303,17 +308,17 @@
               </span>
             </div>
 
-            <div class="d-flex flex-column gap-2 small">
+            <div class="d-flex flex-column gap-2.5 small">
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-shield-check text-success fs-5"></i>
+                <i data-lucide="shield-check" class="text-success flex-shrink-0" style="width: 18px; height: 18px;"></i>
                 <span>Garansi 90 hari suku cadang & jasa</span>
               </div>
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-lock-fill text-primary fs-5"></i>
+                <i data-lucide="lock" class="text-primary flex-shrink-0" style="width: 18px; height: 18px;"></i>
                 <span>Data storage tidak dibuka tanpa izin</span>
               </div>
               <div class="d-flex align-items-center gap-2 text-secondary">
-                <i class="bi bi-qr-code text-dark fs-5"></i>
+                <i data-lucide="qr-code" class="text-dark flex-shrink-0" style="width: 18px; height: 18px;"></i>
                 <span>Pembayaran QRIS setelah biaya disetujui</span>
               </div>
             </div>
@@ -323,7 +328,7 @@
           <div class="card card-bento p-3 bg-white">
             <div class="d-flex align-items-center gap-2.5">
               <div class="icon-box-primary flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.1rem;">
-                <i class="bi bi-headset"></i>
+                <i data-lucide="headphones"></i>
               </div>
               <div class="small">
                 <strong class="d-block text-dark">Butuh Bantuan?</strong>

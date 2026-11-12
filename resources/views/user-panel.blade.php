@@ -8,6 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Font Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- SerComp Theme -->
@@ -24,74 +26,86 @@
 
 
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
+  <header class="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top py-2.5">
     <div class="container-xl">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
+      <a class="navbar-brand d-flex align-items-center gap-2.5" href="{{ url('/') }}">
         <div class="brand-box">SC</div>
         <div>
-          <span class="fw-bold fs-5 text-dark">Ser<span class="text-primary">Comp</span></span>
-          <span class="d-block text-muted small fw-semibold" style="font-size: 10px; margin-top:-3px;">PORTAL PELANGGAN</span>
+          <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.02em;">Ser<span class="text-primary">Comp</span></span>
+          <span class="d-block text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.05em; margin-top: -2px;">Portal Pelacakan Pelanggan</span>
         </div>
       </a>
+      
       <div class="d-flex align-items-center gap-2">
-        <form action="{{ url('/user-panel') }}" method="GET" class="d-flex align-items-center me-1">
+        <form action="{{ url('/user-panel') }}" method="GET" class="d-none d-sm-flex align-items-center me-1">
           <div class="input-group input-group-sm">
             <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
-            <input type="text" name="ticket" class="form-control border-start-0 font-monospace" placeholder="Cari resi tiket..." value="{{ request('ticket', $ticket?->ticket_no) }}" style="width: 150px;" required>
-            <button type="submit" class="btn btn-outline-primary fw-semibold">Lacak</button>
+            <input type="text" name="ticket" class="form-control border-start-0 font-monospace" placeholder="Cari resi tiket..." value="{{ request('ticket', $ticket?->ticket_no) }}" style="width: 160px;" required>
+            <button type="submit" class="btn btn-outline-primary fw-semibold px-2.5">Lacak</button>
           </div>
         </form>
-        <a href="{{ url('/') }}" class="btn btn-sm btn-outline-secondary">
-          <i class="bi bi-house me-1"></i> Beranda
+        <a href="{{ url('/') }}" class="btn btn-sm btn-outline-secondary px-3 py-1.5 d-inline-flex align-items-center gap-1">
+          <i class="bi bi-house"></i>
+          <span class="d-none d-md-inline">Beranda</span>
         </a>
-        <a href="{{ url('/booking') }}" class="btn btn-sm btn-primary fw-semibold">
-          <i class="bi bi-plus-circle me-1"></i> Reservasi Baru
+        <a href="{{ url('/booking') }}" class="btn btn-sm btn-primary fw-semibold px-3 py-1.5 shadow-sm d-inline-flex align-items-center gap-1.5">
+          <i class="bi bi-plus-circle"></i>
+          <span>Reservasi Baru</span>
         </a>
       </div>
     </div>
-  </nav>
+  </header>
 
   <!-- MAIN CONTAINER -->
   <main class="container-xl py-4 flex-grow-1">
 
     <!-- 1. HEADER STATUS TIKET -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
-      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div class="card card-bento p-4 mb-4 bg-white border">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
         <div>
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="text-muted small fw-bold text-uppercase">Nomor Tiket:</span>
-            <span id="displayTicketNo" class="fs-5 fw-bold font-monospace text-primary">#SC-2026-9042</span>
-            <button type="button" onclick="copyCurrentTicket()" class="btn btn-sm btn-outline-secondary py-0.5 px-2" title="Salin Nomor Tiket" style="font-size: 11px;">
-              <i class="bi bi-clipboard" id="iconCopyUserPanel"></i> <span id="textCopyUserPanel">Salin</span>
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-1.5">
+            <span class="text-secondary small fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Nomor Tiket:</span>
+            <span id="displayTicketNo" class="fs-4 fw-bold font-monospace text-primary" style="letter-spacing: -0.02em;">#SC-2026-9042</span>
+            <button type="button" onclick="copyCurrentTicket()" class="btn btn-sm btn-outline-secondary py-1 px-2.5 rounded-2 d-inline-flex align-items-center gap-1" title="Salin Nomor Tiket" style="font-size: 11px;">
+              <i class="bi bi-clipboard" id="iconCopyUserPanel"></i>
+              <span id="textCopyUserPanel">Salin</span>
             </button>
-            <span id="badgeStatus" class="badge badge-warning-accessible px-2.5 py-1.5 fw-bold">
+            <span id="badgeStatus" class="badge-status badge-status-warning fw-bold">
               Menunggu Pemeriksaan
             </span>
           </div>
-          <p class="mb-0 text-secondary small">
-            Perangkat: <strong id="displayDevice" class="text-dark">Laptop Asus ROG Strix G15</strong> • Pelanggan: <strong id="displayCustomer" class="text-dark">Dzul Khair</strong>
-          </p>
+          <div class="text-secondary small d-flex flex-wrap align-items-center gap-2">
+            <span>Perangkat: <strong id="displayDevice" class="text-dark">Laptop Asus ROG Strix G15</strong></span>
+            <span class="text-muted">&bull;</span>
+            <span>Pelanggan: <strong id="displayCustomer" class="text-dark">Dzul Khair</strong></span>
+          </div>
         </div>
 
         <!-- ALERT SLA 1x24 JAM PASCA-PENYERAHAN UNIT -->
-        <div id="slaAlertBox" class="p-2.5 px-3 rounded-3 border d-flex align-items-center gap-3 bg-light text-muted" style="min-width: 320px;">
-          <div class="fs-3 text-warning">
-            <i class="bi bi-hourglass-split"></i>
+        <div id="slaAlertBox" class="p-3 rounded-3 border d-flex align-items-center gap-3 bg-light text-muted" style="min-width: 340px;">
+          <div class="text-warning flex-shrink-0">
+            <i data-lucide="hourglass" style="width: 28px; height: 28px;"></i>
           </div>
           <div>
-            <span class="d-block fw-bold small text-dark" id="slaTitle">SLA Auto-Close (Pasca-Terima Unit):</span>
-            <span id="slaCountdown" class="fw-bold font-monospace text-secondary fs-6">Menunggu Unit Diserahkan</span>
-            <span class="d-block text-muted" style="font-size: 11px;">Masa uji 24 jam sebelum tiket resmi diselesaikan</span>
+            <span class="d-block fw-bold small text-dark" id="slaTitle">SLA Auto-Close (Pasca-Terima Unit)</span>
+            <div id="slaCountdown" class="fw-bold font-monospace text-secondary fs-6">Menunggu Unit Diserahkan</div>
+            <span class="d-block text-muted" style="font-size: 11px;">Masa toleransi uji 24 jam sebelum tiket resmi diselesaikan</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 2. STEPPER PROGRESS 7 TAHAP -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
-      <div class="card-body p-4">
-        <h6 class="text-uppercase text-muted fw-bold small mb-3">Pelacakan Tahapan Servis Real-Time:</h6>
-        <div class="d-flex align-items-start justify-content-between text-center overflow-auto pb-2" style="min-width: 760px;">
+    <div class="card card-bento p-4 mb-4 bg-white border">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-uppercase text-secondary fw-bold small mb-0" style="letter-spacing: 0.05em; font-size: 11px;">
+          Pelacakan Tahapan Servis Real-Time:
+        </h6>
+        <span class="badge bg-light text-secondary border font-monospace" style="font-size: 11px;">
+          7 SIKLUS WORKSHOP
+        </span>
+      </div>
+      <div class="d-flex align-items-start justify-content-between text-center overflow-auto pb-2" style="min-width: 760px;">
           
           <div style="width: 90px;">
             <div id="step1Node" class="step-node step-done"><i class="bi bi-check-lg"></i></div>
@@ -143,7 +157,6 @@
 
         </div>
       </div>
-    </div>
 
     <!-- BANNER UNIT DITERIMA USER & TOMBOL TUTUP TIKET (MUNCUL PASCA SERAH TERIMA) -->
     <!-- BANNER UNIT DITERIMA USER & BUKTI SERAH TERIMA KURIR -->
@@ -170,91 +183,106 @@
             <span class="small text-secondary">Tanda tangan dibubuhkan langsung kepada kurir saat penyerahan unit fisik.</span>
           </div>
           <div>
-            <img id="handoverSignatureImg" src="" alt="Tanda Tangan Penerima" class="border rounded bg-light p-1" style="max-height: 70px; max-width: 200px;">
+            <img id="handoverSignatureImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='60' viewBox='0 0 150 60'%3E%3Crect width='100%25' height='100%25' fill='%23f8fafc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='11'%3ETerverifikasi%3C/text%3E%3C/svg%3E" alt="Tanda Tangan Penerima" class="border rounded bg-light p-1" style="max-height: 70px; max-width: 200px; display: none;">
           </div>
         </div>
       </div>
     </div>
 
     <!-- 3. LEMBAR PERSETUJUAN TEKNISI -->
-    <div id="approvalSection" class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white">
-      <div class="card-header bg-dark text-white p-3 px-4 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-file-earmark-text text-warning fs-5"></i>
+    <div id="approvalSection" class="card card-bento mb-4 overflow-hidden bg-white border">
+      <!-- Section Header -->
+      <div class="px-4 py-3 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="icon-box-primary flex-shrink-0" style="width: 40px; height: 40px; font-size: 1.2rem; background: var(--sc-brand-subtle); color: var(--sc-brand); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;">
+            <i class="bi bi-file-earmark-check"></i>
+          </div>
           <div>
-            <h6 class="fw-bold mb-0">Lembar Persetujuan Kerusakan & Estimasi Biaya</h6>
-            <span class="text-light-50 small" style="font-size: 11px;">Estimasi biaya disetujui di muka sebelum teknisi membongkar unit</span>
+            <h6 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.01em;">Lembar Persetujuan Kerusakan & Estimasi Biaya</h6>
+            <span class="text-secondary small" style="font-size: 12px;">Biaya wajib disetujui di muka sebelum unit dibongkar teknisi</span>
           </div>
         </div>
-        <span class="badge bg-primary text-uppercase px-2.5 py-1">Zero Hidden Cost</span>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 fw-bold font-monospace" style="font-size: 11px; letter-spacing: 0.05em; border-radius: 9999px;">
+          ZERO HIDDEN COST
+        </span>
       </div>
 
-      <div class="card-body p-4">
-        <!-- Kronologi vs Analisis -->
+      <div class="p-4">
+        <!-- Kronologi vs Analisis (2 Kolom Card) -->
         <div class="row g-3 mb-3">
+          
+          <!-- Kronologi Keluhan Konsumen -->
           <div class="col-md-6">
-            <div class="p-3.5 rounded-3 bg-light border h-100 shadow-2xs d-flex flex-column justify-content-between">
+            <div class="card h-100 border rounded-3 p-3.5 bg-light-subtle d-flex flex-column justify-content-between shadow-2xs">
               <div>
-                <div class="d-inline-flex align-items-center gap-2 mb-2.5">
-                  <span class="badge bg-white text-secondary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border" style="width: 24px; height: 24px;">
-                    <i class="bi bi-chat-left-text" style="font-size: 0.75rem;"></i>
-                  </span>
-                  <span class="text-secondary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
-                    Kronologi Gejala Konsumen
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-2.5 border-bottom">
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-person-lines-fill text-secondary"></i>
+                    <span class="fw-bold text-dark text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">
+                      Kronologi Keluhan Konsumen
+                    </span>
+                  </div>
+                  <span class="badge bg-white text-secondary border px-2 py-0.5" style="font-size: 10px; font-weight: 600;">
+                    User Statement
                   </span>
                 </div>
-                <p id="displayChronology" class="small text-dark fst-italic mb-3 lh-base">
-                  -
-                </p>
+                <div class="p-3 bg-white rounded-2 border text-secondary small lh-base mb-3" style="min-height: 80px;">
+                  <span id="displayChronology">Laptop mati mendadak saat rendering 3D, tercium bau sangit dari ventilasi exhaust belakang.</span>
+                </div>
               </div>
-              <div class="small text-secondary pt-2.5 border-top d-flex align-items-center justify-content-between">
-                <span>Metode Penyerahan Unit:</span>
-                <strong id="displayDelivery" class="text-dark">Diantar Sendiri</strong>
+              <div class="small text-secondary pt-2 border-top d-flex align-items-center justify-content-between" style="font-size: 12px;">
+                <span>Metode Penyerahan:</span>
+                <span id="displayDelivery" class="fw-semibold text-dark">Diantar Sendiri</span>
               </div>
             </div>
           </div>
 
+          <!-- Hasil Diagnosa Meja Kerja -->
           <div class="col-md-6">
-            <div class="p-3.5 rounded-3 bg-primary-subtle border border-primary-subtle border-start border-3 border-primary h-100 shadow-2xs d-flex flex-column justify-content-between">
+            <div class="card h-100 border rounded-3 p-3.5 bg-light-subtle d-flex flex-column justify-content-between shadow-2xs">
               <div>
-                <div class="d-flex align-items-center justify-content-between mb-2.5">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-2.5 border-bottom">
                   <div class="d-inline-flex align-items-center gap-2">
-                    <span class="badge bg-white text-primary p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-primary-subtle" style="width: 24px; height: 24px;">
-                      <i class="bi bi-tools" style="font-size: 0.75rem;"></i>
-                    </span>
-                    <span class="text-primary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
+                    <i class="bi bi-cpu text-primary"></i>
+                    <span class="fw-bold text-dark text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">
                       Hasil Diagnosa Meja Kerja
                     </span>
                   </div>
-                  <span class="badge bg-white text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.65rem;">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 10px; font-weight: 600;">
                     Teknisi Hardware
                   </span>
                 </div>
-                <p id="displayDiagnosis" class="small text-dark fw-semibold mb-3 lh-base">
-                  Menunggu unit tiba dan diperiksa fisik di meja workshop teknisi.
-                </p>
+                <div class="p-3 bg-white rounded-2 border text-dark small fw-medium lh-base mb-3" style="min-height: 80px;">
+                  <span id="displayDiagnosis">Bearing kipas pendingin GPU macet total berkerak debu tebal, thermal paste mengeras jadi bubuk.</span>
+                </div>
               </div>
-              <div class="small text-secondary pt-2.5 border-top border-primary-subtle d-flex align-items-center justify-content-between">
+              <div class="small text-secondary pt-2 border-top d-flex align-items-center justify-content-between" style="font-size: 12px;">
                 <span>Teknisi Pemeriksa:</span>
-                <strong id="displayTechnician" class="text-dark">Budi Santoso (Certified Hardware)</strong>
+                <strong id="displayTechnician" class="text-dark">Budi Santoso</strong>
               </div>
             </div>
           </div>
+
         </div>
 
-        <!-- Rencana Tindakan Perbaikan -->
-        <div class="p-3.5 rounded-3 bg-light border border-start border-3 border-info mb-4 shadow-2xs">
-          <div class="d-inline-flex align-items-center gap-2 mb-2">
-            <span class="badge bg-white text-info p-1.5 rounded-2 d-inline-flex align-items-center justify-content-center border border-info-subtle" style="width: 24px; height: 24px;">
-              <i class="bi bi-wrench-adjustable-circle" style="font-size: 0.8rem;"></i>
-            </span>
-            <span class="text-secondary fw-bold text-uppercase font-monospace" style="font-size: 0.6875rem; letter-spacing: 0.06em;">
-              Rencana Tindakan Perbaikan
+        <!-- Rencana Tindakan Perbaikan (Full Width Card) -->
+        <div class="card border rounded-3 p-3.5 bg-light-subtle mb-4 shadow-2xs">
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 pb-2 mb-2.5 border-bottom">
+            <div class="d-inline-flex align-items-center gap-2">
+              <i class="bi bi-wrench-adjustable text-success"></i>
+              <span class="fw-bold text-dark text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">
+                Rencana Tindakan Perbaikan
+              </span>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5" style="font-size: 10px; font-weight: 600;">
+              SOP Terverifikasi
             </span>
           </div>
-          <p id="displayActionPlan" class="small text-dark fw-semibold mb-0 lh-base ps-1">
-            Akan ditentukan setelah teknisi memeriksa komponen dan jalur tegangan.
-          </p>
+          <div class="p-3 bg-white rounded-2 border">
+            <p id="displayActionPlan" class="small text-dark fw-semibold mb-0 lh-base">
+              Ganti modul dual fan cooler, deep cleaning heatsink, dan repasta thermal Arctic MX-4.
+            </p>
+          </div>
         </div>
 
         <!-- Tabel Rincian Biaya -->
@@ -427,27 +455,27 @@
   <!-- MODAL VERIFIKASI KEAMANAN PEMILIK TIKET -->
   <div class="modal fade" id="modalVerifyOwner" tabindex="-1" aria-labelledby="modalVerifyOwnerLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content border-0 shadow-lg text-center p-3 rounded-4">
-        <div class="modal-header border-0 pb-0 justify-content-end">
+      <div class="modal-content border-0 shadow-lg text-center p-4 rounded-4 bg-white">
+        <div class="modal-header border-0 pb-0 justify-content-end p-0">
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body pt-0">
-          <div class="badge bg-primary-subtle text-primary p-3 rounded-circle mb-2">
-            <i class="bi bi-shield-lock-fill fs-3"></i>
+        <div class="modal-body pt-0 px-2">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 56px; height: 56px;">
+            <i data-lucide="shield-check" style="width: 28px; height: 28px;"></i>
           </div>
-          <h6 class="fw-bold mb-1" id="modalVerifyOwnerLabel">Verifikasi Kode PIN Tiket</h6>
-          <p class="text-muted small mb-2">
-            Masukkan <strong>4 Karakter Kode PIN Keamanan</strong> (kombinasi huruf, simbol, dan angka):
+          <h5 class="fw-bold mb-1 text-dark" id="modalVerifyOwnerLabel">Verifikasi Kode PIN</h5>
+          <p class="text-secondary small mb-3">
+            Masukkan <strong>4 Karakter PIN Keamanan</strong> tiket Anda untuk membuka akses data:
           </p>
-          <div id="verifyAlertError" class="alert alert-danger py-1.5 px-2 small mb-2 d-none"></div>
-          <div class="mb-2">
-            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-3 fw-bold" placeholder="K#7X" maxlength="8" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
+          <div id="verifyAlertError" class="alert alert-danger py-2 px-3 small mb-3 d-none border-0 rounded-3"></div>
+          <div class="mb-3">
+            <input type="text" id="inputVerifyPin" class="form-control text-center font-monospace fs-3 fw-bold tracking-widest py-2 rounded-3 border-2" placeholder="K#7X" maxlength="8" autofocus onkeydown="if(event.key==='Enter') submitVerificationPin()">
           </div>
-          <span class="text-muted d-block small mb-3" style="font-size: 11px;">
-            *Lupa kode PIN? Anda juga dapat menggunakan 4 digit terakhir nomor WhatsApp pemilik (<span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>).
+          <span class="text-secondary d-block small mb-3" style="font-size: 11px;">
+            *Atau gunakan 4 digit terakhir nomor WhatsApp: <span id="verifyPhoneHint" class="font-monospace text-primary fw-bold">08**-****-****</span>
           </span>
-          <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm d-inline-flex justify-content-center align-items-center gap-2">
-            <i class="bi bi-check2-circle"></i>
+          <button type="button" onclick="submitVerificationPin()" class="btn btn-primary w-100 fw-semibold py-2.5 shadow-sm d-inline-flex justify-content-center align-items-center gap-2 rounded-3">
+            <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
             <span>Verifikasi & Lanjutkan</span>
           </button>
         </div>
@@ -457,41 +485,47 @@
   <!-- MODAL AJUKAN NEGO BIAYA -->
   <div class="modal fade" id="modalNego" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-content rounded-4 border-0 shadow-lg bg-white p-2">
         <div class="modal-header border-bottom p-3 px-4">
-          <h5 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2">
-            <i class="bi bi-chat-quote-fill text-warning"></i>
+          <h5 class="modal-title fw-bold text-dark d-inline-flex align-items-center gap-2 fs-6">
+            <i data-lucide="message-square-quote" class="text-warning" style="width: 20px; height: 20px;"></i>
             <span>Ajukan Negosiasi Biaya Servis</span>
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4 small">
-          <p class="text-secondary mb-3">
+          <p class="text-secondary mb-3 lh-base">
             SerComp berkomitmen pada transparansi (Zero Hidden Cost). Jika estimasi biaya suku cadang atau jasa dirasa di luar anggaran, Anda dapat mengajukan tawaran atau berdiskusi langsung dengan Admin Workshop.
           </p>
           <div class="p-3 bg-light rounded-3 border mb-3">
             <div class="d-flex justify-content-between align-items-center">
-              <span class="text-muted">Total Estimasi Saat Ini:</span>
+              <span class="text-secondary">Total Estimasi Saat Ini:</span>
               <strong id="modalNegoCurrentTotal" class="text-primary font-monospace fs-6">Rp 0</strong>
             </div>
           </div>
           <div class="mb-3">
-            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Budget / Penawaran yang Anda Harapkan (Rp):</label>
-            <input type="number" id="inputNegoBudget" class="form-control" placeholder="Cth: 350000">
-            <span class="text-muted" style="font-size: 11px;">Kosongkan bila ingin mendiskusikan opsi alternatif suku cadang.</span>
+            <label class="form-label text-secondary fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.05em;">Budget / Penawaran yang Anda Harapkan (Rp):</label>
+            <input type="number" id="inputNegoBudget" class="form-control rounded-3" placeholder="Cth: 350000">
+            <span class="text-secondary" style="font-size: 11px;">Kosongkan bila ingin mendiskusikan opsi alternatif suku cadang.</span>
           </div>
           <div class="mb-3">
-            <label class="form-label text-muted fw-bold text-uppercase" style="font-size: 10px;">Alasan / Catatan Negosiasi:</label>
-            <textarea id="inputNegoNotes" rows="3" class="form-control" placeholder="Cth: Bisakah diskon biaya jasa Rp 50.000? Atau adakah pilihan sparepart second yang bergaransi?"></textarea>
+            <label class="form-label text-secondary fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.05em;">Alasan / Catatan Negosiasi:</label>
+            <textarea id="inputNegoNotes" rows="3" class="form-control rounded-3" placeholder="Cth: Bisakah diskon biaya jasa Rp 50.000? Atau adakah pilihan sparepart second yang bergaransi?"></textarea>
           </div>
           <div class="d-grid gap-2">
-            <button type="button" onclick="submitNegotiation()" class="btn btn-primary fw-bold py-2 d-inline-flex justify-content-center align-items-center gap-2">
-              <i class="bi bi-send-fill"></i>
+            <button type="button" onclick="submitNegotiation()" class="btn btn-primary fw-semibold py-2.5 d-inline-flex justify-content-center align-items-center gap-2 rounded-3 shadow-sm">
+              <i data-lucide="send" style="width: 16px; height: 16px;"></i>
               <span>Kirim Permintaan Nego ke Admin</span>
             </button>
-            <a id="btnNegoWaChat" href="#" target="_blank" class="btn btn-outline-success fw-bold py-2 d-inline-flex justify-content-center align-items-center gap-2">
-              <i class="bi bi-whatsapp"></i>
-              <span>Diskusi Nego Langsung via WhatsApp CS</span>
+            <a id="btnNegoWaChat" href="#" target="_blank" class="btn btn-outline-success fw-semibold py-2.5 d-inline-flex justify-content-center align-items-center gap-2 rounded-3">
+              <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>
+              <span>Diskusi Nego via WhatsApp CS</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
             </a>
           </div>
         </div>
@@ -507,6 +541,13 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
 
   <script>
     let currentOrder = null;
@@ -647,7 +688,7 @@
         custTitle += ` [${currentOrder.companyName}]`;
       }
       document.getElementById('displayCustomer').innerText = custTitle;
-      document.getElementById('displayChronology').innerText = `"${currentOrder.issueChronology}"`;
+      document.getElementById('displayChronology').innerText = currentOrder.issueChronology;
       document.getElementById('displayDelivery').innerText = currentOrder.deliveryMethod;
       document.getElementById('displayTechnician').innerText = currentOrder.technician || "Budi Santoso (Hardware Specialist)";
 

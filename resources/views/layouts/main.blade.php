@@ -52,13 +52,13 @@
           </li>
           <li class="nav-item ms-lg-2">
             <a class="btn btn-outline-primary btn-sm px-3.5 py-2 d-inline-flex align-items-center gap-2" href="{{ url('/user-panel') }}">
-              <i class="bi bi-search"></i>
+              <i data-lucide="search" style="width: 16px; height: 16px;"></i>
               <span>Lacak Tiket</span>
             </a>
           </li>
           <li class="nav-item">
             <a class="btn btn-primary btn-sm px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm" href="{{ url('/booking') }}">
-              <i class="bi bi-calendar2-plus"></i>
+              <i data-lucide="calendar-plus" style="width: 16px; height: 16px;"></i>
               <span>Reservasi Servis</span>
             </a>
           </li>
@@ -86,15 +86,15 @@
           </p>
           <div class="d-flex flex-wrap gap-2">
             <span class="badge-status badge-status-info small d-inline-flex align-items-center gap-1.5">
-              <i class="bi bi-shield-check"></i>
+              <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
               <span>Estimasi Terkunci</span>
             </span>
             <span class="badge-status badge-status-success small d-inline-flex align-items-center gap-1.5">
-              <i class="bi bi-patch-check"></i>
+              <i data-lucide="badge-check" style="width: 14px; height: 14px;"></i>
               <span>Garansi 90 Hari</span>
             </span>
             <span class="badge-status badge-status-neutral small d-inline-flex align-items-center gap-1.5">
-              <i class="bi bi-lock"></i>
+              <i data-lucide="lock" style="width: 14px; height: 14px;"></i>
               <span>Perlindungan Data</span>
             </span>
           </div>
@@ -115,17 +115,17 @@
           <ul class="list-unstyled small mb-0 space-y-2">
             <li class="mb-2">
               <a href="{{ url('/#garansi') }}" class="text-decoration-none text-light text-opacity-75 hover-white d-flex align-items-center gap-1.5">
-                <i class="bi bi-shield-check text-primary"></i> e-Warranty 90 Hari
+                <i data-lucide="shield-check" class="text-primary" style="width: 15px; height: 15px;"></i> e-Warranty 90 Hari
               </a>
             </li>
             <li class="mb-2">
               <a href="{{ url('/#alur-kerja') }}" class="text-decoration-none text-light text-opacity-75 hover-white d-flex align-items-center gap-1.5">
-                <i class="bi bi-diagram-3 text-primary"></i> 4 Alur Kerja Transparan
+                <i data-lucide="git-branch" class="text-primary" style="width: 15px; height: 15px;"></i> 4 Alur Kerja Transparan
               </a>
             </li>
             <li class="mb-2">
               <a href="{{ url('/invoice') }}" class="text-decoration-none text-light text-opacity-75 hover-white d-flex align-items-center gap-1.5">
-                <i class="bi bi-receipt text-primary"></i> Standar Faktur Resmi
+                <i data-lucide="receipt" class="text-primary" style="width: 15px; height: 15px;"></i> Standar Faktur Resmi
               </a>
             </li>
           </ul>
@@ -133,14 +133,14 @@
 
         <div class="col-lg-3">
           <h6 class="text-white fw-bold mb-3 small text-uppercase" style="letter-spacing: 0.05em;">Workshop & Kontak</h6>
-          <p class="small text-light text-opacity-75 mb-2">
-            <i class="bi bi-geo-alt me-1 text-primary"></i> <strong>Workshop Utama:</strong> Service Hub & Meja Kerja Hardware
+          <p class="small text-light text-opacity-75 mb-2 d-flex align-items-center gap-1.5">
+            <i data-lucide="map-pin" class="text-primary flex-shrink-0" style="width: 15px; height: 15px;"></i> <span><strong>Workshop:</strong> Service Hub & Hardware Center</span>
           </p>
-          <p class="small text-light text-opacity-75 mb-2">
-            <i class="bi bi-clock me-1 text-primary"></i> <strong>Jam Operasional:</strong> Senin – Sabtu: 09.00 – 20.00 WIB
+          <p class="small text-light text-opacity-75 mb-2 d-flex align-items-center gap-1.5">
+            <i data-lucide="clock" class="text-primary flex-shrink-0" style="width: 15px; height: 15px;"></i> <span><strong>Jam Kerja:</strong> Senin – Sabtu: 09.00 – 20.00</span>
           </p>
-          <p class="small text-light text-opacity-75 mb-0">
-            <i class="bi bi-whatsapp me-1 text-success"></i> <strong>Hotline:</strong> 0812-9876-5432
+          <p class="small text-light text-opacity-75 mb-0 d-flex align-items-center gap-1.5">
+            <i data-lucide="phone-call" class="text-success flex-shrink-0" style="width: 15px; height: 15px;"></i> <span><strong>Hotline:</strong> 0812-9876-5432</span>
           </p>
         </div>
       </div>
@@ -173,6 +173,16 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
   
   @yield('scripts')
   @stack('scripts')

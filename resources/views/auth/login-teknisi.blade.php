@@ -7,6 +7,8 @@
   <!-- Bootstrap 5.3 CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Font Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- SerComp Theme -->
@@ -56,12 +58,12 @@
           <div class="brand-box">SC</div>
           <span class="fw-bold fs-4 text-dark">Ser<span class="text-primary">Comp</span></span>
         </a>
-        <div class="d-inline-flex align-items-center gap-1 badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 rounded-pill mb-2">
-          <i class="bi bi-shield-lock-fill"></i>
+        <div class="d-inline-flex align-items-center gap-1.5 badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 rounded-pill mb-2">
+          <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i>
           <span>Internal Workshop Staf</span>
         </div>
         <h4 class="fw-bold text-dark mb-1">Login Teknisi & Admin</h4>
-        <p class="text-muted small mb-0">
+        <p class="text-secondary small mb-0">
           Autentikasi staf teknisi untuk input diagnosa, estimasi biaya, & approval pengerjaan.
         </p>
       </div>
@@ -71,11 +73,11 @@
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="text-muted fw-bold">Pilih Akun Demo Cepat:</span>
           <div class="btn-group btn-group-sm">
-            <button type="button" onclick="fillDemoAdmin()" class="btn btn-xs py-0.5 px-2 btn-primary" style="font-size: 11px;">
-              <i class="bi bi-shield-lock me-1"></i> Admin
+            <button type="button" onclick="fillDemoAdmin()" class="btn btn-xs py-0.5 px-2 btn-primary d-inline-flex align-items-center gap-1" style="font-size: 11px;">
+              <i data-lucide="shield" style="width: 12px; height: 12px;"></i> Admin
             </button>
-            <button type="button" onclick="fillDemoTech()" class="btn btn-xs py-0.5 px-2 btn-outline-primary" style="font-size: 11px;">
-              <i class="bi bi-tools me-1"></i> Teknisi
+            <button type="button" onclick="fillDemoTech()" class="btn btn-xs py-0.5 px-2 btn-outline-primary d-inline-flex align-items-center gap-1" style="font-size: 11px;">
+              <i data-lucide="wrench" style="width: 12px; height: 12px;"></i> Teknisi
             </button>
           </div>
         </div>
@@ -98,7 +100,7 @@
         <div class="mb-3">
           <label for="techId" class="form-label small fw-bold text-secondary">ID Karyawan / Kode Staf Teknisi</label>
           <div class="input-group">
-            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person-badge"></i></span>
+            <span class="input-group-text bg-light text-muted border-end-0"><i data-lucide="user-check" style="width: 16px; height: 16px;"></i></span>
             <input type="text" name="tech_id" id="techId" class="form-control border-start-0" placeholder="TEK-2026-XX" value="{{ old('tech_id', 'TEK-2026-01') }}" required>
           </div>
         </div>
@@ -106,13 +108,13 @@
         <div class="mb-3">
           <label for="techPass" class="form-label small fw-bold text-secondary">Kata Sandi Staf</label>
           <div class="input-group">
-            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-key"></i></span>
+            <span class="input-group-text bg-light text-muted border-end-0"><i data-lucide="key" style="width: 16px; height: 16px;"></i></span>
             <input type="password" name="password" id="techPass" class="form-control border-start-0" placeholder="••••••••" value="teknisi123" required>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm mb-3 d-inline-flex justify-content-center align-items-center gap-2">
-          <i class="bi bi-box-arrow-in-right"></i>
+        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm mb-3 d-inline-flex justify-content-center align-items-center gap-2 rounded-3">
+          <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
           <span>Masuk ke Panel Workshop</span>
         </button>
       </form>
@@ -125,7 +127,16 @@
     </div>
   </div>
 
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+
     function fillDemoAdmin() {
       document.getElementById('techId').value = "admin@sercomp.id";
       document.getElementById('techPass').value = "admin123";

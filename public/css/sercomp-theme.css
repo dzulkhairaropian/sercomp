@@ -78,7 +78,7 @@ body {
   outline-offset: 2px !important;
 }
 
-/* Reduced Motion Fallback (Hallmark Rule 7) */
+/* Reduced Motion Fallback - Preserve State Hierarchy gracefully */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -86,6 +86,30 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Custom Scrollbars & Browser Surface Polishing */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sc-paper);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sc-border-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sc-ink-subtle);
+}
+
+::selection {
+  background-color: var(--sc-brand-subtle);
+  color: var(--sc-brand);
 }
 
 /* Brand Logo Box */

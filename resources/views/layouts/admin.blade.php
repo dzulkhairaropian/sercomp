@@ -9,6 +9,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
   <!-- Font Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -125,23 +128,23 @@
 
         @if(auth()->user()?->role === 'admin')
           <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->is('admin') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i>
+            <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
             <span>Dashboard Eksekutif</span>
           </a>
 
           <a href="{{ route('admin.meja-kerja') }}" class="sidebar-link {{ request()->is('admin/meja-kerja*') || request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
-            <i class="bi bi-calculator"></i>
+            <i data-lucide="calculator" style="width: 18px; height: 18px;"></i>
             <span>Estimasi & Persetujuan</span>
           </a>
 
           <a href="{{ route('admin.servis.list') }}" class="sidebar-link {{ request()->is('admin/servis*') || request()->is('teknisi/servis*') ? 'active' : '' }}">
-            <i class="bi bi-laptop"></i>
+            <i data-lucide="laptop" style="width: 18px; height: 18px;"></i>
             <span>Daftar Servis Unit</span>
             <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
           </a>
 
           <a href="{{ route('admin.kasir') }}" class="sidebar-link {{ request()->is('admin/kasir*') ? 'active' : '' }}">
-            <i class="bi bi-cash-coin text-success"></i>
+            <i data-lucide="receipt" class="text-success" style="width: 18px; height: 18px;"></i>
             <span>Kasir & Serah Terima</span>
             @php
               $readyCount = \App\Models\ServiceOrder::whereIn('order_status', ['Selesai', 'Diserahkan'])->count();
@@ -152,7 +155,7 @@
           </a>
 
           <a href="{{ route('admin.crm') }}" class="sidebar-link {{ request()->is('admin/crm*') ? 'active' : '' }}">
-            <i class="bi bi-people-fill text-info"></i>
+            <i data-lucide="users" class="text-info" style="width: 18px; height: 18px;"></i>
             <span>Pelanggan & CRM</span>
             <span class="badge bg-info-subtle text-info rounded-pill ms-auto" style="font-size: 9px; font-weight: 800;">BI CRM</span>
           </a>
@@ -162,27 +165,27 @@
           </div>
 
           <a href="{{ route('admin.sparepart.index') }}" class="sidebar-link {{ request()->is('admin/sparepart*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i>
+            <i data-lucide="package" style="width: 18px; height: 18px;"></i>
             <span>Stok Suku Cadang</span>
           </a>
 
           <a href="{{ route('admin.bi.export') }}" class="sidebar-link">
-            <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+            <i data-lucide="file-spreadsheet" class="text-success" style="width: 18px; height: 18px;"></i>
             <span>Export Dataset BI (.csv)</span>
           </a>
         @else
           <a href="{{ route('teknisi.dashboard') }}" class="sidebar-link {{ request()->is('teknisi') || request()->is('teknisi/dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i>
+            <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
             <span>Dashboard Teknisi</span>
           </a>
 
           <a href="{{ route('admin.workbench') }}" class="sidebar-link {{ request()->is('teknisi/meja-kerja*') ? 'active' : '' }}">
-            <i class="bi bi-tools"></i>
+            <i data-lucide="wrench" style="width: 18px; height: 18px;"></i>
             <span>Meja Kerja Diagnosa</span>
           </a>
 
           <a href="{{ route('admin.servis') }}" class="sidebar-link {{ request()->is('teknisi/servis*') ? 'active' : '' }}">
-            <i class="bi bi-laptop"></i>
+            <i data-lucide="laptop" style="width: 18px; height: 18px;"></i>
             <span>Antrean Servis Unit</span>
             <span class="badge bg-primary text-white rounded-pill ms-auto" style="font-size: 10px;">{{ \App\Models\ServiceOrder::count() }}</span>
           </a>
@@ -192,23 +195,23 @@
           </div>
 
           <a href="{{ route('admin.sparepart') }}" class="sidebar-link {{ request()->is('teknisi/sparepart*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i>
+            <i data-lucide="package" style="width: 18px; height: 18px;"></i>
             <span>Cek Stok Suku Cadang</span>
           </a>
         @endif
 
         @if(auth()->user()?->role === 'admin')
         <a href="{{ url('/invoice') }}" target="_blank" class="sidebar-link">
-          <i class="bi bi-receipt"></i>
+          <i data-lucide="receipt" style="width: 18px; height: 18px;"></i>
           <span>Faktur Invoice A4</span>
-          <i class="bi bi-box-arrow-up-right ms-auto text-muted" style="font-size: 11px;"></i>
+          <i data-lucide="external-link" class="ms-auto text-muted" style="width: 14px; height: 14px;"></i>
         </a>
         @endif
 
         <a href="{{ url('/') }}" target="_blank" class="sidebar-link">
-          <i class="bi bi-globe"></i>
+          <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
           <span>Lihat Website Utama</span>
-          <i class="bi bi-box-arrow-up-right ms-auto text-muted" style="font-size: 11px;"></i>
+          <i data-lucide="external-link" class="ms-auto text-muted" style="width: 14px; height: 14px;"></i>
         </a>
       </nav>
 
@@ -266,6 +269,14 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
   
   @yield('scripts')
   @stack('scripts')

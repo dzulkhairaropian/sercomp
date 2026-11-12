@@ -67,8 +67,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // Inventori Suku Cadang (Kelola Stok & Harga)
     Route::get('/sparepart', [SparepartController::class, 'index'])->name('admin.sparepart.index');
-    Route::post('/sparepart', [SparepartController::class, 'store'])->name('admin.sparepart.save');
-    Route::put('/sparepart/{id}', [SparepartController::class, 'update'])->name('admin.sparepart.edit');
+    Route::post('/sparepart', [SparepartController::class, 'store'])->name('admin.sparepart.store');
+    Route::put('/sparepart/{id}', [SparepartController::class, 'update'])->name('admin.sparepart.update');
 });
 
 // ==========================================
